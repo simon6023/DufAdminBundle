@@ -24,5 +24,8 @@
         "stof/doctrine-extensions-bundle": "1.2.2",
         "simonduflos/dufcorebundle":"@dev",
         "simonduflos/dufmessagingbundle":"@dev"
+    },
+    "autoload": {
+        "psr-4": { "Duf\\AdminBundle\\DufAdminBundle\\": "" }
     }
 }
