@@ -1,0 +1,64 @@
+<div class="col-md-3">
+	<a href="{{ path('duf_admin_messaging_new') }}" class="btn btn-primary btn-block margin-bottom">Compose</a>
+
+	<div class="box box-solid">
+		<div class="box-header with-border">
+			<h3 class="box-title">Folders</h3>
+
+			<div class="box-tools">
+				<button type="button" class="btn btn-box-tool" data-widget="collapse">
+					<i class="fa fa-minus"></i>
+				</button>
+			</div>
+		</div>
+	
+		<div class="box-body no-padding">
+			<ul class="nav nav-pills nav-stacked">
+				{% set unread_messages 	= duf_messaging.getNumberOfUnreadConversations(app.user) %}
+				{% set drafts_messages 	= duf_messaging.getNumberOfDrafts(app.user) %}
+
+				<li {% if current == 'inbox' %}class="active"{% endif %}>
+					<a href="{{ path('duf_admin_messaging_index') }}">
+						<i class="fa fa-inbox"></i> Inbox {% if unread_messages > 0 %}<span class="label label-primary pull-right">{{ unread_messages }}</span>{% endif %}
+					</a>
+				</li>
+				
+				<li {% if current == 'sent' %}class="active"{% endif %}>
+					<a href="{{ path('duf_admin_messaging_sent') }}">
+						<i class="fa fa-envelope-o"></i> Sent
+					</a>
+				</li>
+				
+				<li {% if current == 'drafts' %}class="active"{% endif %}>
+					<a href="{{ path('duf_admin_messaging_draft_index') }}">
+						<i class="fa fa-file-text-o"></i> Drafts {% if drafts_messages > 0 %}<span class="label label-warning pull-right">{{ drafts_messages }}</span>{% endif %}
+					</a>
+				</li>
+
+				<li {% if current == 'trash' %}class="active"{% endif %}>
+					<a href="{{ path('duf_admin_messaging_trash') }}"><i class="fa fa-trash-o"></i> Trash</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="box box-solid">
+		<div class="box-header with-border">
+			<h3 class="box-title">Labels</h3>
+
+			<div class="box-tools">
+				<button type="button" class="btn btn-box-tool" data-widget="collapse">
+					<i class="fa fa-minus"></i>
+				</button>
+			</div>
+		</div>
+
+		<div class="box-body no-padding">
+			<ul class="nav nav-pills nav-stacked">
+				<li><a href="#"><i class="fa fa-circle-o text-red"></i> Important</a></li>
+				<li><a href="#"><i class="fa fa-circle-o text-yellow"></i> Promotions</a></li>
+				<li><a href="#"><i class="fa fa-circle-o text-light-blue"></i> Social</a></li>
+			</ul>
+		</div>
+	</div>
+</div>

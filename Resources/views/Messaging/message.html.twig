@@ -1,0 +1,49 @@
+{% if message is defined and message is not null %}
+	<div class="message-item">
+		<div class="box-body no-padding">
+			<div class="mailbox-read-info">
+				{% set sender_username = message.author.username %}
+
+				{% if message.author == app.user %}
+					{% set sender_username = 'messaging.user.me' | trans %}
+				{% endif %}
+
+				<h5>From: {{ sender_username }} <span class="mailbox-read-time pull-right">{{ message.created_at | date('Y/m/d H:i') }}</span></h5>
+
+				<h5>
+					To: 
+					{% for message_user in message.users %}
+						{% set recipient_username = message_user.user.username %}
+
+						{% if message_user.user == app.user %}
+							{% set recipient_username = 'messaging.user.me' | trans %}
+						{% endif %}
+
+						{{ recipient_username }}{% if loop.last == false %},{% endif %}
+					{% endfor %}
+				</h5>
+			</div>
+
+			<div class="mailbox-read-message">
+				{{ message.content | raw }}
+			</div>
+		</div>
+
+		<div class="box-footer">
+			<div class="pull-right">
+				<button type="button" class="btn btn-default reply-button" data-type="reply" data-conversation-id="{{ conversation.id }}" data-message-id="{{ message.id }}">
+					<i class="fa fa-reply"></i> Reply
+				</button>
+
+				<button type="button" class="btn btn-default reply-button" data-type="reply-all" data-conversation-id="{{ conversation.id }}" data-message-id="{{ message.id }}">
+					<i class="fa fa-reply-all"></i> Reply all
+				</button>
+
+				{# <button type="button" class="btn btn-default"><i class="fa fa-share"></i> Forward</button> #}
+			</div>
+
+			<button type="button" class="btn btn-default"><i class="fa fa-trash-o"></i> Delete</button>
+			<button type="button" class="btn btn-default"><i class="fa fa-print"></i> Print</button>
+		</div>
+	</div>
+{% endif %}

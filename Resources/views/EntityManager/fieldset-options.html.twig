@@ -1,0 +1,20 @@
+{% if field_type.options is defined and field_type.options is not null %}
+	{% for option in field_type.options %}
+		<fieldset class="form-group" data-field-nbr="{{ field_nbr }}">
+			<label for="{{ option.name }}">{{ option.label }}{% if option.required is defined and option.required %}*{% endif %}</label>
+
+			{% if option.type == 'number' or option.type == 'text' %}
+				<input type="{{ option.type }}" class="form-control" name="entity_field[{{ field_nbr }}][{{ option.name }}]" id="{{ option.name }}" {% if option.required is defined and option.required %}required{% endif %} />
+
+			{% elseif option.type == 'select' %}
+				<select class="form-control" name="entity_field[{{ field_nbr }}][{{ option.name }}]" id="{{ option.name }}" id="{{ option.name }}" {% if option.required is defined and option.required %}required{% endif %} data-field-nbr="{{ field_nbr }}">
+					<option value="0" disabled selected>Select</option>
+
+					{% for choice in option.choices %}
+						<option value="{{ choice.name }}">{{ choice.name }}</option>
+					{% endfor %}
+				</select>
+			{% endif %}
+		</fieldset>
+	{% endfor %}
+{% endif %}

@@ -1,0 +1,282 @@
+body {
+	visibility: hidden;
+}
+
+.form-group {
+	margin:40px 0 !important;
+}
+
+label#show-file-input {
+	cursor:pointer;
+}
+
+.duf-admin-upload-input-container {
+	display:none;
+	margin:35px 0;
+}
+
+.duf-admin-file-gallery {
+	float:left;
+	width:20%;
+	height:380px;
+	margin:2%;
+	position:relative;
+}
+
+.duf-admin-file-gallery .image-container {
+	float:left;
+	width:100%;
+	height:100%;
+	background-size:100%;
+	background-position:center;
+	background-repeat: no-repeat;
+}
+
+.duf-admin-file-gallery .duf-admin-remove-file,
+.duf-admin-file-gallery .duf-admin-select-file {
+	font-size:25px;
+	font-weight:bold;
+	color:red;
+	position:absolute;
+	top:50%;
+	left:50%;
+	cursor:pointer;
+}
+
+.duf-admin-file-gallery .duf-admin-select-file {
+	color:green;
+	display:none;
+}
+
+.duf-admin-load-more {
+	float:left;
+	width:100%;
+	margin:50px 0;
+	text-align:center;
+}
+
+.duf-admin-file-infos {
+	text-align:center;
+	font-size:12px;
+	display:inline-block;
+	margin:20px 0;
+	width:100%;
+}
+
+.duf-admin-file-infos a {
+	cursor:pointer;
+}
+
+.duf-admin-modal {
+	z-index:9999999999 !important;
+	display:block !important;
+}
+
+#duf-admin-overlay {
+	display:none;
+	position:fixed;
+	width:100%;
+	height:100%;
+	background-color:rgba(0, 0, 0, 0.8);
+	z-index:999999;
+}
+
+.duf-admin-modal.modal#select-file .modal-dialog {
+	width:800px;
+}
+
+.duf-admin-modal.modal#select-file .modal-dialog .duf-admin-file-gallery {
+	float:left;
+    width:25%;
+    height:215px;
+    margin:2% 3% 8% 5%;
+    position:relative;
+}
+
+.duf-admin-modal.modal#select-file .modal-dialog .box-body.duf-admin-file-list-container {
+	background-color:white;
+	z-index:888;
+	float:left;
+	max-height:400px;
+	overflow:scroll;
+}
+
+.duf-admin-modal.modal#select-file .modal-dialog .box-body.duf-admin-file-list-container .duf-admin-remove-file,
+.duf-admin-modal.modal#select-file .modal-dialog .box-body.duf-admin-file-list-container .duf-admin-file-infos a.duf-admin-render-modal {
+	display:none;
+}
+
+.duf-admin-modal.modal#select-file .modal-dialog .box-body.duf-admin-file-list-container .duf-admin-file-gallery {
+	cursor:pointer;
+}
+
+.duf-admin-modal.modal#select-file .modal-dialog .box-body.duf-admin-file-list-container .duf-admin-select-file:hover {
+	display:block;
+}
+
+.duf-admin-modal.modal#select-file .modal-dialog .select-file-title {
+	text-align:center;
+	margin:20px 0;
+}
+
+.duf-admin-hidden-select {
+	display:none;
+}
+
+.duf-admin-selected-files-container {
+	width:100%;
+	margin:30px 0;
+}
+
+.duf-admin-selected-files-container .duf-admin-file-preview {
+	display:inline-block;
+	width:20%;	
+}
+
+.duf-admin-selected-files-container .duf-admin-file-preview img {
+	width:100%;
+}
+
+.duf-admin-selected-files-container .duf-admin-file-preview .duf-admin-remove-selected-file {
+	cursor:pointer;
+}
+
+#fieldsets_container {
+	float:left;
+	width:100%;
+}
+
+#fieldsets_container .fieldset_item {
+	float:left;
+	width:45%;
+	height:800px;
+	margin:0 2.5%;
+}
+
+#fieldsets_container .fieldset_item .fieldset_checkbox_container {
+	float:left;
+	width:100%;
+}
+
+#fieldsets_container .fieldset_item .fieldset_checkbox_container fieldset {
+	float:left;
+	width:20%;
+}
+
+#fieldsets_container .fieldset_item .fieldset_options_container {
+	float:left;
+	width:100%;
+}
+
+#fieldsets_container .fieldset_item .form-group {
+	margin-top:10px !important;
+	margin-bottom:10px !important;
+}
+
+#fieldsets_container .fieldset_item .form-group.buttons {
+	float:left;
+	width:100%;
+}
+
+#fieldsets_container .fieldset_item .duf_admin_annotations_options {
+	display:none;
+	float:left;
+	width:100%;
+}
+
+#fieldsets_container .fieldset_item .duf_admin_annotations_options .left {
+	float:left;
+	width:10%;
+	margin-right:5%;
+}
+
+#fieldsets_container .fieldset_item .duf_admin_annotations_options .right {
+	float:left;
+	width:85%;
+	margin:0;
+}
+
+#fieldsets_container .fieldset_item .duf_admin_annotations_options .form-group.form_field_placeholder_container {
+	display:none;
+}
+
+.one_to_many_mapped_by_container, .many_to_many_inversed_by_container {
+	float:left;
+	width:100%;
+}
+
+.form-group.editable_relation_index, .form-group.editable_file_type {
+	display:none;
+}
+
+.duf-admin-redmine-details {
+
+}
+
+.duf-admin-redmine-details dd {
+	margin-bottom:20px;
+}
+
+.duf-admin-redmine-journal-container {
+	margin:0 0 40px 0;
+}
+
+.duf-admin-redmine-journal-container .note {
+
+}
+
+.duf-admin-translate-textarea-container {
+    border-style:solid;
+    border-width:0 1px 1px 1px;
+    border-color:#ddd;
+    padding:15px;
+}
+
+.dropdown.user.user-menu {
+	min-width:200px;
+}
+
+.duf-admin-flags-container img {
+	float:left;
+	margin-right:15px;
+}
+
+.uppercase {
+	text-transform:uppercase;
+}
+
+.box-body.no-padding.reply-box label {
+	display:none !important;
+}
+
+.message-item {
+	margin:0 0 40px 0!important;
+	padding:10px 0 !important;
+	border-style:solid;
+	border-width:0 0 1px 0;
+	border-color:#ccc;
+}
+
+.table-striped>tbody>tr.active:nth-of-type(odd) {
+	background-color:lightblue !important;
+}
+
+.table-striped > tbody > tr.active:nth-child(odd) > td, .table-striped > tbody > tr.active:nth-child(odd) > th {
+	background-color:lightblue !important;
+}
+
+.table-striped>tbody>tr.active:nth-of-type(even) {
+	background-color:lightblue !important;
+}
+
+.table-striped > tbody > tr.active:nth-child(even) > td, .table-striped > tbody > tr.active:nth-child(even) > th {
+	background-color:lightblue !important;
+}
+
+.duf-messaging-save-draft {
+	margin-bottom:20px !important;
+}
+
+textarea.no-editor {
+	width:100%;
+}

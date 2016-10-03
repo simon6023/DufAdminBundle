@@ -1,0 +1,37 @@
+<div class="box embed-form">
+	<div class="box-header">
+		<h3 class="box-title">Create new {{ embedded_form.form_name }}</h3>
+	</div>
+
+	<div class="box-body">
+		<table class="table" id="{{ duf_admin_form.getEmbeddedFormName(embedded_form.form_name) }}">
+			<thead>
+				<tr>
+					{% for list_header in embedded_form.form_list_headers %}
+						<th>{{ list_header }}</th>
+					{% endfor %}
+
+					<th>Actions</th>
+				</tr>
+			</thead>
+
+			<tbody id="embed-form-container-{{ duf_admin_form.getEmbeddedFormName(embedded_form.form_name) }}">
+				{% if embed_entities is defined and embed_entities | length > 0 %}
+					{% include 'DufAdminBundle:Crud:embed-form-list.html.twig' %}
+				{% endif %}
+			</tbody>
+		</table>
+
+		<form class="duf-admin-embed-form" name="{{ duf_admin_form.getEmbeddedFormName(embedded_form.form_name) }}" data-route-path="{{ duf_admin_routing.getRouteFromEntityName(embedded_form.form_entity_name, 'form-request/' ~ content_type, 'save') }}" data-form-entity-name="{{ embedded_form.form_entity_name }}" data-form-embed-label="{{ embedded_form.form_name }}" data-form-embed-class="{{ embedded_form.form_entity_class }}" data-form-embed-entity-name="{{ embedded_form.form_entity_name }}" {% if entity is defined and entity is not null %}data-parent-entity-id="{{ entity.id }}"{% endif %} data-is-new="{{ is_new }}" >
+			{% for embedded_form_property in embedded_form.form_properties %}
+				{{ form_widget(attribute(embedded_form.create_form, embedded_form_property)) }}
+			{% endfor %}
+
+			<input type="hidden" name="request_type" value="embed" />
+
+			{{ form_row(embedded_form.create_form._token) }}
+
+			<button type="submit" class="btn btn-primary">Save</button>
+		</form>
+	</div>
+</div>

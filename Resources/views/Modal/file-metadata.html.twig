@@ -1,0 +1,52 @@
+<div class="duf-admin-modal modal in" id="myModal" role="dialog">
+	<div class="modal-dialog">
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+
+				<h4 class="modal-title">{{ modal_title }}</h4>
+			</div>
+
+			<div class="modal-body">
+				{% if form_embed is defined %}
+					<table class="table" id="{{ duf_admin_form.getEmbeddedFormName(form_embed.form_name) }}">
+						<thead>
+							<tr>
+								{% for list_header in form_embed.form_list_headers %}
+									<th>{{ list_header }}</th>
+								{% endfor %}
+
+								<th>Actions</th>
+							</tr>
+						</thead>
+
+						<tbody id="embed-form-container-{{ duf_admin_form.getEmbeddedFormName(form_embed.form_name) }}">
+							{% if embed_entities is defined and embed_entities | length > 0 %}
+								{% include 'DufAdminBundle:Crud:embed-form-list.html.twig' with { 'embedded_form' : form_embed} %}
+							{% endif %}
+						</tbody>
+					</table>
+
+					{% set is_new = false %}
+
+					<form class="duf-admin-embed-form" id= "modal-embed-form" name="{{ duf_admin_form.getEmbeddedFormName(form_embed.form_name) }}" data-route-path="{{ duf_admin_routing.getRouteFromEntityName(form_embed.form_entity_name, 'form-request/' ~ content_type, 'save') }}" data-form-entity-name="{{ form_embed.form_entity_name }}" data-form-embed-label="{{ form_embed.form_name }}" data-form-embed-class="{{ form_embed.form_entity_class }}" data-form-embed-entity-name="{{ form_embed.form_entity_name }}" {% if parent_entity is defined and parent_entity is not null %}data-parent-entity-id="{{ parent_entity.id }}" data-parent-entity-class="{{ duf_admin_form.getEntityClass(parent_entity) }}"{% endif %} data-is-new="{{ is_new }}" >
+						{% for embedded_form_property in form_embed.form_properties %}
+							{{ form_widget(attribute(form_embed.create_form, embedded_form_property)) }}
+						{% endfor %}
+
+						<input type="hidden" name="request_type" value="embed" />
+
+						{{ form_row(form_embed.create_form._token) }}
+
+						<button type="submit" class="btn btn-primary">Save</button>
+					</form>
+				{% endif %}
+			</div>
+
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>

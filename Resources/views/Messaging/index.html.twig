@@ -1,0 +1,112 @@
+{% extends 'DufAdminBundle:Default:index.html.twig' %}
+
+{% block main %}
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="box">
+				<div class="box-header">
+					<h3 class="box-title">{{ 'sidebar.messaging' | trans }}</h3>
+				</div>
+
+				<div class="box-body">
+					{{ render(controller('DufAdminBundle:Messaging:renderMessagingLeftMenu', { 'current' : messaging_section_title })) }}
+
+					<div class="col-md-9">
+						<div class="box box-primary">
+							<div class="box-header with-border">
+								<h3 class="box-title">{{ messaging_section_title | trans }}</h3>
+
+								<div class="box-tools pull-right">
+									<div class="has-feedback">
+										<input type="text" class="form-control input-sm" placeholder="Search Mail">
+										<span class="glyphicon glyphicon-search form-control-feedback"></span>
+									</div>
+								</div>
+							</div>
+
+							<div class="box-body no-padding">
+								{% include 'DufAdminBundle:Messaging:toolbox.html.twig' %}
+
+								<div class="table-responsive mailbox-messages">
+									{% if conversations is defined and conversations | length > 0 and drafts is not defined %}
+										<table class="table table-hover table-striped">
+											<tbody>
+												{% for conversation in conversations %}
+													<tr id="conversation-row-{{ conversation.id }}" {% if duf_messaging.isUnreadConversation(conversation, app.user) %}class="active"{% endif %}>
+														<td>
+															<input type="checkbox" name="select-conversations[]" value="{{ conversation.id }}">
+														</td>
+														
+														<td class="mailbox-star"><a href="#"><i class="fa fa-star text-yellow"></i></a></td>
+														
+														<td class="mailbox-name">
+															{% for user in conversation.users %}
+																<a href="{{ path('duf_admin_messaging_read', { conversation_id: conversation.id }) }}">{% if user.user == app.user %}{{ 'messaging.user.me' | trans }}{% else %}{{ user.user.username }}{% endif %}</a>{% if loop.last == false %}, {% endif %}
+															{% endfor %}
+														</td>
+														
+														<td class="mailbox-subject">
+															<strong>{{ conversation.subject }}</strong> - {{ conversation.lastMessageIntro }}
+														</td>
+														
+														<td class="mailbox-attachment"></td>
+														
+														<td class="mailbox-date">{{ conversation.lastMessageDate | date('Y/m/d H:i') }}</td>
+													</tr>
+												{% endfor %}
+											</tbody>
+										</table>
+									{% elseif drafts is defined and drafts | length > 0 %}
+										<table class="table table-hover table-striped">
+											<tbody>
+												{% for draft in drafts %}
+													<tr>
+														<td>
+															<input type="checkbox" name="select-conversations[]" value="{{ draft.id }}">
+														</td>
+
+														<td></td>
+
+														<td class="mailbox-name">
+															{% if draft.users is not null %}
+																{% for draftUser in draft.users %}
+																	<a href="{{ path('duf_admin_draft_read', { draft_id: draft.id }) }}">{{ draftUser.user.username }}</a>{% if loop.last == false %}, {% endif %}
+																{% endfor %}
+															{% endif %}
+														</td>
+
+														<td class="mailbox-subject">
+															<strong>{{ draft.subject }}</strong> - {{ draft.getMessageIntro }}
+														</td>
+
+														<td class="mailbox-attachment"></td>
+
+														<td class="mailbox-date">
+															{{ draft.createdAt | date('Y/m/d H:i') }}
+														</td>
+													</tr>
+												{% endfor %}
+											</tbody>
+										</table>
+									{% else %}
+										<div class="alert alert-info">
+											{{ 'messaging.no_messages' | trans }}
+										</div>
+									{% endif %}
+								</div>
+							</div>
+
+							<div class="box-footer no-padding">
+								{% if conversations is defined and conversations | length > 10 %}
+									{% include 'DufAdminBundle:Messaging:toolbox.html.twig' %}
+								{% elseif drafts is defined and drafts | length > 10 %}
+									{% include 'DufAdminBundle:Messaging:toolbox.html.twig' %}
+								{% endif %}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

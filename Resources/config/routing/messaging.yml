@@ -1,0 +1,68 @@
+duf_admin_messaging_index:
+    path:     /{page}
+    defaults: { _controller: DufAdminBundle:Messaging:index, page: 1 }
+    requirements:
+        page: \d+
+
+duf_admin_messaging_trash:
+    path:     /trash/{page}
+    defaults: { _controller: DufAdminBundle:Messaging:trash, page: 1 }
+    requirements:
+        page: \d+
+
+duf_admin_messaging_new:
+    path:     /compose
+    defaults: { _controller: DufAdminBundle:Messaging:new }
+
+duf_admin_messaging_create:
+    path:     /create
+    defaults: { _controller: DufAdminBundle:Messaging:create }
+
+duf_admin_messaging_read:
+    path:     /read/{conversation_id}
+    defaults: { _controller: DufAdminBundle:Messaging:read }
+
+duf_admin_messaging_reply:
+    path:     /reply-to-message/{conversation_id}
+    defaults: { _controller: DufAdminBundle:Messaging:reply }
+    requirements:
+        method: POST
+
+duf_admin_messaging_get_reply_form:
+    path:     /get-reply-form/{conversation_id}/{message_id}/{type}
+    defaults: { _controller: DufAdminBundle:Messaging:getReplyForm }
+    requirements:
+        method: POST
+        conversation_id: \d+
+
+duf_admin_messaging_get_message:
+    path:     /get-message/{message_id}
+    defaults: { _controller: DufAdminBundle:Messaging:getMessage }
+    requirements:
+        method: POST
+        conversation_id: \d+
+
+duf_admin_messaging_delete_conversation:
+    path:     /delete-conversation/{conversation_id}
+    defaults: { _controller: DufAdminBundle:Messaging:deleteConversation }
+    requirements:
+        method: POST
+        conversation_id: \d+
+
+duf_admin_messaging_save_draft:
+    path:     /save-draft
+    defaults: { _controller: DufAdminBundle:Messaging:saveDraft }
+    requirements:
+        method: POST
+
+duf_admin_messaging_draft_index:
+    path:     /drafts
+    defaults: { _controller: DufAdminBundle:Messaging:drafts }
+
+duf_admin_draft_read:
+    path:     /draft/{draft_id}
+    defaults: { _controller: DufAdminBundle:Messaging:readDraft }
+
+duf_admin_messaging_sent:
+    path:     /sent
+    defaults: { _controller: DufAdminBundle:Messaging:sent }

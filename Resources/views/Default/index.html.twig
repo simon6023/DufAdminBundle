@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>AdminLTE 2 | Dashboard</title>
+
+		<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+		{# DUFADMIN ASSETS #}
+		<link rel="stylesheet" href="{{ asset('bundles/dufadmin/css/duf_admin.css') }}">
+
+		{# THEME ASSETS #}
+		<link rel="stylesheet" href="{{ asset('bundles/dufadmin/css/AdminLTE.min.css') }}">
+		<link rel="stylesheet" href="{{ asset('bundles/dufadmin/css/skins/_all-skins.min.css') }}">
+
+		{# THEME PLUGINS #}
+		<link rel="stylesheet" href="{{ asset('bundles/dufadmin/plugins/iCheck/flat/blue.css') }}">
+		<link rel="stylesheet" href="{{ asset('bundles/dufadmin/plugins/morris/morris.css') }}">
+		<link rel="stylesheet" href="{{ asset('bundles/dufadmin/plugins/jvectormap/jquery-jvectormap-1.2.2.css') }}">
+		<link rel="stylesheet" href="{{ asset('bundles/dufadmin/plugins/datepicker/datepicker3.css') }}">
+		<link rel="stylesheet" href="{{ asset('bundles/dufadmin/plugins/daterangepicker/daterangepicker-bs3.css') }}">
+		<link rel="stylesheet" href="{{ asset('bundles/dufadmin/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css') }}">
+
+		<!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+			<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+		<![endif]-->
+	</head>
+	
+	<body class="hold-transition skin-blue fixed sidebar-mini">
+		{# overlay for popins #}
+		<div id="duf-admin-overlay"></div>
+
+		{% block body %}
+			<div class="wrapper">
+				{% block header %}
+					{{ render(controller('DufAdminBundle:Default:renderHeader')) }}
+				{% endblock %}
+
+				{% block sidebar %}
+					{{ render(controller('DufAdminBundle:LeftMenu:render')) }}
+				{% endblock %}
+
+				<div class="content-wrapper">
+					<section class="content">
+						{# flashbags #}
+						{% include 'DufAdminBundle:Default:flashbags.html.twig' %}
+
+						{% block main %}
+							{% block content %}
+								{{ render(controller('DufAdminBundle:Default:homepage')) }}
+							{% endblock %}
+						{% endblock %}
+					</section>
+				</div>
+
+				{% block control_sidebar %}
+					{{ render(controller('DufAdminBundle:Default:renderControlSidebar')) }}
+				{% endblock %}
+
+				{% block footer %}
+					{% include 'DufAdminBundle:Default:footer.html.twig' %}
+				{% endblock %}
+			</div>
+		{% endblock %}
+
+		{% block js_footer %}
+			{% include 'DufAdminBundle:JS:js_footer.html.twig' %}
+		{% endblock %}
+
+		{% block additional_js %}{% endblock %}
+
+		{# block used by LexikTranslationBundle #}
+		{% block javascript_footer %}
+            <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular.min.js"></script>
+            <script src="{{ asset('bundles/lexiktranslation/ng-table/ng-table.min.js') }}"></script>
+		{% endblock %}
+	</body>
+</html>

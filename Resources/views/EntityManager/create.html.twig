@@ -1,0 +1,253 @@
+{% extends 'DufAdminBundle:Default:index.html.twig' %}
+
+{% block main %}
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="box">
+				<div class="box-header">
+					<h3 class="box-title">Create new entity : {{ entity_name }} in {{ bundle }}</h3>
+				</div>
+
+				<div class="box-body">
+					<div class="alert alert-info">
+						<h4><i class="icon fa fa-info"></i> Info</h4>
+						fields "id", "created_at" and "updated_at" are added automatically
+					</div>
+
+					<form name="duf_admin_create_entity" action="{{ path('duf_admin_create_entity_create') }}" method="post">
+						<input type="hidden" name="bundle" value="{{ bundle }}" />
+						<input type="hidden" name="entity_name" value="{{ entity_name }}" />
+
+						<div id="fieldsets_container">
+							{% include 'DufAdminBundle:EntityManager:fieldset.html.twig' %}
+						</div>
+
+						<button class="btn btn-success">Create entity</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block additional_js %}
+	<script type="text/javascript">
+		$(document).on('change', '#relationship_entity', function() {
+			var field_nbr = $(this).data('field-nbr');
+
+			// check if relationship type is OneToMany
+			var relationship_type = $('select[name="entity_field[' + field_nbr + '][relationship_type]"]').val();
+			if (relationship_type == 'OneToMany') {
+				getMappedByField(field_nbr);
+			}
+			else {
+				$('#one_to_many_mapped_by_container_' + field_nbr).html('');
+			}
+		});
+
+		$(document).on('change', '#editable_form_field_type', function() {
+			var field_nbr = $(this).data('field-nbr');
+			if ($(this).val() == 'text' || $(this).val() == 'email' || $(this).val() == 'password') {
+				$('#form_field_placeholder_container_' + field_nbr).show();
+
+				// set editable form placeholder
+				var placeholder_field 	= $('input[name="entity_field[' + field_nbr + '][editable_placeholder]"]');
+				var editable_label 		= $('input[name="entity_field[' + field_nbr + '][editable_label]"]');
+
+				if (editable_label.val().length > 1) {
+					placeholder_field.val(editable_label.val());
+				}
+			}
+			else {
+				$('#form_field_placeholder_container_' + field_nbr).hide();
+				$('#editable_placeholder_' + field_nbr).val('');
+			}
+
+			// if ManyToMany, show relation_index input
+			if ($(this).val() == 'entity') {
+				if ($('select[name="entity_field[' + field_nbr + '][relationship_type]"]').val() == 'ManyToMany') {
+					$('#editable_relation_index_container_' + field_nbr).show();
+				}
+				else {
+					// reset select
+					$(this).prop('selectedIndex', 0);
+
+					// hide select
+					$('#editable_relation_index_container_' + field_nbr).hide();
+				}
+			}
+
+			// get filetype select
+			if ($(this).val() == 'file') {
+				$('#editable_file_type_' + field_nbr).show();
+			}
+			else {
+				$('select[name="entity_field[' + field_nbr + '][editable_file_type]"]').prop('selectedIndex', 0);
+				$('#editable_file_type_' + field_nbr).hide();
+			}
+		});
+
+		$(document).on('change', '#field_types', function() {
+			var field_nbr = $(this).data('field-nbr');
+			var selected_value = $(this).val();
+			if (selected_value !== null) {
+				$('.duf_admin_annotations_options.field_' + field_nbr).show();
+
+				if ($(this).val() !== 'relationship') {
+					$('#one_to_many_mapped_by_container_' + field_nbr).html('');
+					$('#indexable_checkbox_container_' + field_nbr).show();
+				}
+			}
+			else {
+				$('.duf_admin_annotations_options.field_' + field_nbr).hide();
+			}
+		});
+
+		$(document).on('change', '.form-control.field-type', function() {
+			// get form field
+			var field_nbr = $(this).data('field-nbr');
+			var route 	= Routing.generate('duf_admin_create_entity_get_field_option', { field_type: $(this).val(), field_nbr: field_nbr });
+			$.ajax({
+				url: route,
+				success: function(html) {
+					$('#fieldset_options_container_' + field_nbr).html(html);
+					//$('#fieldset_options_container_' + field_nbr).append(html);
+		    	},
+		    	error: function(data) {
+		    		console.log(data);
+		    	}
+			});
+		});
+
+		$(document).on('click', '.btn.btn-danger.delete-field', function(e) {
+			e.preventDefault();
+
+			// count fields
+			var count_fields = 0;
+			$('.fieldset_item').each(function() {
+				count_fields = count_fields + 1;
+			});
+
+			if (count_fields > 1) {
+				$('#fieldset_item_' + $(this).data('field-nbr')).remove();
+			}
+		});
+
+		$(document).on('click', '.btn.btn-primary.add-field', function(e) {
+			e.preventDefault();
+
+			// get last field_nbr
+			var field_nbr = 1;
+			$('fieldset').each(function() {
+				field_nbr = parseInt($(this).data('field-nbr'));
+				field_nbr = field_nbr + 1;
+			});
+
+			// get form field
+			var route 	= Routing.generate('duf_admin_create_entity_get_fieldset', { field_nbr: field_nbr });
+			$.ajax({
+				url: route,
+				success: function(html) {
+					$('#fieldsets_container').append(html);
+		    	},
+		    	error: function(data) {
+		    		console.log(data);
+		    	}
+			});
+		});
+
+		// remove indexable option on OneToMany relationship
+		$(document).on('change', '#relationship_type', function() {
+			var field_nbr = $(this).data('field-nbr');
+			if ($(this).val() == 'OneToMany' || $(this).val() == 'ManyToMany') {
+				$('#indexable_checkbox_container_' + field_nbr).hide();
+				$('#indexable_checkbox_container_' + field_nbr).find('checkbox').attr('checked', false);
+
+				if ($(this).val() == 'OneToMany') {
+					// get mappedBy field
+					getMappedByField(field_nbr);
+				}
+				else if ($(this).val() == 'ManyToMany') {
+					// get inversedBy field
+					getInversedByField(field_nbr);
+				}
+			}
+			else {
+				$('#indexable_checkbox_container_' + field_nbr).show();
+				$('#one_to_many_mapped_by_container_' + field_nbr).html('');
+			}
+		});
+
+		$(document).on('click', '.duf_admin_annotations_options input[type="checkbox"]', function() {
+			var field_nbr 			= $(this).data('field-nbr');
+			var annotation_type  	= $(this).data('annotation-type');
+
+			var selected_entity 	= $('select[name="entity_field[' + field_nbr + '][relationship_entity]"]').val();
+			if (typeof(selected_entity) == 'undefined') {
+				selected_entity = null;
+			}
+
+			if ($(this).is(':checked') && typeof(field_nbr) !== 'undefined' && typeof(annotation_type) !== 'undefined') {
+				// render indexable and editable options
+				var route 	= Routing.generate('duf_admin_create_entity_get_annotations_options', { annotation_type: annotation_type, field_nbr: field_nbr, selected_entity: selected_entity });
+				$.ajax({
+					url: route,
+					success: function(html) {
+						$('#' + annotation_type + '_options_container_' + field_nbr).html(html);
+
+						if (annotation_type == 'editable') {
+							// check if indexable column title is set
+							var indexable_column_name = $('input[name="entity_field[' + field_nbr + '][indexable_column_name]"]').val();
+							if (indexable_column_name.length > 1) {
+								// set editable form label value
+								$('input[name="entity_field[' + field_nbr + '][editable_label]"]').val(indexable_column_name);
+							}
+						}
+			    	},
+			    	error: function(data) {
+			    		console.log(data);
+			    	}
+				});
+			}
+			else {
+				// reset and hide options
+				$('#' + annotation_type + '_options_container_' + field_nbr).html('');
+			}
+		});
+
+		$(document).on('keyup', '#field_name', function() {
+			var field_name 	= $(this).val();
+			field_name 		= field_name.replace('_', '');
+			field_name 		= field_name.replace(' ', '');
+			$(this).val(field_name);
+		});
+
+		function getMappedByField(field_nbr) {
+			// get selected entity properties
+			var route 	= Routing.generate('duf_admin_create_entity_get_mapped_by_field', { field_nbr: field_nbr });
+			$.ajax({
+				url: route,
+				success: function(html) {
+					$('#one_to_many_mapped_by_container_' + field_nbr).html(html);
+		    	},
+		    	error: function(data) {
+		    		console.log(data);
+		    	}
+			});
+		}
+
+		function getInversedByField(field_nbr) {
+			// get selected entity properties
+			var route 	= Routing.generate('duf_admin_create_entity_get_inversed_by_field', { field_nbr: field_nbr });
+			$.ajax({
+				url: route,
+				success: function(html) {
+					$('#many_to_many_inversed_by_container_' + field_nbr).html(html);
+		    	},
+		    	error: function(data) {
+		    		console.log(data);
+		    	}
+			});
+		}
+	</script>
+{% endblock %}

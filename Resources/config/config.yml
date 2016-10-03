@@ -1,0 +1,78 @@
+# import services
+imports:
+    - { resource: "@DufAdminBundle/Resources/config/services.yml" }
+
+# Twig Configuration
+twig:
+    form_themes:
+        - 'DufAdminBundle:Form:fields.html.twig'
+    globals:
+        duf_admin_routing: "@duf_admin.dufadminrouting"
+        duf_admin_form: "@duf_admin.dufadminform"
+        duf_admin_file: "@duf_admin.dufadminfile"
+        duf_admin_redmine: "@duf_admin.dufadminredmine"
+        duf_admin_translate: "@duf_admin.dufadmintranslate"
+        duf_messaging: "@duf_messaging.messaging"
+        duf_core_seo: "@duf_core.dufcoreseo"
+
+# Assetic configuration
+assetic:
+    filters:
+        less:
+            node: /usr/local/bin/node
+            node_paths: [/usr/local/lib/node_modules]
+            apply_to: \.less$
+        cssrewrite: ~
+
+# Doctrine configuration
+doctrine:
+    orm:
+        mappings:
+            gedmo_translatable:
+                type: annotation
+                prefix: Gedmo\Translatable\Entity
+                dir: "%kernel.root_dir%/../vendor/gedmo/doctrine-extensions/lib/Gedmo/Translatable/Entity"
+                alias: GedmoTranslatable # (optional) it will default to the name set for the mapping
+                is_bundle: false
+
+# Stof Doctrine Extensions configuration
+stof_doctrine_extensions:
+    default_locale: en_US
+
+    orm:
+        default:
+            translatable: true
+            sluggable: true
+
+braincrafted_bootstrap:
+    css_preprocessor: less
+
+# Lexik Translation configuration
+lexik_translation:
+    fallback_locale: [en]
+    managed_locales: [en, fr, de, it, es]
+    base_layout: "DufAdminBundle:Default:index.html.twig"
+
+# FOS JS Routing configuration
+fos_js_routing:
+    routes_to_expose:
+        - duf_admin_entity_form_request
+        - duf_admin_get_embed_form_by_parent_entity_id
+        - duf_admin_get_embed_form_by_token
+        - duf_admin_delete_embed_entity
+        - duf_admin_get_file_list
+        - duf_admin_delete_file
+        - duf_admin_render_modal
+        - duf_admin_upload_file_from_index
+        - duf_admin_get_file
+        - duf_admin_create_entity_get_fieldset
+        - duf_admin_create_entity_get_field_option
+        - duf_admin_create_entity_get_annotations_options
+        - duf_admin_create_entity_get_mapped_by_field
+        - duf_admin_create_entity_get_inversed_by_field
+        - duf_admin_messaging_reply
+        - duf_admin_messaging_get_reply_form
+        - duf_admin_messaging_get_message
+        - duf_admin_messaging_delete_conversation
+        - duf_admin_messaging_save_draft
+        - duf_admin_messaging_draft_index

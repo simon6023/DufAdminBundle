@@ -1,0 +1,142 @@
+<?php
+namespace Duf\AdminBundle\Service;
+
+use Symfony\Component\DependencyInjection\ContainerInterface as Container;
+
+use Duf\AdminBundle\Entity\File;
+
+class DufAdminFile
+{
+    private $container;
+
+    public function __construct(Container $container)
+    {
+        $this->container = $container;
+    }
+
+    public function getFileExtension($file)
+    {
+        $original_name = $file->getClientOriginalName();
+        return pathinfo($original_name,PATHINFO_EXTENSION);
+    }
+
+    public function getUploadDir($filetype)
+    {
+        return $this->container->get('duf_admin.dufadminconfig')->getDufAdminConfig('upload_dir') . strtolower($filetype);
+    }
+
+    public function getFileInfos($file)
+    {
+        $fileSize       = filesize($file);
+        $fileSizeInfos  = getimagesize($file);
+
+        return array(
+                'size'      => $fileSize,
+                'width'     => $fileSizeInfos[0],
+                'height'    => $fileSizeInfos[1]
+            );
+    }
+
+    /**
+     * Create a File entity (used during upload actions)
+     *
+     * @param \Symfony\Component\HttpFoundation\File\UploadedFile $file UploadedFile object from request
+     * @return \Duf\AdminBundle\Entity\File
+    */
+    public function createFileEntity($file, $filetype)
+    {
+        if (null !== $file) {
+            $upload_dir     = $this->getUploadDir($filetype);
+            $extension      = $this->getFileExtension($file);
+            $filename       = md5(uniqid()).'.'.$extension;
+            $file_infos     = $this->getFileInfos($file);
+
+            if ($this->isAllowedExtension($filetype, $extension)) {
+                $file_entity    = new File();
+                $file_entity->setFile($file);
+                $file_entity->setFilename($filename);
+                $file_entity->setFiletype($filetype);
+                $file_entity->setExtension($extension);
+                $file_entity->setPath($upload_dir);
+                $file_entity->setFilesize($file_infos['size']);
+
+                if (isset($file_infos['height']) && !empty($file_infos['height']) && (int)$file_infos['height'] > 0) {
+                    $file_entity->setHeight($file_infos['height']);
+                }
+
+                if (isset($file_infos['width']) && !empty($file_infos['width']) && (int)$file_infos['width'] > 0) {
+                    $file_entity->setWidth($file_infos['width']);
+                }
+
+                return $file_entity;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Get cleaned path of file (remove "web" from path)
+     *
+     * @param \Duf\AdminBundle\Entity\File $file_entity Doctrine File entity
+     * @return string
+    */
+    public function getWebPath($file_entity)
+    {
+        $web_path       = str_replace('../web', '', $file_entity->getPath());
+        $web_path       = $web_path . '/' . $file_entity->getFilename();
+
+        return $web_path;
+    }
+
+    /**
+     * Get array of allowed filetypes
+     *
+     * @return array
+    */
+    public function getFileTypes()
+    {
+        return array(
+                'images'        => 'Image',
+                'videos'        => 'Video',
+                'documents'     => 'Document',
+            );
+    }
+
+    /**
+     * Check if file's extension is allowed (defined in "allowed_upload_extensions" option in config.yml)
+     *
+     * @param string $filetype type of file (image, video, document)
+     * @param string $extension name of the extension to validate
+     * @return bool
+    */
+    private function isAllowedExtension($filetype, $extension)
+    {
+        $allowed_extensions = $this->getAllowedExtensions($filetype);
+
+        foreach ($allowed_extensions as $allowed_extension) {
+            if (strtolower($extension) == strtolower($allowed_extension)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Get array of allowed extensions (defined in "allowed_upload_extensions" option in config.yml)
+     *
+     * @param string $filetype type of file (image, video, document)
+     * @return array
+    */
+    private function getAllowedExtensions($filetype)
+    {
+        $allowed_extensions         = $this->container->get('duf_admin.dufadminconfig')->getDufAdminConfig('allowed_upload_extensions');
+
+        foreach ($allowed_extensions as $allowed_filetype => $extensions) {
+            if ($allowed_filetype === $filetype) {
+                return $extensions;
+            }
+        }
+    }
+}

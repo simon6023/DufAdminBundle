@@ -1,0 +1,58 @@
+{% extends 'DufAdminBundle:Default:index.html.twig' %}
+
+{% block main %}
+	{# hidden selected users #}
+	<input type="hidden" id="selected_users" value="{{ selected_users }}">
+
+	{# hidden selected draft_id #}
+	<input type="hidden" id="draft_id" value="{{ draft.id }}">
+
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="box">
+				<div class="box-header">
+					<h3 class="box-title">{{ 'messaging.new.title' | trans }}</h3>
+				</div>
+
+				<div class="box-body">
+					{{ render(controller('DufAdminBundle:Messaging:renderMessagingLeftMenu', { current: null })) }}
+
+					<div class="col-md-9">
+						<div class="box box-primary">
+							<div class="box-header with-border">
+								<h3 class="box-title">{{ 'messaging.new.title' | trans }}</h3>
+							</div>
+
+							<div class="box-body no-padding">
+								{{ form(form) }}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block additional_js %}
+	<script type="text/javascript">
+		$(function () {
+			$('textarea').each(function() {
+				CKEDITOR.replace($(this).attr('id'));
+			});
+		});
+
+		$(document).ready(function() {
+			var user_select 	= $('select[name="message[users][]"]');
+			var selected_users 	= $('#selected_users').val();
+			selected_users 		= $.parseJSON(selected_users);
+
+			$.each(selected_users, function(index, user) {
+				user_select.find('option[value="' + user + '"]').attr('selected', 'selected');
+			});
+
+	        // select2
+	        $('.select2').select2();
+		});
+	</script>
+{% endblock %}

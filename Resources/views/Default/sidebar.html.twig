@@ -1,0 +1,174 @@
+<aside class="main-sidebar">
+	<section class="sidebar">
+		<div class="user-panel">
+			<div class="pull-left image">
+				{% if app.user.avatar is defined and app.user.avatar is not null %}
+					<img src="{{ asset(app.user.avatar.path ~ '/' ~ app.user.avatar.filename) }}" class="img-circle" alt="User Image">
+				{% else %}
+					<img src="{{ asset('bundles/dufadmin/img/default-user-160x160.jpg') }}" class="img-circle" alt="User Image">
+				{% endif %}
+			</div>
+
+			<div class="pull-left info">
+				<p>{{ app.user.firstname }} {{ app.user.lastname }}</p>
+				<a href="#"><i class="fa fa-circle text-success"></i> {{ 'sidebar.online' | trans }}</a>
+			</div>
+		</div>
+
+		<form action="#" method="get" class="sidebar-form">
+			<div class="input-group">
+				<input type="text" name="q" class="form-control" placeholder="Search...">
+
+				<span class="input-group-btn">
+					<button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i></button>
+				</span>
+			</div>
+		</form>
+
+		<ul class="sidebar-menu">
+			<li class="header uppercase">{{ 'sidebar.dashboard' | trans }}</li>
+
+			<li class="treeview">
+				<a href="{{ path('duf_admin_homepage') }}">
+					<i class="fa fa-dashboard"></i> <span>{{ 'sidebar.dashboard' | trans }}</span>
+				</a>
+			</li>
+
+			<li class="treeview">
+				<a href="{{ path('duf_admin_messaging_index') }}">
+					<i class="fa fa-envelope"></i> <span>{{ 'sidebar.messaging' | trans }}</span>
+				</a>
+			</li>
+
+			<li class="header uppercase">{{ 'sidebar.content' | trans }}</li>
+
+			{% if entities is defined and entities is not null %}
+				{% for entity_name, params in entities %}
+					{% if params.hidden is not defined or params.hidden == false %}
+						{% if params.override_route is not defined %}
+							{% set entity_link = path('duf_admin_entity_index', { path: duf_admin_routing.getRouteFromEntityName(entity_name, 'content', 'index') }) %}
+						{% else %}
+							{% set entity_link = path(params.override_route) %}
+						{% endif %}
+
+						<li class="treeview">
+							<a href="{{ entity_link }}">
+								<i class="fa {{ params.icon }}"></i> <span>{{ params.title }}</span>
+							</a>
+						</li>
+					{% endif %}
+				{% endfor %}
+			{% endif %}
+
+			<li class="header uppercase">{{ 'sidebar.files' | trans }}</li>
+
+			<li class="treeview">
+				<a href="{{ path('duf_admin_file_index', { filetype: 'images' }) }}">
+					<i class="fa fa-picture-o"></i> <span>Images</span>
+				</a>
+			</li>
+
+			<li class="treeview">
+				<a href="{{ path('duf_admin_file_index', { filetype: 'videos' }) }}">
+					<i class="fa fa-video-camera"></i> <span>Videos</span>
+				</a>
+			</li>
+
+			<li class="treeview">
+				<a href="{{ path('duf_admin_file_index', { filetype: 'documents' }) }}">
+					<i class="fa fa-file-o"></i> <span>Documents</span>
+				</a>
+			</li>
+
+			<li class="header">USERS</li>
+
+			<li class="treeview">
+				<a href="{{ path('duf_admin_entity_index_users', { path: duf_admin_routing.getRouteFromEntityName(user_entity, 'users', 'index') }) }}">
+					<i class="fa fa-user"></i> <span>Users</span>
+				</a>
+			</li>
+
+			<li class="treeview">
+				<a href="{{ path('duf_admin_entity_index_users', { path: duf_admin_routing.getRouteFromEntityName(user_role_entity, 'users', 'index') }) }}">
+					<i class="fa fa-user-secret"></i> <span>Roles</span>
+				</a>
+			</li>
+
+			<li class="header">LOCALIZATION</li>
+
+			<li class="treeview">
+				<a href="{{ path('duf_admin_entity_index_languages', { path: duf_admin_routing.getRouteFromEntityName('DufAdminBundle:Language', 'languages', 'index') }) }}">
+					<i class="fa fa-language"></i> <span>Languages</span>
+				</a>
+			</li>
+
+			<li class="treeview">
+				<a href="#">
+					<i class="fa fa-globe"></i> <span>Translations</span> <i class="fa fa-angle-left pull-right"></i>
+				</a>
+
+				<ul class="treeview-menu">
+					<li><a href="{{ path('lexik_translation_overview') }}"><i class="fa fa-list"></i> Overview</a></li>
+					<li><a href="{{ path('lexik_translation_grid') }}"><i class="fa fa-th"></i> Grid</a></li>
+					<li><a href="{{ path('lexik_translation_new') }}"><i class="fa fa-plus"></i> Add</a></li>
+					<li><a href="{{ path('lexik_translation_invalidate_cache') }}"><i class="fa fa-database"></i> Clear translation cache</a></li>
+					<li><a href="{{ path('duf_admin_export_translations') }}"><i class="fa fa-download"></i> Export</a></li>
+				</ul>
+			</li>
+
+			<li class="header">PARAMETERS</li>
+
+			<li class="treeview">
+				<a href="#">
+					<i class="fa Example of archive fa-archive"></i> <span>Cache</span> <i class="fa fa-angle-left pull-right"></i>
+				</a>
+
+				<ul class="treeview-menu">
+					<li><a href="{{ path('duf_admin_clear_cache', { type: 'doctrine' }) }}"><i class="fa fa-database"></i> Clear Doctrine cache</a></li>
+				</ul>
+			</li>
+
+			<li class="treeview">
+				<a href="{{ path('duf_admin_create_entity_index') }}">
+					<i class="fa fa-database"></i> <span>Entity manager</span>
+				</a>
+			</li>
+
+			<li class="treeview">
+				<a href="{{ path('duf_admin_entity_index', { path: duf_admin_routing.getRouteFromEntityName('DufCoreBundle:DufCoreNotificationType', 'content', 'index') }) }}">
+					<i class="fa fa-bell-o" aria-hidden="true"></i> <span>Notification Types</span>
+				</a>
+			</li>
+
+			{% if sitemap is defined and sitemap == true %}
+				<li class="treeview">
+					<a href="{{ path('duf_core_sitemap') }}" target="_blank">
+						<i class="fa fa-sitemap" aria-hidden="true"></i> <span>Sitemap</span>
+					</a>
+				</li>
+			{% endif %}
+
+			<li class="treeview">
+				<a href="{{ path('duf_admin_phpinfo') }}">
+					<i class="fa fa-info" aria-hidden="true"></i> <span>PHP info</span>
+				</a>
+			</li>
+
+			<li class="header">PROJECT MANAGEMENT</li>
+
+			<li class="treeview">
+				<a href="{{ path('duf_admin_entity_index', { path: duf_admin_routing.getRouteFromEntityName('DufAdminBundle:Task', 'content', 'index') }) }}">
+					<i class="fa fa-tasks" aria-hidden="true"></i> <span>Task Manager</span>
+				</a>
+			</li>
+
+			{% if redmine is defined and redmine is not null %}
+				<li class="treeview">
+					<a href="{{ path('duf_admin_redmine_index') }}">
+						<i class="fa fa-desktop" aria-hidden="true"></i> <span>Redmine</span>
+					</a>
+				</li>
+			{% endif %}
+		</ul>
+	</section>
+</aside>

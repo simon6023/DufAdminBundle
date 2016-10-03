@@ -1,0 +1,120 @@
+{% extends 'DufAdminBundle:Default:index.html.twig' %}
+
+{% block main %}
+	<div class="row">
+		<form name="duf_admin_create_form" action="{{ path('duf_admin_entity_form_request', { path: duf_admin_routing.getRouteFromEntityName(entity_name, 'form-request/' ~ content_type, 'update', entity.id) }) }}" method="post" data-parent-entity-class="{{ duf_admin_form.getEntityClass(entity) }}" data-parent-entity-id="{{ entity.id }}">
+			<div class="col-md-8">
+				<div class="box">
+					<div class="box-header">
+						<h3 class="box-title">Edit "{{ page_title }}"</h3>
+
+						<div class="pull-right box-tools">
+							<a href="{{ path(duf_admin_routing.getEntityRouteName(entity_name), { path: duf_admin_routing.getRouteFromEntityName(entity_name, duf_admin_routing.getContentType(entity_name), 'index') }) }}">
+								<p class="btn btn-default">Cancel</p>
+							</a>
+
+							<button class="btn btn-danger duf_admin_delete" data-confirm-message="Confirm delete ?" data-delete-path="{{ path('duf_admin_entity_delete', { id: entity.id, entity_name: entity_name }) }}">Delete</button>
+
+							<button class="btn btn-primary" id="save_btn">Save</button>
+						</div>
+					</div>
+
+					<div class="box-body">
+						{% for form_property in form_properties %}
+							{{ form_widget(attribute(create_form, form_property)) }}
+						{% endfor %}
+					</div>
+				</div>
+
+				{{ form_row(create_form.duf_admin_form_token) }}
+				{{ form_row(create_form._token) }}
+			</div>
+
+			<div class="col-md-4">
+				<div class="box">
+					<div class="box-header with-border">
+						<h3 class="box-title">Informations</h3>
+					</div>
+
+					<div class="box-body">
+						<dl>
+							<dt>Link</dt>
+							<dd>{# {{ dump(duf_core_seo.getSeoForEntity(entity_name, entity, app.request.locale)) }} #}</dd>
+
+							<dt>Created on</dt>
+							<dd>{{ entity.created_at | date('d/m/Y H:i') }}</dd>
+
+							{% if entity.updated_at is not null %}
+								<dt>Updated on</dt>
+								<dd>{{ entity.updated_at | date('d/m/Y H:i') }}</dd>
+							{% endif %}
+						</dl>
+					</div>
+				</div>
+
+				{% if seo_config is defined and seo_config is not null %}
+					<div class="box">
+						<div class="box-header">
+							<h3 class="box-title">SEO</h3>
+
+							{% include 'DufAdminBundle:Form:seo.html.twig' %}
+						</div>
+					</div>
+				{% endif %}
+			</div>
+		</form>
+
+		<div class="col-md-8">
+			{% if form_embed is defined and form_embed is not null and form_embed | length > 0 %}
+				{% set is_new = false %}
+
+				{% for embedded_form in form_embed  %}
+					{% include 'DufAdminBundle:Crud:embed-form.html.twig' %}
+				{% endfor %}
+			{% endif %}
+		</div>
+	</div>
+{% endblock %}
+
+{% block additional_js %}
+	<script>
+		$(function () {
+			$('textarea').each(function() {
+				if (!$(this).hasClass('no-editor')) {
+					CKEDITOR.replace($(this).attr('id'));
+				}
+			});
+
+			$('.duf-admin-date').each(function() {
+				$(this).datepicker({
+					autoclose: true,
+					format: 'd-m-Y',
+				});
+			});
+
+			$('.duf-admin-datetime').each(function() {
+            	$(this).datetimepicker({
+            		format: 'd/m/Y H:i',
+            	});
+			});
+		});
+
+        // select2
+        $('.select2').select2();
+	</script>
+
+	<script type="text/javascript">
+		$(document).ready(function() {
+            // set bootstrap switches
+            $('input[type="checkbox"]').bootstrapSwitch({
+            	onText: 'Yes',
+            	offText: 'No',
+            });
+
+            {% if form_embed is defined and form_embed is not null and form_embed | length > 0 %}
+	            // get embed form lists
+	            window.dufAdminJS.reloadResultsList($('.duf-admin-embed-form').attr('name'), null);
+	        {% endif %}
+		});
+	</script>
+{% endblock %}

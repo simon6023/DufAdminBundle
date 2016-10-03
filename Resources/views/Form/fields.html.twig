@@ -1,0 +1,246 @@
+{% block duf_admin_text_widget %}
+	<div class="form-group">
+		<label for="">{{ label }}{% if form.vars.required is defined and form.vars.required == true %}*{% endif %}</label>
+		<input name="{{ full_name }}" type="text" class="form-control" id="" {% if form.vars.attr.placeholder is defined %}placeholder="{{ form.vars.attr.placeholder }}"{% endif %} {% if form.vars.required %}required{% endif %} {% if value is defined and value is not null %}value="{{ value }}"{% endif %}>
+	</div>
+{% endblock %}
+
+{% block duf_admin_translatable_text_widget %}
+	{% set langs 		= duf_admin_translate.getAvailableLangs() %}
+	{% set first_lang 	= langs | first %}
+
+	{% set parent_entity_class 	= null %}
+	{% set parent_entity_id 	= null %}
+
+	{% if form.parent is defined and form.parent.vars is defined and form.parent.vars.data is defined %}
+		{% set parent_entity_class 	= duf_admin_form.getEntityClass(form.parent.vars.data) %}
+		{% set parent_entity_id 	= form.parent.vars.data.id %}
+	{% endif %}
+
+	{% if parent_entity_class is not null and parent_entity_id is not null %}
+		{% set translations = duf_admin_translate.getEntityTranslations(parent_entity_class, parent_entity_id, name) %}
+	{% endif %}
+
+	<div class="form-group" id="duf-admin-translatable-text-{{ name }}">
+		<label for="">{{ label }}{% if form.vars.required is defined and form.vars.required == true %}*{% endif %}</label>
+
+		<div class="input-group">
+			<div class="input-group-btn">
+				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<span class="duf-admin-translatable-text selection-container" data-lang="{{ first_lang.name }}">{{ first_lang.label }}</span> <span class="caret"></span>
+				</button>
+
+				<ul class="dropdown-menu">
+					{% for lang in langs %}
+						{% if loop.index <= 1 %}
+							<li class="duf-admin-translatable-text choice hidden" data-field-name="{{ name }}" data-lang="{{ lang.name }}">
+								<a href="#" class="translatable-choice">{{ lang.label }}</a>
+							</li>
+						{% else %}
+							<li class="duf-admin-translatable-text choice visible" data-field-name="{{ name }}" data-lang="{{ lang.name }}">
+								<a href="#" class="translatable-choice">{{ lang.label }}</a>
+							</li>
+						{% endif %}
+					{% endfor %}
+				</ul>
+			</div>
+
+			<input type="text" class="form-control duf-admin-translatable-text translate-content visible" data-lang="{{ first_lang.name }}" name="{{ full_name }}[translate_{{ first_lang.name }}]" value="{{ value }}">
+
+			{% set displayed_langs = [first_lang.name] %}
+
+			{% if translations is defined and translations is not null %}
+				{% for lang_name, translation in translations %}
+					{% if lang_name not in displayed_langs %}
+						{% set displayed_langs = displayed_langs | merge([lang_name]) %}
+
+						<input type="text" class="form-control duf-admin-translatable-text translate-content hidden" data-lang="{{ lang_name }}" name="{{ full_name }}[translate_{{ lang_name }}]" value="{{ translation }}">
+					{% endif %}
+				{% endfor %}
+			{% endif %}
+
+			{#  display empty fields for other langs #}
+			{% for lang in langs %}
+				{% if lang.name not in displayed_langs  %}
+					<input type="text" class="form-control duf-admin-translatable-text translate-content hidden" data-lang="{{ lang.name }}" name="{{ full_name }}[translate_{{ lang.name }}]" value="">
+				{% endif %}
+			{% endfor %}
+		</div>
+	</div>
+{% endblock %}
+
+{% block duf_admin_number_widget %}
+	<div class="form-group">
+		<label for="">{{ label }}{% if form.vars.required is defined and form.vars.required == true %}*{% endif %}</label>
+		<input name="{{ full_name }}" type="number" {% if form.vars.number_type == 'float' %}step="0.01"{% endif %} class="form-control duf-admin-numbers {% if form.vars.number_type == 'integer' %}integer{% elseif form.vars.number_type == 'float' %}float{% endif %}" id="" {% if form.vars.required %}required{% endif %} {% if value is defined and value is not null %}value="{{ value }}"{% endif %}>
+	</div>
+{% endblock %}
+
+{% block duf_admin_date_widget %}
+	<div class="form-group">
+		<label for="">{{ label }}{% if form.vars.required is defined and form.vars.required == true %}*{% endif %}</label>
+		<input name="{{ full_name }}" type="text" class="form-control duf-admin-date" id="" {% if form.vars.required %}required{% endif %} {% if value is defined and value is not null %}value="{{ value }}"{% endif %}>
+	</div>
+{% endblock %}
+
+{% block duf_admin_datetime_widget %}
+	<div class="form-group">
+		<label for="">{{ label }}{% if form.vars.required is defined and form.vars.required == true %}*{% endif %}</label>
+		<input name="{{ full_name }}" type="text" class="form-control duf-admin-datetime" id="" {% if form.vars.required %}required{% endif %} {% if value is defined and value is not null %}value="{{ value }}"{% endif %}>
+	</div>
+{% endblock %}
+
+{% block duf_admin_textarea_widget %}
+	<div class="form-group">
+		<label for="">{{ label }}{% if form.vars.required is defined and form.vars.required == true %}*{% endif %}</label>
+		<textarea id="editor_{{ name }}" name="{{ full_name }}" rows="10" cols="80" {% if form.vars.required %}required{% endif %}>{% if value is defined and value is not null %}{{ value }}{% endif %}</textarea>
+	</div>
+{% endblock %}
+
+{% block duf_admin_translatable_textarea_widget %}
+	{% set langs 		= duf_admin_translate.getAvailableLangs() %}
+
+	{% set parent_entity_class 	= null %}
+	{% set parent_entity_id 	= null %}
+
+	{% if form.parent is defined and form.parent.vars is defined and form.parent.vars.data is defined %}
+		{% set parent_entity_class 	= duf_admin_form.getEntityClass(form.parent.vars.data) %}
+		{% set parent_entity_id 	= form.parent.vars.data.id %}
+	{% endif %}
+
+	{% if parent_entity_class is not null and parent_entity_id is not null %}
+		{% set translations = duf_admin_translate.getEntityTranslations(parent_entity_class, parent_entity_id, name) %}
+	{% endif %}
+
+	<div class="form-group">
+		<label for="">{{ label }}{% if form.vars.required is defined and form.vars.required == true %}*{% endif %}</label>
+
+		<div>
+			<ul class="nav nav-tabs" role="tablist">
+				{% for lang in langs %}
+					<li role="presentation" class="duf-admin-translate-textarea-button {% if loop.index == 1 %}active{% endif %}" data-lang="{{ lang.name }}">
+						<a href="#{{ name }}_translate_{{ lang.name }}" aria-controls="{{ name }}_translate_{{ lang.name }}" role="tab" data-toggle="tab">{{ lang.label }}</a>
+					</li>
+				{% endfor %}
+			</ul>
+
+			<div class="tab-content">
+				{% for lang in langs %}
+					<div role="tabpanel" class="tab-pane {% if loop.index == 1 %}active{% endif %} duf-admin-translate-textarea-container" id="{{ name }}_translate_{{ lang.name }}" data-lang="{{ lang.name }}">
+						<textarea {% if form.vars.attr.class is defined %}class="{{ form.vars.attr.class }}"{% endif %} id="editor_{{ name }}_{{ loop.index }}" name="{{ full_name }}[translate_{{ lang.name }}]" rows="10" cols="80" {% if form.vars.required %}required{% endif %}>{% if translations is defined %}{% for translation_lang_name, translation_value in translations %}{% if translation_lang_name == lang.name %}{{ translation_value }}{% endif %}{% endfor %}{% endif %}</textarea>
+					</div>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block duf_admin_checkbox_widget %}
+	<div class="form-group">
+		<label for="">{{ label }}{% if form.vars.required is defined and form.vars.required == true %}*{% endif %}</label>
+		<br />
+		<input type="checkbox" id="" name="{{ full_name }}" value="1" {% if form.vars.required %}required{% endif %} {% if value is defined and value is not null and value == 1 %}checked{% endif %}>
+	</div>
+{% endblock %}
+
+{% block duf_admin_choice_widget %}
+	<div class="form-group">
+		<label for="">{{ label }}{% if form.vars.required is defined and form.vars.required == true %}*{% endif %}</label>
+		<br />
+
+		<select class="form-control select2" name="{{ full_name }}" {% if form.vars.multiple %}multiple{% endif %}>
+			<option value="0" disabled selected>Select an option</option>
+
+			{% for choice in form.vars.choices %}
+				{% set selected = false %}
+				{% for selected_value in form.vars.value %}
+					{% if selected_value == choice.value or selected_value == choice.label %}
+						{% set selected = true %}
+					{% endif %}
+				{% endfor %}
+
+				{% if form.vars.value is not iterable and form.vars.value == choice.value %}
+					{% set selected = true %}
+				{% endif %}
+
+				<option value="{{ choice.value }}" {% if selected %}selected{% endif %} {% if form.vars.required is defined and form.vars.required == true %}required{% endif %}>{{ choice.label }}</option>
+			{% endfor %}
+		</select>
+	</div>
+{% endblock %}
+
+{% block duf_admin_entity_widget %}
+	<div class="form-group">
+		<label for="">{{ label }}{% if form.vars.required is defined and form.vars.required == true %}*{% endif %}</label>
+		<br />
+
+		<select class="form-control select2" name="{{ full_name }}" {% if form.vars.multiple %}multiple{% endif %} {% if form.vars.required is defined and form.vars.required == true %}required{% endif %}>
+			<option value="" {% if form.vars.entity_empty is not defined or false == form.vars.entity_empty %}disabled{% endif %}>
+				{% if form.vars.entity_empty is defined and true == form.vars.entity_empty %}
+					None
+				{% else %}
+					Select an option
+				{% endif %}
+			</option>
+
+			{% for choice in form.vars.choices %}
+				{% set selected = false %}
+				{% for selected_value in form.vars.value %}
+					{% if selected_value == choice.value %}
+						{% set selected = true %}
+					{% endif %}
+				{% endfor %}
+
+				{% if form.vars.value is not iterable and form.vars.value == choice.value %}
+					{% set selected = true %}
+				{% endif %}
+
+				<option value="{{ choice.value }}" {% if selected %}selected{% endif %}>{{ choice.label }}</option>
+			{% endfor %}
+		</select>
+	</div>
+{% endblock %}
+
+{% block duf_admin_file_widget %}
+	{% set file = null %}
+
+	{% if form.vars.data is defined and form.vars.data is not null %}
+		{% set file = form.vars.data %}
+	{% endif %}
+
+	<div class="form-group">
+		<label for="">{{ label }}{% if form.vars.required is defined and form.vars.required == true %}*{% endif %}</label>
+
+		<br />
+
+		<a href="#" data-modal-name="select-file" data-modal-title="Select file" class="duf-admin-render-modal" data-parent-entity-class="{% if form.parent is defined and form.parent.vars is defined and form.parent.vars.data is defined %}{{ duf_admin_form.getEntityClass(form.parent.vars.data) }}{% endif %}" data-parent-entity-id="{% if form.parent is defined and form.parent.vars is defined and form.parent.vars.data is defined and form.parent.vars.data.id is defined %}{{ form.parent.vars.data.id }}{% endif %}" data-parent-property="{{ form.vars.parent_property }}" data-filetype="{{ form.vars.filetype }}">Upload file</a>
+
+		<select name="{{ full_name }}" class="duf-admin-hidden-select" id="duf-admin-select-file-{{ name }}">
+			{% if file is not null %}
+				<option value="{{ file.id }}">{{ file.filename }}</option>
+			{% endif %}
+		</select>
+
+		<div class="duf-admin-selected-files-container" id="files-container-{{ name }}">
+			{% if file is not null %}
+				<div class="duf-admin-file-preview" id="file-preview-{{ file.id }}">
+					<div class="duf-admin-remove-selected-file" data-file-id="{{ file.id }}" data-entity-property="{{ name }}">
+						<i class="fa fa-times" aria-hidden="true"></i> Delete
+					</div>
+
+					{% if file.filetype == 'images' %}
+						<img src="{{ asset(file.path ~ '/' ~ file.filename) }}">
+					{% elseif file.filetype == 'documents' %}
+						<i class="fa fa-file-text" aria-hidden="true"></i>
+					{% elseif file.filetype == 'videos' %}
+						<i class="fa fa-video-camera" aria-hidden="true"></i>
+					{% endif %}
+				</div>
+			{% endif %}
+		</div>
+	</div>
+{% endblock %}
+
+{% block duf_admin_hidden_widget %}
+	<input type="hidden" name="{{ full_name }}" {% if value is defined and value is not null %}value="{{ value }}"{% endif %}>
+{% endblock %}

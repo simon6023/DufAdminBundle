@@ -1,0 +1,18 @@
+<form name="reply-message" id="reply-message" data-conversation-id="{{ conversation.id }}" method="post">
+	{{ form_widget(form.users) }}
+	{{ form_widget(form.content) }}
+
+	{{ form_row(form._token) }}
+
+	<button class="btn btn-primary" id="send-reply">
+		<i class="fa fa-paper-plane" aria-hidden="true"></i> Send
+	</button>
+</form>
+
+<script type="text/javascript">
+	$(function () {
+		$('textarea').each(function() {
+			CKEDITOR.replace($(this).attr('id'));
+		});
+	});
+</script>

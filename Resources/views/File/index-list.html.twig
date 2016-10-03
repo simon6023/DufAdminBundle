@@ -1,0 +1,27 @@
+{% for entity in entities %}
+	<div class="duf-admin-file-gallery" id="file-box-{{ entity.id }}">
+		<div class="image-container" style="background-image:url('{{ asset(duf_admin_file.getWebPath(entity)) }}');">
+			{% if entity.filetype == 'documents' %}
+				{% if entity.extension == 'pdf' %}
+					<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+				{% elseif entity.extension == 'txt' %}
+					<i class="fa fa-file-text" aria-hidden="true"></i>
+				{% endif %}
+			{% endif %}
+		</div>
+		
+		<div class="duf-admin-remove-file" data-file-id="{{ entity.id }}">
+			<i class="fa fa-times" aria-hidden="true"></i>
+		</div>
+
+		<div class="duf-admin-select-file" data-file-id="{{ entity.id }}" {% if parent_entity_id is defined and parent_entity_id is not null and parent_entity_class is defined and parent_entity_class is not null and parent_entity_property is defined and parent_entity_property is not null %}data-parent-entity-id="{{ parent_entity_id }}" data-parent-entity-class="{{ parent_entity_class }}" data-parent-entity-property="{{ parent_entity_property }}"{% endif %}>
+			<i class="fa fa-check" aria-hidden="true"></i>
+		</div>
+
+		<div class="duf-admin-file-infos">
+			<p>{{ entity.filename }}</p>
+			<p>Size : {{ entity.filesize | getFileSize }}</p>
+			<p><a href="#" class="duf-admin-render-modal" data-modal-title="Edit Metadatas" data-parent-entity-class="{{ entity | getEntityClass }}" data-parent-entity-id="{{ entity.id }}" data-parent-property="metadatas">edit metadata</a></p>
+		</div>
+	</div>
+{% endfor %}

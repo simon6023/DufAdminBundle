@@ -1,0 +1,156 @@
+duf_admin_homepage:
+    path:     /
+    defaults: { _controller: DufAdminBundle:Default:index }
+
+duf_admin_login:
+    path:     /login
+    defaults: { _controller: DufAdminBundle:Security:login }
+
+duf_admin_login_check:
+    path:     /login_check
+
+duf_admin_logout:
+    path:    /logout
+
+duf_admin_messaging:
+    resource: "@DufAdminBundle/Resources/config/routing/messaging.yml"
+    prefix:   /messages
+
+duf_admin_translations_edit:
+    resource: "@LexikTranslationBundle/Resources/config/routing.yml"
+    prefix:   /translations
+
+duf_admin_change_locale:
+    path: /change-locale/{locale}
+    defaults: { _controller: "DufAdminBundle:Translation:changeLocale" }
+
+duf_admin_export_translations:
+    path: /export-translations
+    defaults: { _controller: "DufAdminBundle:Translation:export" }
+
+duf_admin_phpinfo:
+    path: /phpinfo
+    defaults: { _controller: "DufAdminBundle:Default:phpinfo" }
+
+duf_admin_redmine_index:
+    path: /redmine
+    defaults: { _controller: "DufAdminBundle:Redmine:index" }
+
+duf_admin_redmine_create_issue:
+    path: /redmine/issue/create
+    defaults: { _controller: "DufAdminBundle:Redmine:createIssue" }
+
+duf_admin_redmine_save_issue:
+    path: /redmine/issue/save
+    defaults: { _controller: "DufAdminBundle:Redmine:saveIssue" }
+
+duf_admin_redmine_view_issue:
+    path: /redmine/issue/{id}
+    defaults: { _controller: "DufAdminBundle:Redmine:view" }
+
+duf_admin_create_entity_index:
+    path: /entity-manager
+    defaults: { _controller: "DufAdminBundle:EntityManager:index" }
+
+duf_admin_create_entity_new:
+    path: /entity-manager/new-entity
+    defaults: { _controller: "DufAdminBundle:EntityManager:new" }
+
+duf_admin_create_entity_create:
+    path: /entity-manager/new-entity/create
+    defaults: { _controller: "DufAdminBundle:EntityManager:create" }
+
+duf_admin_create_entity_get_fieldset:
+    path: /entity-manager/new-entity/create/get-fieldset/{field_nbr}
+    defaults: { _controller: "DufAdminBundle:EntityManager:getFieldset" }
+
+duf_admin_create_entity_get_field_option:
+    path: /entity-manager/new-entity/create/get-field-options/{field_type}/{field_nbr}
+    defaults: { _controller: "DufAdminBundle:EntityManager:getFieldOptions" }
+
+duf_admin_create_entity_get_annotations_options:
+    path: /entity-manager/new-entity/create/get-field-options/duf-admin-annotations/{annotation_type}/{field_nbr}/{selected_entity}
+    defaults: { _controller: "DufAdminBundle:EntityManager:getDufAdminAnnotationOptions", selected_entity: null }
+
+duf_admin_create_entity_get_mapped_by_field:
+    path: /entity-manager/new-entity/create/get-mapped-by-field/{field_nbr}
+    defaults: { _controller: "DufAdminBundle:EntityManager:getMappedByField" }
+
+duf_admin_create_entity_get_inversed_by_field:
+    path: /entity-manager/new-entity/create/get-inversed-by-field/{field_nbr}
+    defaults: { _controller: "DufAdminBundle:EntityManager:getInversedByField" }
+
+duf_admin_upload_file_from_index:
+    path: /duf-admin-ajax-file-upload/{filetype}
+    defaults: { _controller: "DufAdminBundle:File:ajaxUpload" }
+
+duf_admin_delete_file:
+    path: /duf-admin-delete-file/{file_id}
+    defaults: { _controller: "DufAdminBundle:File:deleteFile" }
+
+duf_admin_get_file:
+    path: /duf-admin-get-file/{file_id}
+    defaults: { _controller: "DufAdminBundle:File:getFile" }
+
+duf_admin_render_modal:
+    path: /duf-admin-render-modal/{name}/{entity_id}
+    defaults: { _controller: "DufAdminBundle:Modal:renderModal", entity_id: null }
+
+duf_admin_clear_cache:
+    path: /clear-cache/{type}
+    defaults: { _controller: "DufAdminBundle:Cache:clear" }
+
+duf_admin_delete_embed_entity:
+    path: /delete-embed-entity/{embed_entity_class}/{embed_entity_id}
+    defaults: { _controller: "DufAdminBundle:Form:deleteEmbedEntity" }
+
+duf_admin_get_embed_form_by_parent_entity_id:
+    path: /get-embed-form-by-parent-entity-id/{form_embed_label}/{form_embed_class}/{form_embed_entity_name}/{parent_entity_id}/{parent_entity_class}
+    defaults: { _controller: "DufAdminBundle:Routing:getEmbedFormByParentEntityId", }
+    requirements:
+        method: POST
+
+duf_admin_get_embed_form_by_token:
+    path: /get-embed-form-by-token/{form_embed_label}/{form_embed_class}/{form_embed_entity_name}/{token}
+    defaults: { _controller: "DufAdminBundle:Routing:getEmbedFormByToken" }
+    requirements:
+        method: POST
+
+duf_admin_file_index:
+    path: /files/{filetype}/{page}
+    defaults: { _controller: "DufAdminBundle:File:index", page: 1 }
+
+duf_admin_entity_index:
+    path: /{path}
+    defaults: { _controller: "DufAdminBundle:Routing:entities" }
+    requirements:
+        path: "^content/.+"
+
+duf_admin_entity_index_users:
+    path: /{path}
+    defaults: { _controller: "DufAdminBundle:Routing:entities" }
+    requirements:
+        path: "^users/.+"
+
+duf_admin_entity_index_languages:
+    path: /{path}
+    defaults: { _controller: "DufAdminBundle:Routing:entities" }
+    requirements:
+        path: "^languages/.+"
+
+duf_admin_entity_form_request:
+    path: /{path}
+    defaults: { _controller: "DufAdminBundle:Form:formRequest" }
+    requirements:
+        method: POST
+        path: "^form-request/.+"
+
+duf_admin_entity_delete:
+    path: /{id}/{entity_name}
+    defaults: { _controller: "DufAdminBundle:Form:deleteRequest" }
+    requirements:
+        id: \d+
+
+duf_admin_get_file_list:
+    path: /duf-admin-get-file-list/{filetype}/{page}
+    defaults: { _controller: "DufAdminBundle:File:index" }

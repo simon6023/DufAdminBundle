@@ -1,0 +1,139 @@
+<?php
+namespace Duf\AdminBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use Duf\AdminBundle\Entity\DufAdminAbstractEntity;
+
+use Duf\AdminBundle\Annotations\IndexableAnnotation;
+
+/**
+ * @ORM\MappedSuperclass
+ * @ORM\HasLifecycleCallbacks
+ */
+abstract class DufAdminEntity extends DufAdminAbstractEntity
+{
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @IndexableAnnotation(index_column=true, index_column_name="Id", index_column_order=1)
+     */
+    protected $id;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created_at", type="datetime")
+     * @IndexableAnnotation(index_column=true, index_column_name="Created At", index_column_order=2)
+     */
+    public $created_at;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="updated_at", type="datetime", nullable=true)
+     * @IndexableAnnotation(index_column=true, index_column_name="Updated At", index_column_order=3)
+     */
+    public $updated_at;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="form_token", type="string", length=255, nullable=true)
+     */
+    private $form_token;
+
+    /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     *
+     * @return User
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->created_at = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->created_at;
+    }
+
+    /**
+     * Set updatedAt
+     *
+     * @param \DateTime $updatedAt
+     *
+     * @return User
+     */
+    public function setUpdatedAt($updatedAt)
+    {
+        $this->updated_at = $updatedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get updatedAt
+     *
+     * @return \DateTime
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updated_at;
+    }
+
+    public function getcreated_at()
+    {
+        return $this->created_at->format('d/m/Y');
+    }
+
+    public function getupdated_at()
+    {
+        return $this->updated_at->format('d/m/Y');
+    }
+
+    /**
+     * Set formToken
+     *
+     * @param string $formToken
+     *
+     * @return User
+     */
+    public function setFormToken($formToken)
+    {
+        $this->form_token = $formToken;
+
+        return $this;
+    }
+
+    /**
+     * Get formToken
+     *
+     * @return string
+     */
+    public function getFormToken()
+    {
+        return $this->form_token;
+    }
+}

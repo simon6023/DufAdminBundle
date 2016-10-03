@@ -1,0 +1,95 @@
+<div class="duf-admin-modal modal in" id="select-file" role="dialog">
+	<div class="modal-dialog">
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+
+				<h4 class="modal-title">{{ modal_title }}</h4>
+			</div>
+
+			<div class="modal-body">
+				<ul class="nav nav-tabs" role="tablist">
+					<li role="presentation" class="active">
+						<a href="#file-upload" aria-controls="file-upload" role="tab" data-toggle="tab">File upload</a>
+					</li>
+
+					<li role="presentation">
+						<a href="#file-select" aria-controls="file-select" role="tab" data-toggle="tab">Select existing file</a>
+					</li>
+				</ul>
+
+				<div class="tab-content">
+					<div role="tabpanel" class="tab-pane active" id="file-upload">
+						<input id="duf-admin-filesystem-index-input" name="duf_admin_index_file_input[]" multiple type="file" class="file-loading">
+
+						<div class="alert alert-danger alert-dismissible hidden">
+							<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+							<h4><i class="icon fa fa-ban"></i> Alert!</h4>
+							An error occured during upload - please try again or check your file
+						</div>
+					</div>
+
+					<div role="tabpanel" class="tab-pane" id="file-select">
+						<p class="select-file-title">Click to select file</p>
+
+						<div class="box-body duf-admin-file-list-container"></div>
+
+						<p class="duf-admin-load-more file-system">
+							<button type="button" class="btn btn-primary btn-lg" data-page="2" data-filetype="{{ filetype }}">Load more</button>
+						</p>
+					</div>
+				</div>
+			</div>
+
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	$(document).ready(function() {
+		// load first files in select existing files tab
+		{% if parent_entity is not null and parent_entity.id is defined %}
+			window.select_file_parent_id 		= "{{ parent_entity.id }}";
+			window.select_file_parent_class 	= "{{ duf_admin_form.getEntityClass(parent_entity) | replace({'\\' : '/'}) }}";
+		{% endif %}
+
+		window.select_file_parent_property 		= "{{ parent_property }}";
+
+		window.dufAdminFileSystem.loadMoreFiles("{{ filetype }}", 1, '.box-body.duf-admin-file-list-container');
+	});
+
+	$("#duf-admin-filesystem-index-input").fileinput({
+		uploadUrl: Routing.generate('duf_admin_upload_file_from_index', { filetype: "{{ filetype }}" }),
+		uploadAsync: true,
+		previewFileIcon: '<i class="fa fa-file"></i>',
+		allowedPreviewTypes: null, // set to empty, null or false to disable preview for all types
+		previewFileIconSettings: {
+			'jpg': '<i class="fa fa-file-photo-o text-warning"></i>',
+			'jpeg': '<i class="fa fa-file-photo-o text-warning"></i>',
+			'png': '<i class="fa fa-file-photo-o text-warning"></i>',
+			'gif': '<i class="fa fa-file-photo-o text-warning"></i>',
+			'bmp': '<i class="fa fa-file-photo-o text-warning"></i>',
+			'tiff': '<i class="fa fa-file-photo-o text-warning"></i>',
+		},
+		browseOnZoneClick: true
+	}).on('fileuploaded', function(event, data, previewId, index) {
+		if (data.response !== 'error') {
+			$('.alert.alert-danger.alert-dismissible').addClass('hidden');
+
+			// set uploaded file in form
+			var filename 	= data.response.filename;
+			var path  		= data.response.path;
+			var file_id 	= data.response.id;
+
+			var property  = window.select_file_parent_property;
+			window.dufAdminFileSystem.setSelectedFileForEntity(file_id, property);
+		}
+		else {
+			$('.alert.alert-danger.alert-dismissible').removeClass('hidden');
+		}
+	});
+</script>

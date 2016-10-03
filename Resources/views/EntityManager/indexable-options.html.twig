@@ -1,0 +1,18 @@
+<fieldset class="form-group" data-field-nbr="{{ field_nbr }}">
+	<label for="indexable_column_name">Column title</label>
+	<input type="text" class="form-control" name="entity_field[{{ field_nbr }}][indexable_column_name]" id="indexable_column_name" required />
+</fieldset>
+
+{% if entity_properties is defined and entity_properties is not null %}
+	<fieldset class="form-group" data-field-nbr="{{ field_nbr }}">
+		<label for="indexable_relation_index">Relationship property for index column</label>
+
+		<select class="form-control" name="entity_field[{{ field_nbr }}][indexable_relation_index]" id="indexable_relation_index" required>
+			<option disabled selected>Select property</option>
+
+			{% for entity_property in entity_properties %}
+				<option value="{{ entity_property }}">{{ entity_property }}</option>
+			{% endfor %}
+		</select>
+	</fieldset>
+{% endif %}

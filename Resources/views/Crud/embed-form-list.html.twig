@@ -1,0 +1,19 @@
+{% for embed_entity in embed_entities %}
+	<tr id="embed-entity-{{ embed_entity.id }}">
+		<td>{{ embed_entity.id }}</td>
+		<td>{{ embed_entity.created_at | date('d/m/Y H:i') }}</td>
+		<td>
+			{% if embed_entity.updated_at is not null %}
+				{{ embed_entity.updated_at | date('d/m/Y H:i') }}
+			{% endif %}
+		</td>
+
+		{% for embedded_form_property in embedded_form.form_properties %}
+			<td>{{ attribute(embed_entity, embedded_form_property) }}</td>
+		{% endfor %}
+
+		<td>
+			<button class="btn btn-danger duf-admin-delete-embed" data-embed-entity-id="{{ embed_entity.id }}" data-embed-entity-class="{{ duf_admin_form.getEntityClass(embed_entity) }}">Delete</button>
+		</td>
+	</tr>
+{% endfor %}

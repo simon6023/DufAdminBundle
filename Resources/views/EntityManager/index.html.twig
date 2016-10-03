@@ -1,0 +1,127 @@
+{% extends 'DufAdminBundle:Default:index.html.twig' %}
+
+{% block main %}
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="box">
+				<div class="box-header">
+					<h3 class="box-title">Entity manager</h3>
+				</div>
+
+				<div class="box-header">
+					<form name="duf_admin_add_entity" action="{{ path('duf_admin_create_entity_new') }}" method="post">
+						<fieldset class="form-group">
+							<label for="entity_manager_bundle">Bundle</label>
+							<select class="form-control" name="bundle" id="entity_manager_bundle">
+								<option disabled selected>Select bundle</option>
+
+								{% for bundle in bundles %}
+									<option value="{{ bundle }}">{{ bundle }}</option>
+								{% endfor %}
+							</select>
+						</fieldset>
+
+						<fieldset class="form-group">
+							<label for="entity_manager_entity_name">Entity name</label>
+							<input type="text" class="form-control" name="entity_name" id="entity_manager_entity_name" />
+						</fieldset>
+
+						<fieldset class="form-group">
+							<button class="btn btn-success" type="submit" disabled id="add_entity_btn">Add</button>
+						</fieldset>
+					</form>
+
+					{% for flash_message in app.session.flashBag.get('error') %}
+						<div class="alert alert-danger alert-dismissible">
+							<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+							<h4><i class="icon fa fa-ban"></i> Alert !</h4>
+							{{ flash_message }}
+						</div>
+					{% endfor %}
+
+					{% for success_flash_message in app.session.flashBag.get('error') %}
+						<div class="alert alert-success alert-dismissible">
+							<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+							<h4><i class="icon fa fa-check"></i> Success !</h4>
+							{{ success_flash_message }}
+						</div>
+					{% endfor %}
+				</div>
+
+				<div class="box-header">
+					<h3 class="box-title">Existing entities</h3>
+				</div>
+
+				<div class="box-body">
+					<table id="duf-admin-index-table" class="table table-bordered table-hover">
+						<thead>
+							<tr>
+								<th>Bundle</th>
+								<th>Entity</th>
+								<th>Namespace</th>
+								<th>Repository</th>
+
+								{# actions #}
+								<th>Actions</th>
+							</tr>
+						</thead>
+
+						<tbody>
+							{% for entity in entities %}
+								<tr>
+									<td>{{ entity.bundle }}</td>
+									<td>{{ entity.name }}</td>
+									<td>{{ entity.namespace }}</td>
+									<td>{{ entity.repository }}</td>
+
+									<td>
+										<button class="btn btn-primary">Modifier</button>
+									</td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block additional_js %}
+	<link rel="stylesheet" href="{{ asset('bundles/dufadmin/plugins/datatables/dataTables.bootstrap.css') }}">
+	<script src="{{ asset('bundles/dufadmin/plugins/datatables/jquery.dataTables.min.js') }}"></script>
+	<script src="{{ asset('bundles/dufadmin/plugins/datatables/dataTables.bootstrap.min.js') }}"></script>
+
+	<script>
+		$('#entity_manager_entity_name').on('keyup', function() {
+			var selected_bundle = $('#entity_manager_bundle').val();
+			if ($(this).val().length > 1 && selected_bundle !== null) {
+				$('#add_entity_btn').removeAttr('disabled');
+			}
+			else {
+				$('#add_entity_btn').attr('disabled', 'disabled');
+			}
+		});
+
+		$('#entity_manager_bundle').on('change', function() {
+			var entity_name_length = $('#entity_manager_entity_name').val().length;
+			if ($(this).val() !== null && entity_name_length > 1) {
+				$('#add_entity_btn').removeAttr('disabled');
+			}
+			else {
+				$('#add_entity_btn').attr('disabled', 'disabled');
+			}
+		});
+
+		$(function () {
+			$('#duf-admin-index-table').DataTable({
+				"paging": true,
+				"lengthChange": false,
+				"searching": false,
+				"ordering": true,
+				"info": true,
+				"autoWidth": false
+			});
+		});
+	</script>
+{% endblock %}

@@ -1,0 +1,53 @@
+services:
+    app.locale_listener:
+        class: Duf\AdminBundle\EventListener\LocaleListener
+        arguments: ['%kernel.default_locale%']
+        tags:
+            - { name: kernel.event_subscriber }
+
+    duf_admin.dufadminencoder:
+        class: Duf\AdminBundle\Service\DufAdminEncoder
+
+    duf_admin.dufadminrouting:
+        class: Duf\AdminBundle\Service\DufAdminRouting
+        arguments: ['@service_container']
+
+    duf_admin.dufadminconfig:
+        class: Duf\AdminBundle\Service\DufAdminConfig
+        arguments: ['@service_container']
+
+    duf_admin.dufadminform:
+        class: Duf\AdminBundle\Service\DufAdminForm
+        arguments: ['@doctrine.orm.entity_manager', '@service_container', '@security.token_storage']
+
+    duf_admin.dufadminfile:
+        class: Duf\AdminBundle\Service\DufAdminFile
+        arguments: ['@service_container']
+
+    duf_admin.dufadminredmine:
+        class: Duf\AdminBundle\Service\DufAdminRedmine
+        arguments: ['@service_container']
+
+    duf_admin.dufadmintranslate:
+        class: Duf\AdminBundle\Service\DufAdminTranslate
+        arguments: ['@doctrine.orm.entity_manager', '@service_container']
+
+    duf_admin.twig.dufAdminBundle_extension:
+        class: Duf\AdminBundle\Twig\DufAdminExtension
+        tags:
+            - { name: twig.extension }
+
+    duf_admin.dufadminredirectrefererservice:
+        class: Duf\AdminBundle\Service\DufAdminRedirectRefererService
+
+    duf_admin.form.type.dufadminentityhiddentype:
+        class: Duf\AdminBundle\Form\Type\DufAdminEntityHiddenType
+        arguments: ["@doctrine.orm.entity_manager"]
+        tags:
+            - { name: form.type }
+
+    duf_admin.form.dufadmingenericType:
+        class: Duf\AdminBundle\Form\DufAdminGenericType
+        arguments: ["@doctrine.orm.entity_manager"]
+        tags:
+            - { name: form.type }

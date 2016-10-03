@@ -1,0 +1,16 @@
+{% for type, messages in app.session.flashbag.all() %}
+	{% if type == 'error' %}
+		<div class="alert alert-danger alert-dismissible">
+	{% elseif type == 'success' %}
+		<div class="alert alert-success alert-dismissible">
+	{% elseif type == 'warning' %}
+		<div class="alert alert-warning alert-dismissible">
+	{% else %}
+		<div class="alert alert-info alert-dismissible">
+	{% endif %}
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+			{% for message in messages %}
+				<p>{{ message }}</p>
+			{% endfor %}
+		</div>
+{% endfor %}

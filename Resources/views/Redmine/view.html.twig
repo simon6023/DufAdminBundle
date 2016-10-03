@@ -1,0 +1,179 @@
+{% extends 'DufAdminBundle:Default:index.html.twig' %}
+
+{% block main %}
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="box">
+				<div class="box-header">
+					<h3 class="box-title">Issue #{{ issue.id }} - {{ issue.subject }}</h3>
+
+					<br />
+					<br />
+					<label class="control-label" id="show-file-input">Added by {{ issue.author.name }} on {{ issue.created_on | date('d/m/Y H:i:s') }}</label>
+
+					{% if issue.updated_on is defined and issue.updated_on != issue.created_on %}
+						<br />
+						<label class="control-label" id="show-file-input">Updated on {{ issue.updated_on | date('d/m/Y H:i:s') }}</label>
+					{% endif %}
+
+					<div class="pull-right box-tools">
+						<a href="{{ path('duf_admin_redmine_index') }}">
+							<p class="btn btn-default">Back</p>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-6">
+			<div class="box box-solid">
+				<div class="box-body">
+					<dl class="duf-admin-redmine-details">
+						<dt>Status</dt>
+						<dd>{{ issue.status.name }}</dd>
+
+						<dt>Priority</dt>
+						<dd>{{ issue.priority.name }}</dd>
+
+						<dt>Assignee</dt>
+						<dd>{{ issue.priority.name }}</dd>
+
+						<dt>Category</dt>
+						<dd>
+							{% if issue.category is defined and issue.category is not null %}
+								{{ issue.category.name }}
+							{% else %}
+							 - 
+							{% endif %}
+						</dd>
+
+						<dt>Version</dt>
+						<dd>{{ issue.priority.name }}</dd>
+					</dl>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-md-6">
+			<div class="box box-solid">
+				<div class="box-body">
+					<dl class="duf-admin-redmine-details">
+						<dt>Start date</dt>
+						<dd>{{ issue.start_date | date('d/m/Y') }}</dd>
+
+						<dt>Due date</dt>
+						<dd>
+							{% if issue.due_date is defined and issue.due_date is not null %}
+								{{ issue.due_date | date('d/m/Y') }}
+							{% else %}
+							 - 
+							{% endif %}
+						</dd>
+						
+						<dt>{{ issue.done_ratio }} % Done</dt>
+						<dd>
+							<div class="progress progress-xs progress-striped active">
+								<div class="progress-bar progress-bar-success" style="width:{{ issue.done_ratio }}%;"></div>
+							</div>
+						</dd>
+						
+						<dt>Estimated time</dt>
+						<dd>
+							{% if issue.estimated_hours is defined and issue.estimated_hours is not null %}
+								{{ issue.estimated_hours }} hours
+							{% else %}
+							 - 
+							{% endif %}
+						</dd>
+
+						<dt>Spent time</dt>
+						<dd>
+							{% if issue.spent_hours is defined and issue.spent_hours is not null and issue.spent_hours > 0 %}
+								{{ issue.spent_hours }} hours
+							{% else %}
+							 - 
+							{% endif %}
+						</dd>
+					</dl>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-6">
+			<div class="box box-solid">
+				<div class="box-header with-border">
+					<h3 class="box-title">Description</h3>
+				</div>
+
+				<div class="box-body">
+					{{ issue.description | raw }}
+				</div>
+
+				{% if issue.attachments is defined and issue.attachments is not null %}
+					<div class="box-header with-border">
+						<h3 class="box-title">Attachments</h3>
+					</div>
+
+					<div class="box-body">
+						<ul>
+							{% for attachment in issue.attachments %}
+								<li>
+									<a href="{{ attachment.content_url }}" target="_blank">
+										{{ attachment.filename }}
+									</a>
+									 - by {{ attachment.author.name }} on {{ attachment.created_on | date('d/m/Y H:i') }}
+								</li>
+							{% endfor %}
+						</ul>
+					</div>
+				{% endif %}
+			</div>
+		</div>
+
+		<div class="col-md-6">
+			<div class="box box-solid">
+				<div class="box-header with-border">
+					<h3 class="box-title">History</h3>
+				</div>
+
+				<div class="box-body">
+					{% if issue.journals is defined and issue.journals | length > 0 %}
+						{% for journal in issue.journals %}
+							<div class="duf-admin-redmine-journal-container">
+								<h5>Updated by {{ journal.user.name }} on {{ journal.created_on | date('d/m/Y H:i') }}</h5>
+
+								{% if journal.details is defined and journal.details is not null %}
+									<ul>
+										{% for detail in journal.details %}
+											{% if detail.name is defined %}
+												{% if detail.name == 'status_id' %}
+													<li>
+														<strong>Status</strong> changed from <em>{{ duf_admin_redmine.getStatusName(detail.old_value) }}</em> to <em>{{ duf_admin_redmine.getStatusName(detail.new_value) }}</em>
+													</li>
+												{% elseif detail.name == 'assigned_to_id' %}
+													<li>
+														<strong>Assignee</strong> set to <em>{{ duf_admin_redmine.getUserUsername(detail.new_value) }}</em></em>
+													</li>
+												{% endif %}
+											{% endif %}
+										{% endfor %}
+									</ul>
+								{% endif %}
+
+								<div class="note">
+									{{ journal.notes }}
+								</div>
+							</div>
+						{% endfor %}
+					{% else %}
+						No history
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

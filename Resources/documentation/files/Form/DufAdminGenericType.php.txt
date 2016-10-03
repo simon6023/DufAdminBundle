@@ -1,0 +1,105 @@
+<?php
+
+namespace Duf\AdminBundle\Form;
+
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+
+use Duf\AdminBundle\Form\Type\DufAdminTextType;
+use Duf\AdminBundle\Form\Type\DufAdminTextareaType;
+use Duf\AdminBundle\Form\Type\DufAdminDateType;
+use Duf\AdminBundle\Form\Type\DufAdminDatetimeType;
+use Duf\AdminBundle\Form\Type\DufAdminCheckboxType;
+use Duf\AdminBundle\Form\Type\DufAdminEntityType;
+use Duf\AdminBundle\Form\Type\DufAdminNumberType;
+use Duf\AdminBundle\Form\Type\DufAdminFileType;
+
+class DufAdminGenericType extends AbstractType
+{
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
+    	if (isset($options['duf_options'])) {
+    		foreach ($options['duf_options'] as $form_option) {
+    			$builder->add($form_option['property_name'], $this->getFormType($form_option['type']), $form_option['parameters']);
+    		}
+    	}
+
+        $builder->add('duf_admin_form_token', HiddenType::class, array(
+                'mapped' => false,
+                'attr' => array(
+                    'value'     => md5(uniqid() . date('d/m/Y H:i:s')),
+                ),
+            )
+        );
+    }
+
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults(array(
+            'data_class' 	=> 'Duf\AdminBundle\Entity\DufAdminEntity',
+            'duf_options'	=> array(),
+        ));
+    }
+
+    private function getFormType($string_type)
+    {
+    	switch ($string_type) {
+    		case 'text':
+    			$type = DufAdminTextType::class;
+    			break;
+            case 'date':
+                $type = DufAdminDateType::class;
+                break;
+            case 'datetime':
+                $type = DufAdminDatetimeType::class;
+                break;
+    		case 'email':
+    			$type = EmailType::class;
+    			break;
+    		case 'number':
+            case 'integer':
+            case 'float':
+    			$type = DufAdminNumberType::class;
+    			break;
+    		case 'checkbox':
+    			$type = DufAdminCheckboxType::class;
+    			break;
+    		case 'textarea':
+    			$type = DufAdminTextareaType::class;
+    			break;
+   			case 'password':
+    			$type = PasswordType::class;
+    			break;
+   			case 'choice':
+    			$type = ChoiceType::class;
+    			break;
+   			case 'entity':
+    			$type = DufAdminEntityType::class;
+    			break;
+            case 'file':
+                $type = DufAdminFileType::class;
+                break;
+            case 'hidden':
+                $type = HiddenType::class;
+                break;
+    		default:
+    			$type = TextType::class;
+    			break;
+    	}
+
+    	return $type;
+    }
+}

@@ -1,0 +1,80 @@
+<div class="fieldset_item" id="fieldset_item_{{ field_nbr }}">
+	<fieldset class="form-group" data-field-nbr="{{ field_nbr }}">
+		<label for="field_name">Field name (CamelCase only)</label>
+		<input type="text" class="form-control" name="entity_field[{{ field_nbr }}][field_name]" id="field_name" required />
+	</fieldset>
+
+	<fieldset class="form-group" data-field-nbr="{{ field_nbr }}">
+		<label for="field_types">Field type</label>
+		<select class="form-control field-type" name="entity_field[{{ field_nbr }}][field_type]" id="field_types" required data-field-nbr="{{ field_nbr }}">
+			<option disabled selected>Select field type</option>
+
+			{% for field_type in field_types %}
+				<option value="{{ field_type.name }}">{{ field_type.label }}</option>
+			{% endfor %}
+		</select>
+	</fieldset>
+
+	<div class="fieldset_options_container" id="fieldset_options_container_{{ field_nbr }}"></div>
+
+	<div class="one_to_many_mapped_by_container" id="one_to_many_mapped_by_container_{{ field_nbr }}"></div>
+
+	<div class="many_to_many_inversed_by_container" id="many_to_many_inversed_by_container_{{ field_nbr }}"></div>
+
+	<div class="fieldset_checkbox_container">
+		<fieldset class="form-group" data-field-nbr="{{ field_nbr }}">
+			<label for="nullable">Nullable</label>
+
+			<br />
+
+			<input type="checkbox" name="entity_field[{{ field_nbr }}][nullable]" id="nullable" value="1" />
+		</fieldset>
+
+		<fieldset class="form-group" data-field-nbr="{{ field_nbr }}">
+			<label for="unique">Unique</label>
+
+			<br />
+
+			<input type="checkbox" name="entity_field[{{ field_nbr }}][unique]" id="unique" value="1" />
+		</fieldset>
+	</div>
+
+	<div class="duf_admin_annotations_options field_{{ field_nbr }}">
+		<div class="left">
+			<fieldset class="form-group" data-field-nbr="{{ field_nbr }}" id="indexable_checkbox_container_{{ field_nbr }}">
+				<label for="indexable">Indexable</label>
+
+				<br />
+
+				<input type="checkbox" name="entity_field[{{ field_nbr }}][indexable]" id="indexable" value="1" data-field-nbr="{{ field_nbr }}" data-annotation-type="indexable" />
+			</fieldset>
+		</div>
+
+		<div class="right">
+			<div class="indexable_options_container" id="indexable_options_container_{{ field_nbr }}"></div>
+		</div>
+	</div>
+
+	<div class="duf_admin_annotations_options field_{{ field_nbr }}">
+		<div class="left">
+			<fieldset class="form-group" data-field-nbr="{{ field_nbr }}">
+				<label for="editable">Editable</label>
+
+				<br />
+
+				<input type="checkbox" name="entity_field[{{ field_nbr }}][editable]" id="editable" value="1" data-field-nbr="{{ field_nbr }}" data-annotation-type="editable" />
+			</fieldset>
+		</div>
+
+		<div class="right">
+			<div class="editable_options_container" id="editable_options_container_{{ field_nbr }}"></div>
+		</div>
+	</div>
+
+	<fieldset class="form-group buttons" data-field-nbr="{{ field_nbr }}">
+		<button class="btn btn-primary add-field"data-field-nbr="{{ field_nbr }}">Add field</button>
+		{% if field_nbr > 1 %}
+			<button class="btn btn-danger delete-field" data-field-nbr="{{ field_nbr }}">Delete field</button>
+		{% endif %}
+	</fieldset>
+</div>

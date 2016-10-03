@@ -1,0 +1,58 @@
+<fieldset class="form-group" data-field-nbr="{{ field_nbr }}">
+	<label for="editable_label">Form label</label>
+	<input type="text" class="form-control" name="entity_field[{{ field_nbr }}][editable_label]" id="editable_label" required />
+</fieldset>
+
+<fieldset class="form-group" data-field-nbr="{{ field_nbr }}">
+	<label for="editable_form_field_type">Form field type</label>
+
+	<select class="form-control" name="entity_field[{{ field_nbr }}][editable_form_field_type]" id="editable_form_field_type" required data-field-nbr="{{ field_nbr }}">
+		<option value="0" disabled selected>Select form field type</option>
+
+		{% for form_field_name, form_field_label in form_field_types %}
+			<option value="{{ form_field_name }}">{{ form_field_label }}</option>
+		{% endfor %}
+	</select>
+</fieldset>
+
+<fieldset class="form-group editable_file_type" data-field-nbr="{{ field_nbr }}" id="editable_file_type_{{ field_nbr }}">
+	<label for="editable_file_type">File type</label>
+
+	<select class="form-control" name="entity_field[{{ field_nbr }}][editable_file_type]" id="editable_file_type" required data-field-nbr="{{ field_nbr }}">
+		<option value="0" disabled selected>Select file type</option>
+
+		{% for file_type_name, file_type_label in filetypes %}
+			<option value="{{ file_type_name }}">{{ file_type_label }}</option>
+		{% endfor %}
+	</select>
+</fieldset>
+
+{% if entity_properties is defined and entity_properties is not null %}
+	<fieldset class="form-group editable_relation_index" data-field-nbr="{{ field_nbr }}" id="editable_relation_index_container_{{ field_nbr }}">
+		<label for="editable_relation_index">Relationship property used in form field</label>
+
+		<select class="form-control" name="entity_field[{{ field_nbr }}][editable_relation_index]" id="editable_relation_index" required>
+			<option disabled selected>Select property</option>
+
+			{% for entity_property in entity_properties %}
+				<option value="{{ entity_property }}">{{ entity_property }}</option>
+			{% endfor %}
+		</select>
+	</fieldset>
+{% endif %}
+
+<fieldset class="form-group form_field_placeholder_container" data-field-nbr="{{ field_nbr }}" id="form_field_placeholder_container_{{ field_nbr }}">
+	<label for="editable_placeholder_{{ field_nbr }}">Field placeholder</label>
+	<input type="text" class="form-control" name="entity_field[{{ field_nbr }}][editable_placeholder]" id="editable_placeholder_{{ field_nbr }}" />
+</fieldset>
+
+<fieldset class="form-group" data-field-nbr="{{ field_nbr }}">
+	<label for="editable_order">Field order in form</label>
+	<input type="number" class="form-control" name="entity_field[{{ field_nbr }}][editable_order]" id="editable_order" required />
+</fieldset>
+
+<fieldset class="form-group" data-field-nbr="{{ field_nbr }}">
+	<label for="editable_required">Is required in form</label>
+	<br />
+	<input type="checkbox" name="entity_field[{{ field_nbr }}][editable_required]" id="editable_required" value="1" />
+</fieldset>

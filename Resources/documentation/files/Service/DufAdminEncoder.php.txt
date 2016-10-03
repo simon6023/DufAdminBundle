@@ -1,0 +1,31 @@
+<?php
+namespace Duf\AdminBundle\Service;
+
+use Symfony\Component\Security\Core\Encoder\BasePasswordEncoder;
+use Symfony\Component\Security\Core\Exception\BadCredentialsException;
+use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
+
+class DufAdminEncoder extends BasePasswordEncoder implements PasswordEncoderInterface
+{
+    public function encodePassword($raw, $salt)
+    {
+        if ($this->isPasswordTooLong($raw)) {
+            throw new BadCredentialsException('Invalid password.');
+        }
+
+		$raw = base64_encode(pack('H*',md5($raw)));
+		$length = strlen($raw);
+		$length = $length - 2;
+		$raw = substr($raw,0,$length);
+        return $raw;
+    }
+
+    public function isPasswordValid($encoded, $raw, $salt)
+    {
+        if ($this->isPasswordTooLong($raw)) {
+            return false;
+        }
+
+        return $encoded === $this->encodePassword($raw, $salt);
+    }
+}

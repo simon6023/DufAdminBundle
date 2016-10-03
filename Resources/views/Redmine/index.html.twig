@@ -1,0 +1,75 @@
+{% extends 'DufAdminBundle:Default:index.html.twig' %}
+
+{% block main %}
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="box">
+				<div class="box-header">
+					<h3 class="box-title">Redmine</h3>
+
+					<div class="pull-right box-tools">
+						<a href="{{ path('duf_admin_redmine_create_issue') }}">
+							<button class="btn btn-primary">Create new Issue</button>
+						</a>
+					</div>
+				</div>
+
+				<div class="box-header">
+					<label class="control-label" id="show-file-input">Issues</label>
+				</div>
+
+				<div class="box-body">
+					<table id="duf-admin-index-table" class="table table-bordered table-hover">
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>Tracker</th>
+								<th>Status</th>
+								<th>Priority</th>
+								<th>Subject</th>
+								<th>Assignee</th>
+								<th>Updated</th>
+							</tr>
+						</thead>
+
+						<tbody>
+							{% for issue in issues %}
+								<tr>
+									<td>{{ issue.id }}</td>
+									<td>{{ issue.tracker.name }}</td>
+									<td>{{ issue.status.name }}</td>
+									<td>{{ issue.priority.name }}</td>
+
+									<td>
+										<a href="{{ path('duf_admin_redmine_view_issue', { id: issue.id }) }}">
+											{{ issue.subject }}
+										</a>
+									</td>
+
+									<td>
+										{% if issue.assigned_to is defined and issue.assigned_to.name is defined %}
+											{{ issue.assigned_to.name }}
+										{% endif %}
+									</td>
+									<td>{{ issue.updated_on | date('d/m/Y H:i:s') }}</td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block additional_js %}
+	<link rel="stylesheet" href="{{ asset('bundles/dufadmin/plugins/datatables/dataTables.bootstrap.css') }}">
+	<script src="{{ asset('bundles/dufadmin/plugins/datatables/jquery.dataTables.min.js') }}"></script>
+	<script src="{{ asset('bundles/dufadmin/plugins/datatables/dataTables.bootstrap.min.js') }}"></script>
+
+	<script>
+		$(function () {
+			$('#duf-admin-index-table').DataTable();
+		});
+	</script>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends 'DufAdminBundle:Default:index.html.twig' %}
+
+{% block main %}
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="box">
+				<div class="box-header">
+					<h3 class="box-title">{{ filetype }}</h3>
+				</div>
+
+				<div class="box-header">
+					<label class="control-label" id="show-file-input">Upload {{ filetype }}</label>
+
+					<div class="duf-admin-upload-input-container">
+						<input id="duf-admin-filesystem-index-input" name="duf_admin_index_file_input[]" multiple type="file" class="file-loading">
+					</div>
+
+					<div class="alert alert-danger alert-dismissible hidden">
+						<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+						<h4><i class="icon fa fa-ban"></i> Alert!</h4>
+						An error occured during upload - please try again or check your file
+					</div>
+				</div>
+
+				<div class="box-body duf-admin-file-list-container">
+					{% include 'DufAdminBundle:File:index-list.html.twig' %}
+				</div>
+
+				<div class="box-body">
+					{% if entities | length > 0 %}
+						<p class="duf-admin-load-more file-system">
+							<button type="button" class="btn btn-primary btn-lg" data-page="{{ page + 1 }}" data-filetype="{{ filetype }}">Load more</button>
+						</p>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block additional_js %}
+	<script>
+		$("#duf-admin-filesystem-index-input").fileinput({
+			uploadUrl: "{{ path('duf_admin_upload_file_from_index', { filetype: filetype }) }}",
+			uploadAsync: true,
+			previewFileIcon: '<i class="fa fa-file"></i>',
+			allowedPreviewTypes: null, // set to empty, null or false to disable preview for all types
+			previewFileIconSettings: {
+				'jpg': '<i class="fa fa-file-photo-o text-warning"></i>',
+				'jpeg': '<i class="fa fa-file-photo-o text-warning"></i>',
+				'png': '<i class="fa fa-file-photo-o text-warning"></i>',
+				'gif': '<i class="fa fa-file-photo-o text-warning"></i>',
+				'bmp': '<i class="fa fa-file-photo-o text-warning"></i>',
+				'tiff': '<i class="fa fa-file-photo-o text-warning"></i>',
+			},
+			browseOnZoneClick: true
+		}).on('fileuploaded', function(event, data, previewId, index) {
+			if (data.response !== 'error') {
+				$('.alert.alert-danger.alert-dismissible').addClass('hidden');
+				window.dufAdminFileSystem.loadMoreFiles("{{ filetype }}", 1, '.box-body.duf-admin-file-list-container');
+			}
+			else {
+				$('.alert.alert-danger.alert-dismissible').removeClass('hidden');
+			}
+		});
+	</script>
+{% endblock %}
