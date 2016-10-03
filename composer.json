@@ -24,5 +24,18 @@
         "hwi/oauth-bundle": "dev-master",
         "simonduflos/dufcorebundle":"dev-master",
         "simonduflos/dufmessagingbundle":"dev-master"
-    }
+    },
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "jquery/jquery",
+                "version": "1.11.1",
+                "dist": {
+                    "url": "https://code.jquery.com/jquery-1.11.1.js",
+                    "type": "file"
+                }
+            }
+        }
+    ]
 }
