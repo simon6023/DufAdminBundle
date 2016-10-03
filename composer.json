@@ -21,6 +21,8 @@
         "kbsali/redmine-api": "~1.0",
         "stof/doctrine-extensions-bundle": "dev-master",
         "lexik/translation-bundle": "~4.0",
-        "hwi/oauth-bundle": "dev-master"
+        "hwi/oauth-bundle": "dev-master",
+        "simonduflos/dufcorebundle":"dev-master",
+        "simonduflos/dufmessagingbundle":"dev-master"
     }
 }
