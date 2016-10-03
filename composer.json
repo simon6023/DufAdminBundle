@@ -22,7 +22,7 @@
         "lexik/translation-bundle": "~4.0",
         "hwi/oauth-bundle": "0.5.0",
         "stof/doctrine-extensions-bundle": "1.2.2",
-        "simonduflos/dufcorebundle":"dev-master",
-        "simonduflos/dufmessagingbundle":"dev-master"
+        "simonduflos/dufcorebundle":"@dev",
+        "simonduflos/dufmessagingbundle":"@dev"
     }
 }
