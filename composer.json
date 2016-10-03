@@ -13,14 +13,14 @@
     "require": {
         "php": ">=5.3.0",
         "psr/log": "~1.0",
-        "braincrafted/bootstrap-bundle": "dev-master",
+        "braincrafted/bootstrap-bundle": "~2.2",
         "twbs/bootstrap": "3.0.*",
         "bmatzner/fontawesome-bundle": "~4.4",
         "components/jquery": "2.*",
         "friendsofsymfony/jsrouting-bundle": "~1.6",
         "kbsali/redmine-api": "~1.0",
         "lexik/translation-bundle": "~4.0",
-        "hwi/oauth-bundle": "dev-master",
+        "hwi/oauth-bundle": "0.5.0",
         "stof/doctrine-extensions-bundle": "1.2.2",
         "simonduflos/dufcorebundle":"dev-master",
         "simonduflos/dufmessagingbundle":"dev-master"
