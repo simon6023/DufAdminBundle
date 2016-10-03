@@ -1,6 +1,6 @@
 <?php
 
-namespace Duf\AdminBundle\Annotations;
+namespace Duf\Bundle\AdminBundle\Annotations;
 
 /**
  * Annotation for indexable entities in DufAdminBundle

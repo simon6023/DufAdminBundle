@@ -1,5 +1,5 @@
 <?php
-namespace Duf\AdminBundle\Service;
+namespace Duf\Bundle\AdminBundle\Service;
 
 use Symfony\Component\Security\Core\Encoder\BasePasswordEncoder;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;

@@ -26,6 +26,6 @@
         "simonduflos/dufmessagingbundle":"@dev"
     },
     "autoload": {
-        "psr-4": { "Duf\\AdminBundle\\DufAdminBundle\\": "" }
+        "psr-4": { "Duf\\Bundle\\AdminBundle\\DufAdminBundle\\": "" }
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Duf\AdminBundle;
+namespace Duf\Bundle\AdminBundle\DufAdminBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 

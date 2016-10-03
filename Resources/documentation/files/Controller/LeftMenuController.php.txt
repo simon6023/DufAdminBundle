@@ -1,6 +1,6 @@
 <?php
 
-namespace Duf\AdminBundle\Controller;
+namespace Duf\Bundle\AdminBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
