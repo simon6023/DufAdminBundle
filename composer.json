@@ -19,9 +19,9 @@
         "components/jquery": "2.*",
         "friendsofsymfony/jsrouting-bundle": "~1.6",
         "kbsali/redmine-api": "~1.0",
-        "stof/doctrine-extensions-bundle": "dev-master",
         "lexik/translation-bundle": "~4.0",
         "hwi/oauth-bundle": "dev-master",
+        "stof/doctrine-extensions-bundle": "dev-master",
         "simonduflos/dufcorebundle":"dev-master",
         "simonduflos/dufmessagingbundle":"dev-master"
     }
