@@ -16,7 +16,7 @@
         "braincrafted/bootstrap-bundle": "dev-master",
         "twbs/bootstrap": "3.0.*",
         "bmatzner/fontawesome-bundle": "~4.4",
-        "jquery/jquery":  "1.11.*",
+        "components/jquery": "2.*",
         "friendsofsymfony/jsrouting-bundle": "~1.6",
         "kbsali/redmine-api": "~1.0",
         "stof/doctrine-extensions-bundle": "dev-master",
@@ -24,18 +24,5 @@
         "hwi/oauth-bundle": "dev-master",
         "simonduflos/dufcorebundle":"dev-master",
         "simonduflos/dufmessagingbundle":"dev-master"
-    },
-    "repositories": [
-        {
-            "type": "package",
-            "package": {
-                "name": "jquery/jquery",
-                "version": "1.11.1",
-                "dist": {
-                    "url": "https://code.jquery.com/jquery-1.11.1.js",
-                    "type": "file"
-                }
-            }
-        }
-    ]
+    }
 }
