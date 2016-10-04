@@ -163,9 +163,5 @@ duf_core:
     resource: "@DufCoreBundle/Resources/config/routing.yml"
     prefix:   /
 
-duf_admin:
-    resource: "@DufAdminBundle/Resources/config/routing.yml"
-    prefix:   /site-admin
-
 fos_js_routing:
     resource: "@FOSJsRoutingBundle/Resources/config/routing/routing.xml"
