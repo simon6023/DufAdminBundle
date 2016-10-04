@@ -1,5 +1,6 @@
 # import services
 imports:
+    - { resource: "@DufCoreBundle/Resources/config/config.yml" }
     - { resource: "@DufAdminBundle/Resources/config/services.yml" }
 
 # Twig Configuration
