@@ -1,6 +1,6 @@
 <?php
 
-namespace Duf\Bundle\AdminBundle\Controller;
+namespace Duf\AdminBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;

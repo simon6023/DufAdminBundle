@@ -1,5 +1,5 @@
 <?php
-namespace Duf\Bundle\AdminBundle\Form\Type;
+namespace Duf\AdminBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\OptionsResolver\OptionsResolver;

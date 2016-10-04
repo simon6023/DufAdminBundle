@@ -1,6 +1,6 @@
 <?php
 
-namespace Duf\Bundle\AdminBundle\Tests\Controller;
+namespace Duf\AdminBundle\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 

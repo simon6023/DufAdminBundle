@@ -1,5 +1,5 @@
 <?php
-namespace Duf\Bundle\AdminBundle\DependencyInjection;
+namespace Duf\AdminBundle\DependencyInjection;
 
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;

@@ -1,6 +1,7 @@
 {
     "name": "simonduflos/dufadminbundle",
     "description": "Admin Bundle for Symfony 3",
+    "type":"symfony-bundle",
     "homepage": "http://github.com/simon6023/DufAdminBundle",
     "license": "MIT",
     "authors": [
@@ -26,6 +27,6 @@
         "simonduflos/dufmessagingbundle":"@dev"
     },
     "autoload": {
-        "psr-4": { "Duf\\Bundle\\AdminBundle\\DufAdminBundle\\": "" }
+        "psr-4": { "Duf\\AdminBundle\\": "" }
     }
 }

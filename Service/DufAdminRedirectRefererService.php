@@ -1,5 +1,5 @@
 <?php
-namespace Duf\Bundle\AdminBundle\Service;
+namespace Duf\AdminBundle\Service;
 
 use Symfony\Component\HttpFoundation\Request;
 

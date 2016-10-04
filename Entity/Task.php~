@@ -1,6 +1,6 @@
 <?php
 
-namespace Duf\Bundle\AdminBundle\Entity;
+namespace Duf\AdminBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Duf\AdminBundle\Entity\DufAdminEntity;

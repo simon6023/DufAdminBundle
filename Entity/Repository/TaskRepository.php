@@ -1,6 +1,6 @@
 <?php
 
-namespace Duf\Bundle\AdminBundle\Entity\Repository;
+namespace Duf\AdminBundle\Entity\Repository;
 
 /**
  * TaskRepository

@@ -1,6 +1,6 @@
 <?php
 
-namespace Duf\Bundle\AdminBundle\Twig;
+namespace Duf\AdminBundle\Twig;
 
 class DufAdminExtension extends \Twig_Extension
 {

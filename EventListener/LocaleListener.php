@@ -1,5 +1,5 @@
 <?php
-namespace Duf\Bundle\AdminBundle\EventListener;
+namespace Duf\AdminBundle\EventListener;
 
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
