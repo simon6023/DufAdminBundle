@@ -48,6 +48,7 @@ Finally, add following configuration to your project
 
 imports:
     - { resource: "@DufAdminBundle/Resources/config/config.yml" }
+    - { resource: "@DufAdminBundle/Resources/config/security.yml" }
 
 ```
 

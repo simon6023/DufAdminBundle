@@ -67,6 +67,10 @@ class InstallCommand extends ContainerAwareCommand
                 $this->asseticDump(),
                 '============',
             ]);
+
+        // TO DO : configure languages
+
+        // TO DO : run CLI command to import translations
     }
 
     private function createUserRoles()

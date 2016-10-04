@@ -1,0 +1,45 @@
+# http://symfony.com/doc/current/book/security.html
+# http://symfony.com/doc/current/book/security.html#where-do-users-come-from-user-providers
+# http://symfony.com/doc/current/book/security.html#a-configuring-how-your-users-will-authenticate
+# http://symfony.com/doc/current/cookbook/security/form_login_setup.html
+
+security:
+    encoders:
+        Symfony\Component\Security\Core\User\User:
+            algorithm: plaintext
+        Duf\AdminBundle\Entity\User:
+            id: duf_admin.dufadminencoder
+    providers:
+        duf_admin_provider:
+            entity: { class: Duf\AdminBundle\Entity\User }
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        duf_admin:
+            provider: duf_admin_provider
+            anonymous: ~
+            form_login:
+                login_path: duf_admin_login
+                check_path: duf_admin_login_check
+            logout:
+                path: duf_admin_logout
+                target: duf_admin_homepage
+        duf_oauth:
+            provider: duf_admin_provider
+            anonymous: ~
+            oauth:
+                resource_owners:
+                    facebook:           facebook_login
+                login_path:        /oauth/login
+                use_forward:       false
+                failure_path:      /oauth/login
+                oauth_user_provider:
+                    oauth: hwi_oauth.user.provider.entity
+        main:
+            anonymous: ~
+            # http_basic: ~
+            # form_login: ~
+    access_control:
+        - { path: ^/site-admin/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/site-admin, roles: ROLE_ADMIN }
