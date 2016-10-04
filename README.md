@@ -8,4 +8,24 @@ Add `simonduflos/dufadminbundle` to your `composer.json`
 }
 ```
 
-Run `composer.phar update` to install the bundle and its dependencies
+Run `composer.phar update` to install the bundle and its dependencies.
+
+Then add `DufAdminBundle` to your `AppKernel.php` :
+
+```php
+// app/AppKernel.php
+
+public function registerBundles()
+{
+	$bundles = [
+		// your other bundles
+	];
+
+	\Duf\AdminBundle\DufAdminBundle::registerInto($bundles, 'prod');
+
+    if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
+        \Duf\AdminBundle\DufAdminBundle::registerInto($bundles, 'dev');
+    }
+}
+```
+
