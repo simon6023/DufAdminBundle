@@ -31,5 +31,6 @@
     },
     "autoload": {
         "psr-4": { "Duf\\AdminBundle\\": "" }
-    }
+    },
+    "minimum-stability":"dev"
 }
