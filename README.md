@@ -1,3 +1,10 @@
+# Description
+
+The purpose of this bundle is to provide a quick way to get up-and-running with a fully fonctionning admin panel, and to make this admin quickly customizable by avoiding manual CRUD generation and multiplication of files. Create your entities, set some annotations and configuration variables, and you have a dynamic CRUD available in your admin panel.
+
+This bundle also comes with a bunch of built-in functionalities : messaging system, file manager, multi-lang support, sitemap generation, Redmine integration... 
+
+
 # Installation
 
 Add `simonduflos/dufadminbundle` to your `composer.json`
@@ -111,6 +118,7 @@ This will :
 * import the bundle's native translations
 * install assets
 * dump assetic assets
+
 
 # Usage
 
