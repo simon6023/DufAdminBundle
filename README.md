@@ -124,6 +124,33 @@ This will :
 * dump assetic assets
 
 
+# Configuration
+
+In order to customize this bundle, you have to set some basic informations in your `config.yml` file :
+
+```yml
+# app/config/config.yml
+
+duf_admin:
+    site_name: "My website"                 # the name of your website
+    upload_dir: "uploads/"                  # directory used by the file manager
+    allowed_upload_extensions:              # extensions accepted by the file manager
+        images:
+            - jpg
+            - png
+        documents:
+            - txt
+            - pdf
+        videos:
+            - avi
+            - mp4
+    file_system_items_per_page: 4           # number of items to display in the file manager
+    user_entity: "MyBundle:User"            # your User entity
+    user_role_entity: "MyBundle:UserRole"   # your UserRole entity
+    language_entity: "MyBundle:Language"    # your language entity
+
+```
+
 # Usage
 
 [TO DO]
