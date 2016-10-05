@@ -38,8 +38,6 @@ security:
                     oauth: hwi_oauth.user.provider.entity
         main:
             anonymous: ~
-            # http_basic: ~
-            # form_login: ~
     access_control:
         - { path: ^/site-admin/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/site-admin, roles: ROLE_ADMIN }

@@ -35,28 +35,13 @@ In order to use `BraincraftedBootstrapBundle`, you have to install a LESS compil
 	npm install -g less
 ```
 
-Then run `dufadminbundle:install` using CLI. This will :
-
-* update database schema
-* create `ROLE_ADMIN` and `ROLE_USER`
-* create `User` entity with `ROLE_ADMIN` privileges
-* create default languages
-* import the bundle's native translations
-* install assets
-* dump assetic assets
-
-```cli
-	php bin/console dufadmin:install
-```
-
-Finally, add following configuration to your project
+Then, add following configuration to your project
 
 ```yml
 # app/config/config.yml
 
 imports:
     - { resource: "@DufAdminBundle/Resources/config/config.yml" }
-    - { resource: "@DufAdminBundle/Resources/config/security.yml" }
 
 ```
 
@@ -68,6 +53,64 @@ duf_admin:
     prefix:   /site-admin
 
 ```
+
+```yml
+# app/config/security.yml
+security:
+    encoders:
+        Symfony\Component\Security\Core\User\User:
+            algorithm: plaintext
+        Duf\AdminBundle\Entity\User:
+            id: duf_admin.dufadminencoder
+    providers:
+        duf_admin_provider:
+            entity: { class: Duf\AdminBundle\Entity\User }
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        duf_admin:
+            provider: duf_admin_provider
+            anonymous: ~
+            form_login:
+                login_path: duf_admin_login
+                check_path: duf_admin_login_check
+            logout:
+                path: duf_admin_logout
+                target: duf_admin_homepage
+        duf_oauth:
+            provider: duf_admin_provider
+            anonymous: ~
+            oauth:
+                resource_owners:
+                    facebook:           facebook_login
+                login_path:        /oauth/login
+                use_forward:       false
+                failure_path:      /oauth/login
+                oauth_user_provider:
+                    oauth: hwi_oauth.user.provider.entity
+        main:
+            anonymous: ~
+    access_control:
+        - { path: ^/site-admin/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/site-admin, roles: ROLE_ADMIN }
+```
+
+Finally, run `dufadminbundle:install` using CLI.
+
+```cli
+	php bin/console dufadmin:install
+```
+
+This will :
+
+* update database schema
+* create `ROLE_ADMIN` and `ROLE_USER`
+* create `User` entity with `ROLE_ADMIN` privileges
+* create default languages
+* import the bundle's native translations
+* install assets
+* dump assetic assets
 
 # Usage
 
