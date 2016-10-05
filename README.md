@@ -3,7 +3,7 @@
 Add `simonduflos/dufadminbundle` to your `composer.json`
 
 ```json
-{
+"require": {
 	"simonduflos/dufadminbundle":"dev-master"
 }
 ```
@@ -35,7 +35,15 @@ In order to use `BraincraftedBootstrapBundle`, you have to install a LESS compil
 	npm install -g less
 ```
 
-Then run `dufadminbundle:install` using CLI
+Then run `dufadminbundle:install` using CLI. This will :
+
+* update database schema
+* create `ROLE_ADMIN` and `ROLE_USER`
+* create `User` entity with `ROLE_ADMIN` privileges
+* create default languages
+* import the bundle's native translations
+* install assets
+* dump assetic assets
 
 ```cli
 	php bin/console dufadmin:install

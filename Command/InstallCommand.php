@@ -41,6 +41,12 @@ class InstallCommand extends ContainerAwareCommand
         $this->em               = $this->container->get('doctrine.orm.entity_manager');
 
         $output->writeln([
+                'Update Database Schema',
+                $this->updateDatabaseSchema(),
+                '============',
+            ]);
+
+        $output->writeln([
                 'Create User Roles',
                 '============',
             ]);
@@ -57,6 +63,19 @@ class InstallCommand extends ContainerAwareCommand
         $this->createAdminUser();
 
         $output->writeln([
+                'Configure languages',
+                '============',
+            ]);
+
+        $this->configureLanguages();
+
+        $output->writeln([
+                'Import translations',
+                $this->importTranslations(),
+                '============',
+            ]);
+
+        $output->writeln([
                 'Install assets',
                 $this->assetsInstall(),
                 '============',
@@ -67,10 +86,6 @@ class InstallCommand extends ContainerAwareCommand
                 $this->asseticDump(),
                 '============',
             ]);
-
-        // TO DO : configure languages
-
-        // TO DO : run CLI command to import translations
     }
 
     private function createUserRoles()
@@ -115,6 +130,62 @@ class InstallCommand extends ContainerAwareCommand
 
         $this->em->persist($user);
         $this->em->flush();
+    }
+
+    private function configureLanguages()
+    {
+        $languages = array(
+                array(
+                    'name'      => 'French',
+                    'code'      => 'fr',
+                ),
+                array(
+                    'name'      => 'English',
+                    'code'      => 'en',
+                ),
+            );
+
+        foreach ($languages as $lang) {
+            $language       = new \Duf\AdminBundle\Entity\Language();
+            $language->setName($lang['name']);
+            $language->setCode($lang['code']);
+            $language->setEnabled(true);
+            $language->setIsAdmin(true);
+            $language->setCreatedAt(new \DateTime());
+
+            $this->em->persist($language);
+        }
+
+        $this->em->flush();
+    }
+
+    private function updateDatabaseSchema()
+    {
+        $output         = $this->getCliOutput();
+        $application    = $this->getCliApplication();
+        $input          = new ArrayInput(
+                                array(
+                                        'command'           => 'doctrine:schema:update',
+                                        '--force'           => true,
+                                    )
+                                );
+        $application->run($input, $output);
+
+        return $output->fetch();
+    }
+
+    private function importTranslations()
+    {
+        $output         = $this->getCliOutput();
+        $application    = $this->getCliApplication();
+        $input          = new ArrayInput(
+                                array(
+                                        'command'           => 'lexik:translations:import',
+                                    )
+                                );
+        $application->run($input, $output);
+
+        return $output->fetch();
     }
 
     private function assetsInstall()
