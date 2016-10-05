@@ -1,7 +1,7 @@
 # Description
 
 ```diff
-    WARNING : this bundle is still under development. You should not use it in production environment
+- WARNING : this bundle is still under development. You should not use it in production environment
 ```
 
 The purpose of this bundle is to provide a quick way to get up-and-running with a fully fonctionning admin panel, and to make this admin quickly customizable by avoiding manual CRUD generation and multiplication of files. Create your entities, set some annotations and configuration variables, and you have a dynamic CRUD available in your admin panel.
