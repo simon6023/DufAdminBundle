@@ -96,7 +96,7 @@ class InstallCommand extends ContainerAwareCommand
 
     private function createUserRoles()
     {
-        $roles  = array('TEST_ROLE_ADMIN', 'TEST_ROLE_USER');
+        $roles  = array('ROLE_ADMIN', 'ROLE_USER');
         foreach ($roles as $role_name) {
             $role = new \Duf\AdminBundle\Entity\UserRole();
             $role->setName($role_name);
