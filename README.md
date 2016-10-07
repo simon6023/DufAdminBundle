@@ -21,7 +21,7 @@ Add `simonduflos/dufadminbundle` to your `composer.json`
 
 Run `composer.phar update` to install the bundle and its dependencies.
 
-Then add `DufAdminBundle` to your `AppKernel.php` :
+Then add `DufAdminBundle` and its dependencies to your `AppKernel.php` :
 
 ```php
 // app/AppKernel.php
@@ -30,12 +30,22 @@ public function registerBundles()
 {
 	$bundles = [
 		// your other bundles
+
+        new Braincrafted\Bundle\BootstrapBundle\BraincraftedBootstrapBundle(),
+        new Bmatzner\FontAwesomeBundle\BmatznerFontAwesomeBundle(),
+        new FOS\JsRoutingBundle\FOSJsRoutingBundle(),
+        new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
+        new Lexik\Bundle\TranslationBundle\LexikTranslationBundle(),
+        new HWI\Bundle\OAuthBundle\HWIOAuthBundle(),
+        new Symfony\Bundle\AsseticBundle\AsseticBundle(),
+        new Duf\AdminBundle\DufAdminBundle(),
+        new Duf\CoreBundle\DufCoreBundle(),
+        new Duf\MessagingBundle\DufMessagingBundle(),
 	];
 
-	\Duf\AdminBundle\DufAdminBundle::registerInto($bundles, 'prod');
-
     if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
-        \Duf\AdminBundle\DufAdminBundle::registerInto($bundles, 'dev');
+        // your other test bundles
+        new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
     }
 }
 ```
