@@ -41,6 +41,12 @@ class InstallCommand extends ContainerAwareCommand
         $this->em               = $this->container->get('doctrine.orm.entity_manager');
 
         $output->writeln([
+                'Create Database',
+                $this->createDatabase(),
+                '============',
+            ]);
+
+        $output->writeln([
                 'Update Database Schema',
                 $this->updateDatabaseSchema(),
                 '============',
@@ -157,6 +163,21 @@ class InstallCommand extends ContainerAwareCommand
         }
 
         $this->em->flush();
+    }
+
+    private function createDatabase()
+    {
+        $output         = $this->getCliOutput();
+        $application    = $this->getCliApplication();
+        $input          = new ArrayInput(
+                                array(
+                                        'command'           => 'doctrine:database:create',
+                                        '--if-not-exists'   => true,
+                                    )
+                                );
+        $application->run($input, $output);
+
+        return $output->fetch();
     }
 
     private function updateDatabaseSchema()
