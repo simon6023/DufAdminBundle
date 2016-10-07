@@ -166,4 +166,48 @@ duf_admin:
 
 # Usage
 
-[TO DO]
+* Dynamically generate a CRUD for an entity
+
+1. First, add this to your configuration :
+
+```yml
+duf_admin:
+    entities:
+        'AppBundle:MyEntity':
+            title: 'My Entity'
+            icon: 'fa-newspaper-o'
+            title_field: 'title'
+
+```
+
+2. Then, in `/src/AppBundle/Entity/MyEntity.php` configure your entity to build the CRUD :
+
+Import these annotations :
+
+```php
+use Duf\AdminBundle\Entity\DufAdminEntity;
+use Duf\AdminBundle\Annotations\IndexableAnnotation as Indexable;
+use Duf\AdminBundle\Annotations\EditableAnnotation as Editable;
+```
+
+Your `MyEntity` class must extend `DufAdminEntity`. Remove the `$id` property from your entity, since `DufAdminEntity` already contains this field.
+
+```php
+class MyEntity extends DufAdminEntity
+{
+
+}
+```
+
+Add annotations to your entities properties
+
+```php
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="title", type="string", length=255)
+     * @Indexable(index_column=true, index_column_name="Title")
+     * @Editable(is_editable=true, label="Title", required=true, type="text", order=1, placeholder="Write your title")
+     */
+    private $title;
+```
