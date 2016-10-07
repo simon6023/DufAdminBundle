@@ -92,6 +92,12 @@ class InstallCommand extends ContainerAwareCommand
                 $this->asseticDump(),
                 '============',
             ]);
+
+        $output->writeln([
+                'Clear cache',
+                $this->clearCache(),
+                '============',
+            ]);
     }
 
     private function createUserRoles()
@@ -163,6 +169,20 @@ class InstallCommand extends ContainerAwareCommand
         }
 
         $this->em->flush();
+    }
+
+    private function clearCache()
+    {
+        $output         = $this->getCliOutput();
+        $application    = $this->getCliApplication();
+        $input          = new ArrayInput(
+                                array(
+                                        'command'           => 'cache:clear',
+                                    )
+                                );
+        $application->run($input, $output);
+
+        return $output->fetch();
     }
 
     private function createDatabase()
