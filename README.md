@@ -45,7 +45,8 @@ public function registerBundles()
 
     if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
         // your other test bundles
-        new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
+        
+        $bundles[] = new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle();
     }
 }
 ```

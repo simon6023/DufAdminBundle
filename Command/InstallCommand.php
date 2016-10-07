@@ -20,11 +20,11 @@ class InstallCommand extends ContainerAwareCommand
     {
         parent::__construct();
 
-        $this->admin_username   = 'test_admin';
-        $this->admin_password   = 'test_admin';
-        $this->admin_email      = 'test_admin@domain.com';
-        $this->admin_firstname  = 'test_admin';
-        $this->admin_lastname   = 'test_admin';
+        $this->admin_username   = 'admin';
+        $this->admin_password   = 'admin';
+        $this->admin_email      = 'admin@domain.com';
+        $this->admin_firstname  = 'John';
+        $this->admin_lastname   = 'Doe';
     }
 
     protected function configure()
@@ -103,7 +103,7 @@ class InstallCommand extends ContainerAwareCommand
 
     private function createAdminUser()
     {
-        $role       = $this->em->getRepository('DufAdminBundle:UserRole')->findOneByName('TEST_ROLE_ADMIN');
+        $role       = $this->em->getRepository('DufAdminBundle:UserRole')->findOneByName('ROLE_ADMIN');
         $user_infos = array(
                 'username'          => $this->admin_username,
                 'firstname'         => $this->admin_firstname,
