@@ -168,7 +168,7 @@ duf_admin:
 
 * Dynamically generate a CRUD for an entity
 
-1. First, add this to your configuration :
+First, add this to your configuration :
 
 ```yml
 duf_admin:
@@ -180,7 +180,7 @@ duf_admin:
 
 ```
 
-2. Then, in `/src/AppBundle/Entity/MyEntity.php` configure your entity to build the CRUD :
+Then, in `/src/AppBundle/Entity/MyEntity.php` configure your entity to build the CRUD :
 
 Import these annotations :
 
@@ -202,12 +202,14 @@ class MyEntity extends DufAdminEntity
 Add annotations to your entities properties
 
 ```php
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="title", type="string", length=255)
-     * @Indexable(index_column=true, index_column_name="Title")
-     * @Editable(is_editable=true, label="Title", required=true, type="text", order=1, placeholder="Write your title")
-     */
-    private $title;
+/**
+ * @var string
+ *
+ * @ORM\Column(name="title", type="string", length=255)
+ * @Indexable(index_column=true, index_column_name="Title")
+ * @Editable(is_editable=true, label="Title", required=true, type="text", order=1, placeholder="Write your title")
+ */
+private $title;
 ```
+
+That's it ! If you go to `my-domain/site-admin`, you should see a menu item with the name of your entity in the left sidebar, under the section "Content".
