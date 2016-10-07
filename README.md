@@ -2,8 +2,7 @@
 [Headers](#headers)  
 [Emphasis](#emphasis)  
 ...snip...    
-<a name="headers"/>
-## Headers
+<a name="headers"/>#
 
 # Description
 
