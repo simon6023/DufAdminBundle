@@ -22,6 +22,8 @@ security:
             form_login:
                 login_path: duf_admin_login
                 check_path: duf_admin_login_check
+                always_use_default_target_path: true
+                default_target_path: /site-admin
             logout:
                 path: duf_admin_logout
                 target: duf_admin_homepage
