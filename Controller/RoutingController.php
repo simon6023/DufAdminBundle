@@ -9,6 +9,7 @@ use Doctrine\Common\Annotations\AnnotationReader;
 
 use Duf\AdminBundle\Entity\DufCoreSeo;
 use Duf\AdminBundle\Form\DufAdminGenericType;
+use Duf\AdminBundle\Form\DufAdminGenericNestedTreeType;
 
 class RoutingController extends Controller
 {
@@ -48,13 +49,15 @@ class RoutingController extends Controller
                 $view_variables['headers']      = $headers_properties['headers'];
                 $view_variables['properties']   = $headers_properties['properties'];
                 $view_variables['create_route'] = $routing_service->getEntityRoute($entity_name, 'create');
+                $view_variables['is_tree']      = $routing_service->isTree($entity_name);
     			break;
             case 'create':
                 $created_entity                         = new $entity_class;
                 $template                               = 'DufAdminBundle:Crud:entities_new.html.twig';
                 $form_options_properties                = $form_service->getFormOptions($entity_name, $entity_class);
+                $generic_form_class                     = $routing_service->getEntityGenericForm($created_entity);
 
-                $create_form                            = $this->createForm(DufAdminGenericType::class, $created_entity, array(
+                $create_form                            = $this->createForm($generic_form_class, $created_entity, array(
                                                                     'action'        => '',
                                                                     'method'        => 'POST',
                                                                     'duf_options'   => $form_options_properties['form_options'],
@@ -80,7 +83,9 @@ class RoutingController extends Controller
                 $form_entity                    = $this->getDoctrine()->getRepository($entity_name)->findOneById($entity_id);
                 $template                       = 'DufAdminBundle:Crud:entities_edit.html.twig';
                 $form_options_properties        = $form_service->getFormOptions($entity_name, $entity_class);
-                $create_form                    = $this->createForm(DufAdminGenericType::class, $form_entity, array(
+                $generic_form_class             = $routing_service->getEntityGenericForm($form_entity);
+
+                $create_form                    = $this->createForm($generic_form_class, $form_entity, array(
                                                             'action'        => '',
                                                             'method'        => 'POST',
                                                             'duf_options'   => $form_options_properties['form_options'],

@@ -51,3 +51,9 @@ services:
         arguments: ["@doctrine.orm.entity_manager"]
         tags:
             - { name: form.type }
+
+    duf_admin.form.dufadmingenericNestedTreeType:
+        class: Duf\AdminBundle\Form\DufAdminGenericNestedTreeType
+        arguments: ["@doctrine.orm.entity_manager"]
+        tags:
+            - { name: form.type }

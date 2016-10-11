@@ -155,6 +155,22 @@ duf_admin_get_file_list:
     path: /duf-admin-get-file-list/{filetype}/{page}
     defaults: { _controller: "DufAdminBundle:File:index" }
 
+duf_admin_get_tree:
+    path: /duf-admin-get-tree/{entity_name}
+    defaults: { _controller: "DufAdminBundle:Tree:getTree", entity_name: null }
+
+duf_admin_tree_save:
+    path: /duf-admin-save-tree/{entity_name}/{action}/{node_id}
+    defaults: { _controller: "DufAdminBundle:Tree:saveTree", node_id: null}
+
+duf_admin_tree_remove:
+    path: /duf-admin-remove-tree/{entity_name}/{node_id}
+    defaults: { _controller: "DufAdminBundle:Tree:removeTree" }
+
+duf_admin_tree_move:
+    path: /duf-admin-move-tree/{entity_name}/{node_id}/{direction}
+    defaults: { _controller: "DufAdminBundle:Tree:moveTree" }
+
 duf_messaging:
     resource: "@DufMessagingBundle/Resources/config/routing.yml"
     prefix:   /

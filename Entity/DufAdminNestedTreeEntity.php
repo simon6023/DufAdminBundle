@@ -3,14 +3,17 @@ namespace Duf\AdminBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
+use Gedmo\Mapping\Annotation as Gedmo;
+
 use Duf\AdminBundle\Entity\DufAdminAbstractEntity;
 use Duf\AdminBundle\Annotations\IndexableAnnotation;
 
 /**
+ * @Gedmo\Tree(type="nested")
  * @ORM\MappedSuperclass
  * @ORM\HasLifecycleCallbacks
  */
-abstract class DufAdminEntity extends DufAdminAbstractEntity
+abstract class DufAdminNestedTreeEntity extends DufAdminAbstractEntity
 {
     /**
      * @var integer
@@ -39,17 +42,28 @@ abstract class DufAdminEntity extends DufAdminAbstractEntity
     public $updated_at;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="form_token", type="string", length=255, nullable=true)
+     * @ORM\Column(name="enabled", type="boolean")
      */
-    private $form_token;
+    public $enabled;
 
     /**
-     * Get id
-     *
-     * @return integer
+     * @Gedmo\TreeLeft
+     * @ORM\Column(type="integer")
      */
+    public $lft;
+
+    /**
+     * @Gedmo\TreeLevel
+     * @ORM\Column(type="integer")
+     */
+    public $lvl;
+
+    /**
+     * @Gedmo\TreeRight
+     * @ORM\Column(type="integer")
+     */
+    public $rgt;
+
     public function getId()
     {
         return $this->id;
@@ -114,26 +128,41 @@ abstract class DufAdminEntity extends DufAdminAbstractEntity
     }
 
     /**
-     * Set formToken
+     * Set enabled
      *
-     * @param string $formToken
+     * @param boolean $enabled
      *
-     * @return User
+     * @return DufAdminNestedTreeEntity
      */
-    public function setFormToken($formToken)
+    public function setEnabled($enabled)
     {
-        $this->form_token = $formToken;
+        $this->enabled = $enabled;
 
         return $this;
     }
 
     /**
-     * Get formToken
+     * Get enabled
      *
-     * @return string
+     * @return boolean
      */
-    public function getFormToken()
+    public function getEnabled()
     {
-        return $this->form_token;
+        return $this->enabled;
+    }
+
+    public function getCategoryLevel()
+    {
+        return $this->lvl;
+    }
+
+    public function setLft($left)
+    {
+        $this->lft = $left;
+    }
+
+    public function setLvl($level)
+    {
+        $this->lvl = $level;
     }
 }

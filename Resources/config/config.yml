@@ -33,7 +33,13 @@ doctrine:
                 type: annotation
                 prefix: Gedmo\Translatable\Entity
                 dir: "%kernel.root_dir%/../vendor/gedmo/doctrine-extensions/lib/Gedmo/Translatable/Entity"
-                alias: GedmoTranslatable # (optional) it will default to the name set for the mapping
+                alias: GedmoTranslatable
+                is_bundle: false
+            gedmo_tree:
+                type: annotation
+                prefix: Gedmo\Tree\Entity
+                dir: "%kernel.root_dir%/../vendor/gedmo/doctrine-extensions/lib/Gedmo/Tree/Entity"
+                alias: GedmoTree
                 is_bundle: false
 
 # Stof Doctrine Extensions configuration
@@ -44,6 +50,7 @@ stof_doctrine_extensions:
         default:
             translatable: true
             sluggable: true
+            tree: true
 
 braincrafted_bootstrap:
     css_preprocessor: less
@@ -77,3 +84,7 @@ fos_js_routing:
         - duf_admin_messaging_delete_conversation
         - duf_admin_messaging_save_draft
         - duf_admin_messaging_draft_index
+        - duf_admin_get_tree
+        - duf_admin_tree_save
+        - duf_admin_tree_remove
+        - duf_admin_tree_move

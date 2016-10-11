@@ -51,7 +51,9 @@ class FormController extends Controller
         }
 
         $form_options_properties    = $form_service->getFormOptions($entity_name, $entity_class);
-        $form                       = $this->createForm(DufAdminGenericType::class, $entity, array(
+        $generic_form_class         = $routing_service->getEntityGenericForm($entity);
+
+        $form                       = $this->createForm($generic_form_class, $entity, array(
                                             'action'        => '',
                                             'method'        => 'POST',
                                             'duf_options'   => $form_options_properties['form_options'],
@@ -96,30 +98,32 @@ class FormController extends Controller
             }
 
             // check ManyToMany values
-            foreach ($form_data as $field_name => $value) {
-                if (is_array($value)) {
-                    if (isset($form_options_properties['form_options'][$field_name]['parameters']['class'])) {
-                        // get relation entity class
-                        $relation_entity_class  = $form_options_properties['form_options'][$field_name]['parameters']['class'];
+            if (null !== $form_data) {
+                foreach ($form_data as $field_name => $value) {
+                    if (is_array($value)) {
+                        if (isset($form_options_properties['form_options'][$field_name]['parameters']['class'])) {
+                            // get relation entity class
+                            $relation_entity_class  = $form_options_properties['form_options'][$field_name]['parameters']['class'];
 
-                        // get relation entity setter
-                        $relation_entity_setter = $entity_tools_service->getEntitySetter($entity, $field_name, 'add');
+                            // get relation entity setter
+                            $relation_entity_setter = $entity_tools_service->getEntitySetter($entity, $field_name, 'add');
 
-                        foreach ($value as $relation_entity_id) {
-                            $relation_entity        = $this->getDoctrine()->getRepository($relation_entity_class)->findOneById($relation_entity_id);
-                            $entity->{$relation_entity_setter}($relation_entity);
+                            foreach ($value as $relation_entity_id) {
+                                $relation_entity        = $this->getDoctrine()->getRepository($relation_entity_class)->findOneById($relation_entity_id);
+                                $entity->{$relation_entity_setter}($relation_entity);
+                            }
                         }
                     }
                 }
-            }
 
-            // TO DO : check if type is password and create encoded password
-            foreach ($form_data as $field_name => $value) {
-                if (isset($form_options_properties['form_options'][$field_name]) && $form_options_properties['form_options'][$field_name]['type'] == 'password') {
-                    $password           = $this->get('security.password_encoder')->encodePassword($entity, $value);
-                    $password_setter    = $entity_tools_service->getEntitySetter($entity, $field_name, 'set');
+                // TO DO : check if type is password and create encoded password
+                foreach ($form_data as $field_name => $value) {
+                    if (isset($form_options_properties['form_options'][$field_name]) && $form_options_properties['form_options'][$field_name]['type'] == 'password') {
+                        $password           = $this->get('security.password_encoder')->encodePassword($entity, $value);
+                        $password_setter    = $entity_tools_service->getEntitySetter($entity, $field_name, 'set');
 
-                    $entity->{$password_setter}($password);
+                        $entity->{$password_setter}($password);
+                    }
                 }
             }
 
@@ -251,6 +255,13 @@ class FormController extends Controller
     {
         $translatable   = array();
         $default_lang   = $this->getParameter('locale');
+
+        if (empty($form_data)) {
+            return array(
+                    'request'       => $request,
+                    'translatable'  => $translatable,
+                );
+        }
 
         foreach ($form_data as $field_name => $field_value) {
             if (is_array($field_value)) {

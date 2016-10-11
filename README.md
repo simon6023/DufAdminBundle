@@ -190,7 +190,9 @@ use Duf\AdminBundle\Annotations\IndexableAnnotation as Indexable;
 use Duf\AdminBundle\Annotations\EditableAnnotation as Editable;
 ```
 
-Your `MyEntity` class must extend `DufAdminEntity`. Remove the `$id` property from your entity, since `DufAdminEntity` already contains this field.
+Your `MyEntity` class must extend `DufAdminEntity`.
+
+Remove the `$id` property from your entity, since `DufAdminEntity` already contains that property.
 
 ```php
 class MyEntity extends DufAdminEntity
@@ -213,3 +215,7 @@ private $title;
 ```
 
 That's it ! If you go to `my-domain/site-admin`, you should see a menu item with the name of your entity in the left sidebar, under the section "Content".
+
+The `Indexable` annotation specifies which properties you want in the "list" part of the CRUD.
+
+The `Editable` annotation specifies which properties you want in the "create/edit" form.

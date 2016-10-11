@@ -3,6 +3,9 @@ namespace Duf\AdminBundle\Service;
 
 use Symfony\Component\DependencyInjection\ContainerInterface as Container;
 
+use Duf\AdminBundle\Form\DufAdminGenericType;
+use Duf\AdminBundle\Form\DufAdminGenericNestedTreeType;
+
 class DufAdminRouting
 {
     private $container;
@@ -204,5 +207,28 @@ class DufAdminRouting
         }
 
         return $content_type;
+    }
+
+    public function isTree($entity_name)
+    {
+        $config_entities = $this->container->get('duf_admin.dufadminconfig')->getDufAdminConfig(array('entities'));
+
+        foreach ($config_entities as $config_entity_name => $config_entity_params) {
+            if ($config_entity_name === $entity_name && isset($config_entity_params['is_tree']) && true === $config_entity_params['is_tree']) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function getEntityGenericForm($entity)
+    {
+
+        if (is_subclass_of($entity, 'Duf\AdminBundle\Entity\DufAdminNestedTreeEntity')) {
+            return DufAdminGenericNestedTreeType::class;
+        }
+        
+        return DufAdminGenericType::class;
     }
 }

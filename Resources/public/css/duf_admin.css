@@ -280,3 +280,23 @@ label#show-file-input {
 textarea.no-editor {
 	width:100%;
 }
+
+.create-first-category {
+	display:none;
+	margin-top:20px;
+}
+
+.table.gtreetable {
+	margin-top:20px;
+}
+
+.table.gtreetable .gtree-arrow {
+	float:right;
+	margin:5px 5px;
+	color:#ccc;
+}
+
+.table.gtreetable .gtree-arrow:hover {
+	cursor:pointer;
+	color:black;
+}

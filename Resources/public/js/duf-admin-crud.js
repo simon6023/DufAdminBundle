@@ -15,6 +15,73 @@ DufAdminCrud.prototype.integersOnly = function(input)
 	}
 };
 
+DufAdminCrud.prototype.getTreeView = function(entity_name)
+{
+	$('#gtreetable').gtreetable({
+		manyroots: true,
+	  	'source': function (id) {
+	  		// check number of nodes
+	  		var check_route = Routing.generate('duf_admin_get_tree', { entity_name: entity_name });
+			$.ajax({
+				url: check_route,
+				method: 'post',
+				data: { 'id': id },
+				success: function(json) {
+	        		if (json.nodes.length == 0) {
+	        			$('.create-first-category').show();
+	        		}
+	        		else {
+	        			$('.create-first-category').remove();
+	        		}
+				},
+			});
+
+	  		return {
+	  			type: 'GET',
+	  			url: Routing.generate('duf_admin_get_tree', { entity_name: entity_name }),
+	        	data: { 'id': id },
+	        	dataType: 'json',
+	        	error: function(XMLHttpRequest) {
+	        		console.log(XMLHttpRequest.status+': '+XMLHttpRequest.responseText);
+	        	},
+	      	}
+	    },
+		'onSave':function (oNode) {
+			var action 		= !oNode.isSaved() ? 'create' : 'update';
+			var node_id 	= !oNode.isSaved() ? '0' : oNode.getId();
+			var save_route 	= Routing.generate('duf_admin_tree_save', { entity_name: entity_name, action: action, node_id: node_id });
+
+			return {
+				type: 'POST',
+		      	url: save_route,
+		      	data: {
+		        	parent: oNode.getParent(),
+		        	name: oNode.getName(),
+		        	position: oNode.getInsertPosition(),
+		        	related: oNode.getRelatedNodeId()
+		      	},
+		      	dataType: 'json',
+		      	error: function(XMLHttpRequest) {
+		        	console.log(XMLHttpRequest.status+': '+XMLHttpRequest.responseText);
+		      	}
+		    };
+		},
+		'onDelete':function (oNode) {
+			var node_id 		= oNode.getId();
+			var delete_route 	= Routing.generate('duf_admin_tree_remove', { entity_name: entity_name, node_id: node_id });
+
+			return {
+				type: 'POST',
+				url: delete_route,
+				dataType: 'json',
+				error: function(XMLHttpRequest) {
+					console.log(XMLHttpRequest.status+': '+XMLHttpRequest.responseText);
+				}
+			};
+		},  
+	});
+};
+
 DufAdminCrud.prototype.changeLangage = function(choice)
 {
 	var field_name 				= choice.attr('data-field-name');
@@ -64,4 +131,89 @@ $(document).on('click', '.duf-admin-translatable-text.choice', function() {
 
 $(document).on('click', '.duf-admin-translate-textarea-button', function() {
 
+});
+
+$(document).on('click', '.save-firt-category', function() {
+	var entity_name 	= $(this).data('entity-name');
+	var save_route 		= Routing.generate('duf_admin_tree_save', { entity_name: entity_name, action: 'create', node_id: null });
+	var category_title 	= $('input[name="first-category"]').val();
+
+	$.ajax({
+		url: save_route,
+		method: 'post',
+      	data: {
+        	parent: '0',
+        	name: category_title,
+        	position: '0',
+        	related: '0'
+      	},
+		success: function() {
+			location.reload();
+		},
+	});
+});
+
+$(document).on('mouseenter', '.table.gtreetable tr.node', function() {
+	var parent_id 			= $(this).data('parent');
+	var row 				= $(this).find('td');
+
+	var parent 				= $(this).prev();
+	var parent_parent_id 	= parent.data('parent');
+
+	var next 				= $(this).next();
+	var next_parent_id 		= next.data('parent');
+
+	if (parent_id !== '0' && parent_id !== 0) {
+		if (parent_parent_id !== '0' && parent_parent_id !== 0) {
+			row.append('<i class="fa fa-arrow-up gtree-arrow" aria-hidden="true"></i>');
+		}
+
+		if (next_parent_id !== '0' && next_parent_id !== 0) {
+			row.append('<i class="fa fa-arrow-down gtree-arrow" aria-hidden="true"></i>');
+		}
+	}
+});
+
+$(document).on('mouseleave', '.table.gtreetable tr.node', function() {
+	var row 		= $(this).find('td');
+	var arrows  	= row.find('.gtree-arrow');
+	$.each(arrows, function() {
+		$(this).remove();
+	});
+});
+
+$(document).on('click', '.table.gtreetable .gtree-arrow', function() {
+	var direction 	= 'up';
+	if ($(this).hasClass('fa-arrow-down')) {
+		direction = 'down';
+	}
+
+	var row 		= $(this).parent().parent();
+	var entity_name = $('#gtreetable').data('entity-name');
+	var node_id 	= $(this).parent().parent().data('id');
+	var move_route 	= Routing.generate('duf_admin_tree_move', { entity_name: entity_name, node_id: node_id, direction: direction });
+
+	$.ajax({
+		url: move_route,
+		method: 'post',
+		success: function(json) {
+			if (direction == 'up') {
+				row.insertBefore(row.prev());
+			}
+			else if (direction == 'down') {
+				row.insertAfter(row.next());
+			}
+		},
+	});
+});
+
+$(document).on('click', '.node-action-5', function() {
+	// redirect to CRUD
+	var node_id 	= $(this).parent().parent().parent().parent().parent().data('id');
+	var edit_route 	= $('#edit-route').val();
+	edit_route 		= edit_route.replace('/***', '/' + node_id);
+
+	console.log(edit_route);
+
+	window.location.href = edit_route;
 });
