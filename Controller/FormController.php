@@ -222,11 +222,33 @@ class FormController extends Controller
     {       
         $routing_service    = $this->get('duf_admin.dufadminrouting');
         $entity             = $this->getDoctrine()->getRepository($entity_name)->findOneById($id);
+        $entity_class       = $routing_service->getEntityClass($entity_name);
+
+        if (substr($entity_class, 0, 1) == '\\') {
+            $entity_class = substr($entity_class, 1, strlen($entity_class));
+        }
 
         if (!empty($entity)) {
+            $entity_id  = $entity->getId();
             $em         = $this->getDoctrine()->getManager();
             $em->remove($entity);
             $em->flush();
+
+            // delete translations
+            $translations   = $this->getDoctrine()->getRepository('Gedmo\Translatable\Entity\Translation')->findBy(
+                    array(
+                        'objectClass'      => $entity_class,
+                        'foreignKey'       => $entity_id,
+                    )
+                );
+
+            if (!empty($translations)) {
+                foreach ($translations as $translation) {
+                    $em->remove($translation);
+                }
+
+                $em->flush();
+            }
 
             // get redirect route
             $redirect_url = $routing_service->getEntityRoute($entity_name, 'index');
