@@ -69,6 +69,8 @@ class FormController extends Controller
 
         $form->handleRequest($request);
 
+        //echo '<pre>'; print_r($form_data); echo '</pre>'; exit();
+
         if ($form->isValid()) {
             $em             = $this->getDoctrine()->getManager();
 
@@ -123,6 +125,17 @@ class FormController extends Controller
                         $password_setter    = $entity_tools_service->getEntitySetter($entity, $field_name, 'set');
 
                         $entity->{$password_setter}($password);
+                    }
+                }
+            }
+
+            // persist multiple_files
+            foreach ($form_data as $field_name => $value) {
+                if (isset($value['multiple_files'])) {
+                    // get setter
+                    $multiple_files_setter      = $entity_tools_service->getEntitySetter($entity, $field_name, 'set');
+                    if (null !== $multiple_files_setter) {
+                        $entity->{$multiple_files_setter}($value['multiple_files']);
                     }
                 }
             }

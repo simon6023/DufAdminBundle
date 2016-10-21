@@ -300,3 +300,28 @@ textarea.no-editor {
 	cursor:pointer;
 	color:black;
 }
+
+.duf-admin-multiple-file-gallery {
+	width:100%;
+	margin:20px 0;
+}
+
+.duf-admin-file-preview.sortable {
+	cursor:move;
+}
+
+.duf-admin-file-preview.sortable:hover {
+	border-style:solid;
+	border-width:1px;
+	border-color:#ccc;
+}
+
+.duf-admin-selected-files-container.multiple {
+	display: inline-block;
+}
+
+.duf-admin-selected-files-container.multiple .duf-admin-file-preview {
+	display:block;
+	float:left;
+	margin:0 10px 0 0;
+}

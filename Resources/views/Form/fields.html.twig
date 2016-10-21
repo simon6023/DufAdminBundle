@@ -201,6 +201,59 @@
 	</div>
 {% endblock %}
 
+{% block duf_admin_multiple_file_widget %}
+	{% set previous_files = duf_admin_form.getPreviousFiles(form.vars.data) %}
+
+	<div class="form-group">
+		<label for="">{{ label }}{% if form.vars.required is defined and form.vars.required == true %}*{% endif %}</label>
+
+		<br />
+
+		<a href="#" 
+			class="duf-admin-render-modal" 
+			data-modal-name="select-file" 
+			data-modal-title="Select file" 
+			data-parent-entity-class="{% if form.parent is defined and form.parent.vars is defined and form.parent.vars.data is defined %}{{ duf_admin_form.getEntityClass(form.parent.vars.data) }}{% endif %}" 
+			data-parent-entity-id="{% if form.parent is defined and form.parent.vars is defined and form.parent.vars.data is defined and form.parent.vars.data.id is defined %}{{ form.parent.vars.data.id }}{% endif %}" 
+			data-parent-property="{{ form.vars.parent_property }}" 
+			data-filetype="{{ form.vars.filetype }}" 
+			data-multiple-file="true"
+		>
+			Add file
+		</a>
+
+		<select name="{{ full_name }}[multiple_files][]" class="duf-admin-hidden-select multiple" id="duf-admin-select-file-{{ name }}" multiple>
+			{% if previous_files is defined and previous_files is not null %}
+				{% for previous_file in previous_files %}
+					<option value="{{ previous_file.id }}" selected>{{ previous_file.id }}</option>
+				{% endfor %}
+			{% endif %}
+		</select>
+
+		<div class="duf-admin-selected-files-container multiple" id="files-container-{{ name }}">
+			{% if previous_files is defined and previous_files is not null %}
+				{% for previous_file in previous_files %}
+					<div class="duf-admin-file-preview" id="file-preview-{{ previous_file.id }}">
+						<div class="duf-admin-remove-selected-file" data-file-id="{{ previous_file.id }}" data-entity-property="{{ name }}">
+							<i class="fa fa-times" aria-hidden="true"></i> Delete
+						</div>
+
+						{% if previous_file.filetype == 'images' %}
+							<img src="{{ asset(previous_file.path ~ '/' ~ previous_file.filename) }}">
+						{% elseif previous_file.filetype == 'documents' %}
+							<i class="fa fa-file-text" aria-hidden="true"></i>
+						{% elseif previous_file.filetype == 'videos' %}
+							<i class="fa fa-video-camera" aria-hidden="true"></i>
+						{% endif %}
+					</div>
+				{% endfor %}
+			{% endif %}
+		</div>
+
+		<button class="btn btn-default sort-duf-admin-multiple-files-gallery"><i class="fa fa-sort" aria-hidden="true"></i> Sort</button>
+	</div>
+{% endblock %}
+
 {% block duf_admin_file_widget %}
 	{% set file = null %}
 

@@ -31,6 +31,7 @@ use Duf\AdminBundle\Form\Type\DufAdminCheckboxType;
 use Duf\AdminBundle\Form\Type\DufAdminEntityType;
 use Duf\AdminBundle\Form\Type\DufAdminNumberType;
 use Duf\AdminBundle\Form\Type\DufAdminFileType;
+use Duf\AdminBundle\Form\Type\DufAdminMultipleFileType;
 use Duf\AdminBundle\Form\Type\DufAdminEntityHiddenType;
 
 use Duf\AdminBundle\Form\DataTransformer\EntityToIdTransformer;
@@ -113,6 +114,9 @@ class DufAdminGenericType extends AbstractType
     			break;
             case 'file':
                 $type = DufAdminFileType::class;
+                break;
+            case 'multiple_file':
+                $type = DufAdminMultipleFileType::class;
                 break;
             case 'hidden':
                 $type = HiddenType::class;

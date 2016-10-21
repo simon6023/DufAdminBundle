@@ -99,7 +99,7 @@ class DufAdminForm
                                     $form_properties[$order] = $property_name;
                                 }
 
-                                if ($annotation->type == 'file') {
+                                if ($annotation->type == 'file' || $annotation->type == 'multiple_file') {
                                     $form_options[$property_name]['parameters']['parent_entity']    = $relationship_entity;
                                     $form_options[$property_name]['parameters']['parent_property']  = $property_name;
                                     $form_options[$property_name]['parameters']['filetype']         = $annotation->filetype;
@@ -440,5 +440,22 @@ class DufAdminForm
         }
 
         return null;
+    }
+
+    public function getPreviousFiles($previous_files_ids)
+    {
+        $previous_files         = array();
+
+        if (null !== $previous_files_ids && is_array($previous_files_ids)) {
+            foreach ($previous_files_ids as $file_id) {
+                $file       = $this->em->getRepository('Duf\AdminBundle\Entity\File')->findOneById($file_id);
+
+                if (!empty($file)) {
+                    $previous_files[] = $file;
+                }
+            }
+        }
+
+        return $previous_files;
     }
 }

@@ -98,8 +98,13 @@ DufAdminFileSystem.prototype.setSelectedFileForEntity = function(selected_file_i
 {
 	// append selected file to form
 	var parent_select 			= $('#duf-admin-select-file-' + parent_entity_property);
-	parent_select.html('<option value="' + selected_file_id + '" selected></option>');
-	$('#files-container-' + parent_entity_property).append();
+
+	if (!parent_select.hasClass('multiple')) {
+		parent_select.html('<option value="' + selected_file_id + '" selected>' + selected_file_id + '</option>');
+	}
+	else {
+		parent_select.append('<option value="' + selected_file_id + '" selected>' + selected_file_id + '</option>');
+	}
 
 	// set file preview
 	window.dufAdminFileSystem.setFilePreview(selected_file_id, parent_entity_property);
@@ -136,8 +141,16 @@ DufAdminFileSystem.prototype.getPreviewHtml = function(file_json, parent_entity_
 
 DufAdminFileSystem.prototype.removeSelectedFile = function(button)
 {
+	var selected_files_container = $('#duf-admin-select-file-' + button.data('entity-property'));
+		
 	// reset select
-	$('#duf-admin-select-file-' + button.data('entity-property')).html('');
+	if (!selected_files_container.hasClass('multiple')) {
+		selected_files_container.html('');
+	}
+	else {
+		var option_to_remove = selected_files_container.find('option[value="' + button.data('file-id') + '"]');
+		option_to_remove.remove();
+	}
 
 	// remove preview
 	$('#file-preview-' + button.data('file-id')).remove();
@@ -184,7 +197,7 @@ $(document).on('click', '.duf-admin-modal .modal-footer .btn.btn-default', funct
 	window.dufAdminFileSystem.closeModal();
 });
 
-$(document).on('click', '.render-file-select-modal', function(e) {
+$(document).on('click', '.render-file-select-modal, .duf-admin-add-multiple-file', function(e) {
 	e.preventDefault();
 	window.dufAdminFileSystem.renderModal($(this));
 });
@@ -197,4 +210,47 @@ $(document).on('click', '.duf-admin-modal.modal#select-file .duf-admin-file-gall
 
 $(document).on('click', '.duf-admin-remove-selected-file', function() {
 	window.dufAdminFileSystem.removeSelectedFile($(this));
+});
+
+$(document).on('click', '.sort-duf-admin-multiple-files-gallery', function(e) {
+	e.preventDefault();
+
+	var gallery_container = $(this).parent().find('.duf-admin-selected-files-container');
+
+	if (!gallery_container.hasClass('being-sorted')) {
+		$(this).html('Done');
+
+		gallery_container.addClass('being-sorted');
+		gallery_container.sortable();
+		gallery_container.disableSelection();
+		gallery_container.find('.duf-admin-file-preview').addClass('sortable');
+	}
+	else {
+		$(this).html('<i class="fa fa-sort" aria-hidden="true"></i> Sort');
+
+		gallery_container.sortable('destroy');
+		gallery_container.removeClass('being-sorted');
+		gallery_container.find('.duf-admin-file-preview').removeClass('sortable');
+
+		// sort select input
+		var gallery_select 	= $(this).parent().find('.duf-admin-hidden-select.multiple');
+		var options 		= gallery_select.find('option');
+		var previews 		= $(this).parent().find('.duf-admin-file-preview');
+		var new_options 	= new Array();
+
+		$.each(previews, function(i, item) {
+			var id 	= item.id;
+			id 	 	= id.replace('file-preview-', '');
+
+			new_options.push(id);
+		});
+
+		// empty list
+		gallery_select.html('');
+
+		$.each(new_options, function(i, item) {
+			var option_html = '<option value="' + item + '" selected>' + item + '</option>';
+			gallery_select.append(option_html);
+		});
+	}
 });
