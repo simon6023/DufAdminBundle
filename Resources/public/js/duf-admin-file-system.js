@@ -66,6 +66,10 @@ DufAdminFileSystem.prototype.renderModal = function(link)
 		modal_name = link.data('modal-name');
 	}
 
+	if (modal_name == 'edit-image') {
+		form_data.append('file_id', link.data('file-id'));
+	}
+
 	// open metadata modal
 	var route 	= Routing.generate('duf_admin_render_modal', { name: modal_name });
 	$.ajax({
@@ -93,6 +97,38 @@ DufAdminFileSystem.prototype.closeModal = function()
 		$(this).remove();
 	});
 };
+
+DufAdminFileSystem.prototype.saveImage = function(button)
+{
+	var file_id 		= button.data('file-id');
+	var save_route 		= Routing.generate('duf_admin_save_edit_image', { file_id: file_id });
+	var image_data 		= JSON.stringify($('#image-to-crop').cropper('getData'), null, 2);
+	var form_data 		= new FormData();
+
+	form_data.append('image_data', image_data);
+	form_data.append('parent_entity', button.data('parent-entity'));
+	form_data.append('parent_entity_id', button.data('parent-entity-id'));
+
+	$.ajax({
+		url: save_route,
+		type: 'POST',
+		data: form_data,
+		cache: false,
+		processData: false,
+		contentType: false,
+		success: function(new_filepath) {
+			// close modal
+			window.dufAdminFileSystem.closeModal();
+
+			// set new thumbnail
+			$('#preview-image-' + file_id).attr('src', new_filepath + '?timestamp=' + new Date().getTime());
+    	},
+    	error: function(data) {
+    		console.log('error');
+    		console.log(data);
+    	}
+	});
+}
 
 DufAdminFileSystem.prototype.setSelectedFileForEntity = function(selected_file_id, parent_entity_property)
 {
@@ -210,6 +246,14 @@ $(document).on('click', '.duf-admin-modal.modal#select-file .duf-admin-file-gall
 
 $(document).on('click', '.duf-admin-remove-selected-file', function() {
 	window.dufAdminFileSystem.removeSelectedFile($(this));
+});
+
+$(document).on('click', '.duf-admin-crop-selected-file', function() {
+	window.dufAdminFileSystem.renderModal($(this));
+});
+
+$(document).on('click', '#edit-image #save-image', function() {
+	window.dufAdminFileSystem.saveImage($(this));
 });
 
 $(document).on('click', '.sort-duf-admin-multiple-files-gallery', function(e) {

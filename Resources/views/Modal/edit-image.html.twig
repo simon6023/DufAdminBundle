@@ -1,0 +1,131 @@
+<div class="duf-admin-modal modal in" id="edit-image" role="dialog">
+	<div class="modal-dialog">
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+
+				<h4 class="modal-title">{{ modal_title }}</h4>
+			</div>
+
+			<div class="modal-body">
+				<div class="crop-options">
+					<button class="btn btn-default aspect-ratio" data-ratio="16:9"><i class="fa fa-crop" aria-hidden="true"></i> 16:9</button> 
+					<button class="btn btn-default aspect-ratio" data-ratio="4:3"><i class="fa fa-crop" aria-hidden="true"></i> 4:3</button> 
+					<button class="btn btn-default aspect-ratio" data-ratio="1:1"><i class="fa fa-crop" aria-hidden="true"></i> 1:1</button> 
+					<button class="btn btn-default aspect-ratio" data-ratio="free"><i class="fa fa-crop" aria-hidden="true"></i> Free</button>
+
+					<div class="pull-right">
+						<button class="btn btn-default zoom-in"><i class="fa fa-plus-circle" aria-hidden="true"></i> Zoom in</button> 
+						<button class="btn btn-default zoom-out"><i class="fa fa-minus-circle" aria-hidden="true"></i> Zoom out</button>
+					</div>
+				</div>
+
+				<div class="crop-options">
+					<button class="btn btn-default scale-horizontal"><i class="fa fa-arrows-h" aria-hidden="true"></i> Flip horizontally</button> 
+					<button class="btn btn-default scale-vertical"><i class="fa fa-arrows-v" aria-hidden="true"></i> Flip vertically</button> 
+
+					<div class="pull-right">
+						<button class="btn btn-default rotate-left"><i class="fa fa-undo" aria-hidden="true"></i> -90<sup>°</sup></button> 
+						<button class="btn btn-default rotate-right"><i class="fa fa-repeat" aria-hidden="true"></i> +90<sup>°</sup></button> 
+					</div>
+				</div>
+
+				{% if file is defined and file is not null %}
+					<div class="cropped-image">
+						<img id="image-to-crop" src="{{ asset(file.path ~ '/' ~ file.filename) }}">
+					</div>
+				{% endif %}
+			</div>
+
+			<div class="modal-footer">
+				{% if file is defined and file is not null %}
+					<button type="button" class="btn btn-primary" id="save-image" data-file-id="{{ file.id }}" data-parent-entity="{{ parent_entity }}" data-parent-entity-id="{{ parent_entity_id }}">Save</button>
+				{% endif %}
+
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		
+		{% if file_edit is defined and file_edit is not null %}
+			$('#image-to-crop').cropper({
+				built: function() {
+					$('#image-to-crop').cropper("setData", {
+						width: {{ file_edit.editData.width }},
+						height: {{ file_edit.editData.height }},
+						y: {{ file_edit.editData.y }},
+						x: {{ file_edit.editData.x }},
+						scaleX: {{ file_edit.editData.scaleX }},
+						scaleY: {{ file_edit.editData.scaleY }},
+						rotate: {{ file_edit.editData.rotate }}
+					});
+				}
+			});
+		{% else %}
+			$('#image-to-crop').cropper();
+		{% endif %}
+	});
+
+	$('.crop-options .zoom-in').on('click', function() {
+		$('#image-to-crop').cropper('zoom', 0.1);
+	});
+
+	$('.crop-options .zoom-out').on('click', function() {
+		$('#image-to-crop').cropper('zoom', -0.1);
+	});
+
+	$('.crop-options .aspect-ratio').on('click', function() {
+		var aspect_ratio = $(this).data('ratio');
+		if (aspect_ratio == 'free') {
+			$('#image-to-crop').cropper('setAspectRatio', 'NaN');
+		}
+		else if (aspect_ratio == '16:9') {
+			$('#image-to-crop').cropper('setAspectRatio', 16 / 9);
+		}
+		else if (aspect_ratio == '4:3') {
+			$('#image-to-crop').cropper('setAspectRatio', 4 / 3);
+		}
+		else if (aspect_ratio == '1:1') {
+			$('#image-to-crop').cropper('setAspectRatio', 1 / 1);
+		}
+	});
+
+	$('.crop-options .rotate-right').on('click', function() {
+		$('#image-to-crop').cropper('rotate', 90);
+	});
+
+	$('.crop-options .rotate-left').on('click', function() {
+		$('#image-to-crop').cropper('rotate', -90);
+	});
+
+	$('.crop-options .scale-horizontal').on('click', function() {
+		// get current scale
+		var image_data 		= $('#image-to-crop').cropper('getData');
+		var current_scale 	= image_data.scaleX;
+
+		if (current_scale == 1) {
+			$('#image-to-crop').cropper('scaleX', -1);
+		}
+		else {
+			$('#image-to-crop').cropper('scaleX', 1);
+		}
+	});
+
+	$('.crop-options .scale-vertical').on('click', function() {
+		// get current scale
+		var image_data 		= $('#image-to-crop').cropper('getData');
+		var current_scale 	= image_data.scaleY;
+
+		if (current_scale == 1) {
+			$('#image-to-crop').cropper('scaleY', -1);
+		}
+		else {
+			$('#image-to-crop').cropper('scaleY', 1);
+		}
+	});
+</script>

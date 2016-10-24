@@ -22,7 +22,7 @@ services:
 
     duf_admin.dufadminfile:
         class: Duf\AdminBundle\Service\DufAdminFile
-        arguments: ['@service_container']
+        arguments: ['@doctrine.orm.entity_manager', '@service_container']
 
     duf_admin.dufadminredmine:
         class: Duf\AdminBundle\Service\DufAdminRedmine

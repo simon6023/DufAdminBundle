@@ -134,11 +134,25 @@ label#show-file-input {
 }
 
 .duf-admin-selected-files-container .duf-admin-file-preview img {
-	width:100%;
+    max-height:100px;
+    max-width:100%;
 }
 
 .duf-admin-selected-files-container .duf-admin-file-preview .duf-admin-remove-selected-file {
+	position:absolute;
+	bottom:0;
 	cursor:pointer;
+}
+
+.duf-admin-selected-files-container .duf-admin-file-preview .duf-admin-crop-selected-file {
+	position:absolute;
+	bottom:0;
+	right:10px;
+	cursor:pointer;
+}
+
+.duf-admin-remove-selected-file .action:hover, .duf-admin-crop-selected-file .action:hover {
+	font-weight:bold;
 }
 
 #fieldsets_container {
@@ -321,7 +335,51 @@ textarea.no-editor {
 }
 
 .duf-admin-selected-files-container.multiple .duf-admin-file-preview {
+	position:relative;
 	display:block;
 	float:left;
 	margin:0 10px 0 0;
+	width:22%;
+	height:160px;
+    border-style:dashed;
+    border-width:1px;
+    border-radius:10px;
+    border-color:#ccc;
+    padding:10px;
+}
+
+.duf-admin-selected-files-container .duf-admin-file-preview {
+	position:relative;
+	display:block;
+	float:left;
+	margin:0 10px 0 0;
+	width:22%;
+	height:160px;
+    border-style:dashed;
+    border-width:1px;
+    border-radius:10px;
+    border-color:#ccc;
+    padding:10px;
+}
+
+.duf-admin-selected-files-container.multiple .duf-admin-file-preview:hover {
+	border-width:2px;
+}
+
+#edit-image #image-to-crop {
+	max-width:100%;
+}
+
+.crop-options {
+	width:100%;
+	margin:0 0 10px 0;
+}
+
+.cropped-image {
+	larginmargin:10px 0 0 0;
+}
+
+.form-group.file-container {
+	width:100%;
+	display:inline-block;
 }

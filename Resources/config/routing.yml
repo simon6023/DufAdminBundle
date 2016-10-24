@@ -171,6 +171,11 @@ duf_admin_tree_move:
     path: /duf-admin-move-tree/{entity_name}/{node_id}/{direction}
     defaults: { _controller: "DufAdminBundle:Tree:moveTree" }
 
+duf_admin_save_edit_image:
+    path: /duf-admin-save-edit-image/{file_id}
+    defaults: { _controller: "DufAdminBundle:File:saveEditImage" }
+    methods: [POST]
+
 duf_messaging:
     resource: "@DufMessagingBundle/Resources/config/routing.yml"
     prefix:   /

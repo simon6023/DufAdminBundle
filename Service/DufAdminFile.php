@@ -2,16 +2,25 @@
 namespace Duf\AdminBundle\Service;
 
 use Symfony\Component\DependencyInjection\ContainerInterface as Container;
+use Doctrine\ORM\EntityManager as EntityManager;
+
+use Imagine\Gd\Imagine as GdImagine;
+use Imagine\Imagick\Imagine as Imagick;
+use Imagine\Image\Point;
+use Imagine\Image\Box;
 
 use Duf\AdminBundle\Entity\File;
+use Duf\AdminBundle\Entity\FileEdit;
 
 class DufAdminFile
 {
+    private $em;
     private $container;
 
-    public function __construct(Container $container)
+    public function __construct(EntityManager $em, Container $container)
     {
-        $this->container = $container;
+        $this->em           = $em;
+        $this->container    = $container;
     }
 
     public function getFileExtension($file)
@@ -103,6 +112,111 @@ class DufAdminFile
             );
     }
 
+    public function createFileEditEntity($file, $parent_entity, $parent_entity_id, $edit_data)
+    {
+        $cache_path     = $this->getCachePath($parent_entity);
+        $new_filename   = $this->getNewFilename($file, $parent_entity, $parent_entity_id, false);
+        $file_edit      = new FileEdit();
+
+        // remove previous FileEdit entities
+        $this->removeFileEditEntities($file, $parent_entity, $parent_entity_id);
+
+        $file_edit->setFile($file);
+        $file_edit->setParentEntity($parent_entity);
+        $file_edit->setParentEntityId($parent_entity_id);
+        $file_edit->setEditData($edit_data);
+        $file_edit->setPath($cache_path);
+        $file_edit->setFilename($new_filename);
+        $file_edit->setCreatedAt(new \DateTime());
+
+        $this->em->persist($file_edit);
+        $this->em->flush();
+
+        return $file_edit;
+    }
+
+    public function createFileEdit($file_edit)
+    {
+        if (!is_object($file_edit))
+            $file_edit      = $this->em->getRepository('DufAdminBundle:FileEdit')->findOneById($file_edit);
+
+        $imagine        = $this->getImagine();
+
+        if (null === $imagine || empty($file_edit))
+            return null;
+
+        $cache_path     = $this->getCachePath($file_edit->getParentEntity());
+        $filepath       = $file_edit->getFile()->getPath() . '/' . $file_edit->getFile()->getFilename();
+        $new_filepath   = $file_edit->getPath() . '/' . $file_edit->getFilename();
+        $image          = $imagine->open($filepath);
+        $edit_data      = $file_edit->getEditData();
+
+        // rotate if defined
+        if (isset($edit_data['rotate']) && (int)$edit_data['rotate'] !== 0) {
+            $rotation       = (int)$edit_data['rotate'];
+            $image->rotate($rotation);
+        }
+
+        // flip horizontally if defined
+        if (isset($edit_data['scaleX']) && (int)$edit_data['scaleX'] !== 1) {
+            $image->flipHorizontally();
+        }
+
+        // flip vertically if defined
+        if (isset($edit_data['scaleY']) && (int)$edit_data['scaleY'] !== 1) {
+            $image->flipVertically();
+        }
+
+        if (isset($edit_data['x']) && isset($edit_data['y']) && isset($edit_data['width']) && isset($edit_data['height'])) {
+            // crop infos
+            $crop_point     = new Point($edit_data['x'], $edit_data['y']);
+            $crop_box       = new Box($edit_data['width'], $edit_data['height']);
+
+            // crop image
+            $image->crop($crop_point, $crop_box);
+        }
+        
+        // save image
+        $image->save($new_filepath);
+
+        return '/' . $new_filepath;
+    }
+
+    public function getFilePath($file, $parent_entity)
+    {
+        if (!is_object($file))
+            $file       = $this->em->getRepository('DufAdminBundle:File')->findOneById($file);
+
+        if (!empty($file)) {
+            // check if file is image
+            if ('images' === $file->getFiletype()) {
+                // check if file is overriden in FileEdit
+                $file_edit  = $this->em->getRepository('DufAdminBundle:FileEdit')->findOneBy(
+                        array(
+                            'file'                  => $file,
+                            'parent_entity_id'      => $parent_entity->getId(),
+                            'parent_entity'         => get_class($parent_entity),
+                        )
+                    );
+
+                if (!empty($file_edit)) {
+                    // check if overriden file exists
+                    $file_edit_path         = $file_edit->getPath() . '/' . $file_edit->getFilename();
+
+                    // create edited file if it doesn't exist
+                    if (!file_exists($file_edit_path))
+                        $this->createFileEdit($file_edit);
+
+                    return $file_edit_path;
+                }
+            }
+
+            return $file->getPath() . '/' . $file->getFilename();
+        }
+
+        return null;
+    }
+
     /**
      * Check if file's extension is allowed (defined in "allowed_upload_extensions" option in config.yml)
      *
@@ -138,5 +252,69 @@ class DufAdminFile
                 return $extensions;
             }
         }
+    }
+
+    private function getImagine()
+    {
+        if (extension_loaded('imagick')) {
+            return new Imagick();
+        }
+        elseif (extension_loaded('gd') || extension_loaded('gd2')) {
+            return new GdImagine();
+        }
+
+        return null;
+    }
+
+    private function getNewFilename($file, $parent_entity, $parent_entity_id, $append_dir = true)
+    {
+        $entity_class_hash      = substr(md5($parent_entity), 0, 10);
+        $old_filename           = $file->getFilename();
+        $new_filename           = $entity_class_hash . '_' . $parent_entity_id . '_' . $old_filename;
+        $cache_path             = $this->getCachePath($parent_entity);
+
+        // create folder if it doesn't exist
+        if (!is_dir($cache_path)) {
+            mkdir($cache_path);
+
+            // set permissions
+            $this->setCacheDirPermissions($cache_path);
+        }
+
+        if (!$append_dir)
+            return $new_filename;
+
+        return $cache_path . '/' . $new_filename;
+    }
+
+    private function getCachePath($parent_entity)
+    {
+        return 'uploads/images/cache';
+    }
+
+    private function setCacheDirPermissions($cache_path)
+    {
+        $cache_path_elements = explode('/', $cache_path);
+
+        foreach ($cache_path_elements as $dir) {
+            chmod($dir, '777');
+        }
+    }
+
+    private function removeFileEditEntities($file, $parent_entity, $parent_entity_id)
+    {
+        $file_edits     = $this->em->getRepository('DufAdminBundle:FileEdit')->findBy(
+                array(
+                    'file'              => $file,
+                    'parent_entity'     => $parent_entity,
+                    'parent_entity_id'  => $parent_entity_id,
+                )
+            );
+
+        foreach ($file_edits as $file_edit) {
+            $this->em->remove($file_edit);
+        }
+
+        $this->em->flush();
     }
 }

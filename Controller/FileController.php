@@ -115,4 +115,32 @@ class FileController extends Controller
 
         return new Response('error', 500);
     }
+
+    public function saveEditImageAction($file_id, Request $request)
+    {
+        $file       = $this->getDoctrine()->getRepository('DufAdminBundle:File')->findOneById($file_id);
+
+        if (!empty($file) && null !== $request->get('image_data')) {
+            $filepath       = $file->getPath() . '/' . $file->getFilename();
+
+            if (file_exists($filepath)) {
+                $file_service       = $this->get('duf_admin.dufadminfile');
+                $edit_data          = json_decode($request->get('image_data'), true);
+                $parent_entity      = $request->get('parent_entity');
+                $parent_entity_id   = $request->get('parent_entity_id');
+
+                // create FileEdit entity
+                $file_edit          = $file_service->createFileEditEntity($file, $parent_entity, $parent_entity_id, $edit_data);
+
+                // process FileEdit with Imagine
+                $new_filepath       = $file_service->createFileEdit($file_edit);
+
+                return new Response($new_filepath, 200);
+            }
+
+            return new Response('file_does_not_exist', 500);
+        }
+
+        return new Response('file_not_found', 500);
+    }
 }

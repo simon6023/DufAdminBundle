@@ -204,7 +204,7 @@
 {% block duf_admin_multiple_file_widget %}
 	{% set previous_files = duf_admin_form.getPreviousFiles(form.vars.data) %}
 
-	<div class="form-group">
+	<div class="form-group file-container">
 		<label for="">{{ label }}{% if form.vars.required is defined and form.vars.required == true %}*{% endif %}</label>
 
 		<br />
@@ -235,11 +235,27 @@
 				{% for previous_file in previous_files %}
 					<div class="duf-admin-file-preview" id="file-preview-{{ previous_file.id }}">
 						<div class="duf-admin-remove-selected-file" data-file-id="{{ previous_file.id }}" data-entity-property="{{ name }}">
-							<i class="fa fa-times" aria-hidden="true"></i> Delete
+							<span class='action'><i class="fa fa-trash" aria-hidden="true"></i> Delete</span>
+						</div>
+
+						<div 
+							class="duf-admin-crop-selected-file" 
+							data-modal-name="edit-image" 
+							data-modal-title="Edit file" 
+							data-file-id="{{ previous_file.id }}" 
+							data-entity-property="{{ name }}" 
+							data-parent-entity-class="{% if form.parent is defined and form.parent.vars is defined and form.parent.vars.data is defined %}{{ duf_admin_form.getEntityClass(form.parent.vars.data) }}{% endif %}" 
+							data-parent-entity-id="{% if form.parent is defined and form.parent.vars is defined and form.parent.vars.data is defined and form.parent.vars.data.id is defined %}{{ form.parent.vars.data.id }}{% endif %}" 
+						>
+							
+							<span class='action'><i class="fa fa-pencil" aria-hidden="true"></i> Edit</span>
+						
 						</div>
 
 						{% if previous_file.filetype == 'images' %}
-							<img src="{{ asset(previous_file.path ~ '/' ~ previous_file.filename) }}">
+							{% set filepath = duf_admin_file.getFilePath(previous_file, form.parent.vars.data) %}
+
+							<img id="preview-image-{{ previous_file.id }}" src="{{ asset(filepath) }}">
 						{% elseif previous_file.filetype == 'documents' %}
 							<i class="fa fa-file-text" aria-hidden="true"></i>
 						{% elseif previous_file.filetype == 'videos' %}
@@ -261,7 +277,7 @@
 		{% set file = form.vars.data %}
 	{% endif %}
 
-	<div class="form-group">
+	<div class="form-group file-container">
 		<label for="">{{ label }}{% if form.vars.required is defined and form.vars.required == true %}*{% endif %}</label>
 
 		<br />
@@ -278,11 +294,27 @@
 			{% if file is not null %}
 				<div class="duf-admin-file-preview" id="file-preview-{{ file.id }}">
 					<div class="duf-admin-remove-selected-file" data-file-id="{{ file.id }}" data-entity-property="{{ name }}">
-						<i class="fa fa-times" aria-hidden="true"></i> Delete
+						<i class="fa fa-trash" aria-hidden="true"></i> Delete
+					</div>
+
+					<div 
+						class="duf-admin-crop-selected-file" 
+						data-modal-name="edit-image" 
+						data-modal-title="Edit file" 
+						data-file-id="{{ file.id }}" 
+						data-entity-property="{{ name }}" 
+						data-parent-entity-class="{% if form.parent is defined and form.parent.vars is defined and form.parent.vars.data is defined %}{{ duf_admin_form.getEntityClass(form.parent.vars.data) }}{% endif %}" 
+						data-parent-entity-id="{% if form.parent is defined and form.parent.vars is defined and form.parent.vars.data is defined and form.parent.vars.data.id is defined %}{{ form.parent.vars.data.id }}{% endif %}" 
+					>
+						
+						<span class='action'><i class="fa fa-pencil" aria-hidden="true"></i> Edit</span>
+					
 					</div>
 
 					{% if file.filetype == 'images' %}
-						<img src="{{ asset(file.path ~ '/' ~ file.filename) }}">
+						{% set filepath = duf_admin_file.getFilePath(file, form.parent.vars.data) %}
+
+						<img id="preview-image-{{ file.id }}" src="{{ asset(filepath) }}">
 					{% elseif file.filetype == 'documents' %}
 						<i class="fa fa-file-text" aria-hidden="true"></i>
 					{% elseif file.filetype == 'videos' %}

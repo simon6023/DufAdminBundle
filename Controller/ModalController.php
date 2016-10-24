@@ -19,7 +19,7 @@ class ModalController extends Controller
         $view_variables         = array();
         $embed_form_array       = array();
 
-        if (null !== $request->get('parent_entity_class')) {
+        if (null !== $request->get('parent_entity_class') && $request->get('parent_entity_class') !== 'undefined') {
             $parent_entity_class                    = $request->get('parent_entity_class');
             $parent_entity_name                     = $routing_service->getEntityNameFromBundle($parent_entity_class);
 
@@ -73,6 +73,32 @@ class ModalController extends Controller
             if (isset($embed_form_array['form_properties'])) {
                 $view_variables['form_properties']      = $embed_form_array['form_properties'];
             }
+        }
+
+        if ($name === 'edit-image' && null !== $request->get('file_id') && $request->get('file_id') !== 'undefined') {
+            $parent_entity_class    = $request->get('parent_entity_class');
+            $parent_entity_id       = $request->get('parent_entity_id');
+            $file_id                = $request->get('file_id');
+            $file                   = $this->getDoctrine()->getRepository('Duf\AdminBundle\Entity\File')->findOneById($file_id);
+
+            if (!empty($file)) {
+                $view_variables['file'] = $file;
+
+                // check if file is overriden in FileEdit
+                $file_edit  = $this->getDoctrine()->getRepository('DufAdminBundle:FileEdit')->findOneBy(
+                        array(
+                            'file'                  => $file,
+                            'parent_entity_id'      => $parent_entity_id,
+                            'parent_entity'         => $parent_entity_class,
+                        )
+                    );
+
+                if (!empty($file_edit))
+                    $view_variables['file_edit']    = $file_edit;
+            }
+
+            $view_variables['parent_entity']        = $parent_entity_class;
+            $view_variables['parent_entity_id']     = $parent_entity_id;
         }
 
         $view_variables['modal_title']              = $request->get('modal_title');
