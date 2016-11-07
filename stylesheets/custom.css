@@ -1,0 +1,15 @@
+.documentation-section {
+	margin-top:5em;
+}
+
+.dufadminbundle-toc a.active {
+	font-weight:bold;
+}
+
+ul.parameters li {
+	margin-bottom:2em;
+}
+
+.field-description {
+	margin-bottom:5em;
+}

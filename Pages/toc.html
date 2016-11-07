@@ -1,0 +1,57 @@
+<h3>
+	<span aria-hidden="true" class="octicon octicon-link"></span> Table of contents
+</h3>
+
+<ul class="dufadminbundle-toc">
+	<li><a href="#install-bundle" class="navigation">Install</a></li>
+
+	<li><a href="#configure-bundle" class="navigation">Configuration</a></li>
+
+	<li>
+		<a href="#usage" class="navigation">Usage</a>
+
+		<ul>
+			<li>
+				<a href="#crud" class="sub-navigation" data-parent="usage">Generate CRUD (quick start)</a>
+			</li>
+
+			<li>
+				<a href="#indexable" class="sub-navigation" data-parent="usage">Configure Index lists</a>
+			</li>
+
+			<li>
+				<a href="#crud-fields-types" class="sub-navigation" data-parent="usage">CRUD fields types</a>
+			</li>
+
+			<li>The file system</li>
+
+			<li>Translations</li>
+		</ul>
+	</li>
+</ul>
+
+<script type="text/javascript">
+	$('.dufadminbundle-toc li a.navigation').on('click', function(e) {
+		e.preventDefault();
+		removeActive();
+		$(this).addClass('active');
+
+		var link 	= $(this).attr('href').replace('#', '');
+		$('#page-container').load('pages/' + link + '.html');
+	});
+
+	$('.dufadminbundle-toc li a.sub-navigation').on('click', function(e) {
+		e.preventDefault();
+		removeActive();
+		$(this).addClass('active');
+
+		var parent 	= $(this).data('parent');
+		$('#page-container').load('pages/' + parent + '.html');
+	});
+
+	function removeActive() {
+		$('.dufadminbundle-toc a').each(function() {
+			$(this).removeClass('active');
+		});
+	}
+</script>

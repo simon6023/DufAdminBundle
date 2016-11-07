@@ -1,0 +1,119 @@
+<h4>Configure Index lists</h4>
+
+<p>
+	The <code>Indexable</code> annotation allows you to configure the list view of your CRUD.
+</p>
+
+<p>
+	To use this feature, import <code>IndexableAnnotation</code> in your entity :
+</p>
+
+<pre>
+	<code>
+use Duf\AdminBundle\Annotations\IndexableAnnotation as Indexable;
+	</code>
+</pre>
+
+<p>
+	Several property types are supported :
+</p>
+
+<ul>
+	<li><a href="#field-default">Default</a></li>
+	<li><a href="#field-boolean">Boolean</a></li>
+	<li><a href="#field-many-to-one">ManyToOne</a></li>
+</ul>
+
+<div class="field-description">
+	<p>
+		<strong>Global parameters :</strong>
+
+		<ul class="parameters">
+			<li>
+				<code>index_column</code> : boolean | required
+				<br>
+				Set to <code>true</code>, the list table will have this column
+				<br>
+				Set to <code>false</code>, the column will not be displayed
+			</li>
+
+			<li>
+				<code>index_column_name</code> : string | required
+				<br>
+				The header label of the column
+			</li>
+
+			<li>
+				<code>prefix</code> : string | optional
+				<br>
+				Text to display before the value of the field, in the list table
+			</li>
+
+			<li>
+				<code>suffix</code> : string | optional
+				<br>
+				Text to display after the value of the field, in the list table
+			</li>
+		</ul>
+	</p>
+</div>
+
+<div class="field-description">
+	<h5 id="field-default">Default</h5>
+
+	<p>
+		Valid for following property types : <code>string</code>, <code>text</code>, <code>integer</code>, <code>float</code>, <code>datetime</code>.
+	</p>
+
+
+	<p><strong>Definition :</strong></p>
+	<pre>
+		<code class="php">
+* @Indexable(index_column=true, index_column_name="Title")
+		</code>
+	</pre>
+</div>
+
+<div class="field-description">
+	<h5 id="field-boolean">Boolean</h5>
+
+	<p><strong>Definition :</strong></p>
+	<pre>
+		<code class="php">
+* @Indexable(index_column=true, index_column_name="Enabled", boolean_column=true)
+		</code>
+	</pre>
+	<p>
+		<strong>Parameters :</strong>
+
+		<ul class="parameters">
+			<li>
+				<code>boolean_column</code> : boolean | required
+				<br>
+				Set <code>true</code> to use a boolean column (will display 'Yes' or 'No')
+			</li>
+		</ul>
+	</p>
+</div>
+
+<div class="field-description">
+	<h5 id="field-many-to-one">ManyToOne</h5>
+
+	<p><strong>Definition :</strong></p>
+	<pre>
+		<code class="php">
+* @IndexableAnnotation(index_column=true, index_column_name="Category", relation_index="title")
+		</code>
+	</pre>
+	<p>
+		<strong>Parameters :</strong>
+
+		<ul class="parameters">
+			<li>
+				<code>relation_index</code> : string | required
+				<br>
+				the property of the inverse side of the relation. Must be a string property, as it will be displayed in the list table.
+			</li>
+		</ul>
+	</p>
+</div>

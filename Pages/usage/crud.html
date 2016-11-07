@@ -1,0 +1,80 @@
+<h4>Generate CRUD (quick start)</h4>
+
+<p>The main feature of this bundle is to provide quick generation of CRUDs. Based on your yml configuration file and your entities annotations, you will be able to generate lists and forms in seconds.</p>
+
+<p>First, edit your app configuration :</p>
+
+<pre>
+	<code class="yml">
+# app/config/config.yml
+
+duf_admin:
+    entities:
+        'AppBundle:MyEntity':
+            title: 'My Entity'
+            icon: 'fa-newspaper-o'
+            title_field: 'title'
+	</code>
+</pre>
+
+<p>
+	Then, in <code>/src/AppBundle/Entity/MyEntity.php</code> configure your entity to build the CRUD.
+</p>
+
+<p>
+	Import these classes :
+</p>
+
+<pre>
+	<code class="php">
+use Duf\AdminBundle\Entity\DufAdminEntity;
+use Duf\AdminBundle\Annotations\IndexableAnnotation as Indexable;
+use Duf\AdminBundle\Annotations\EditableAnnotation as Editable;
+	</code>
+</pre>
+
+<p>
+	Your <code>MyEntity</code> class must extend <code>DufAdminEntity</code>.
+</p>
+
+<p>
+	Remove the <code>$id</code> property from your entity, since <code>DufAdminEntity</code> already contains that property.
+</p>
+
+<pre>
+	<code class="php">
+class MyEntity extends DufAdminEntity
+{
+
+}
+	</code>
+</pre>
+
+<p>
+	Add annotations to your entities properties :
+</p>
+
+<pre>
+	<code class="php">
+/**
+ * @var string
+ *
+ * @ORM\Column(name="title", type="string", length=255)
+ * @Indexable(index_column=true, index_column_name="Title")
+ * @Editable(is_editable=true, label="Title", required=true, type="text", order=1, placeholder="Write your title")
+ */
+private $title;
+	</code>
+</pre>
+
+<p>
+	That's it ! If you go to <code>http://your-domain/site-admin</code>, you should see a menu item with the name of your entity in the left sidebar, under the section "Content".
+</p>
+
+<p>
+	The <code>Indexable</code> annotation specifies which properties you want in the "list" part of the CRUD.
+</p>
+
+<p>
+	The <code>Editable</code> annotation specifies which properties you want in the "create/edit" form.
+</p>

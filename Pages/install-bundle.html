@@ -1,0 +1,160 @@
+<div class="documentation-section" id="install-bundle">
+	<h3>
+		<span aria-hidden="true" class="octicon octicon-link"></span> Install
+	</h3>
+
+	<p>
+		Add <code>simonduflos/dufadminbundle</code> to your <code>composer.json</code>
+	</p>
+
+	<pre>
+		<code class="json">
+"require": {
+	"simonduflos/dufadminbundle":"dev-master"
+}
+		</code>
+	</pre>
+
+	<p>
+		Run <code>composer.phar update</code> to install the bundle and its dependencies.
+	</p>
+
+	<p>
+		Then add <code>DufAdminBundle</code> and its dependencies to your <code>AppKernel.php</code> :
+	</p>
+
+	<pre>
+		<code class="php">
+// app/AppKernel.php
+
+public function registerBundles()
+{
+	$bundles = [
+		// your other bundles
+
+        new Braincrafted\Bundle\BootstrapBundle\BraincraftedBootstrapBundle(),
+        new Bmatzner\FontAwesomeBundle\BmatznerFontAwesomeBundle(),
+        new FOS\JsRoutingBundle\FOSJsRoutingBundle(),
+        new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
+        new Lexik\Bundle\TranslationBundle\LexikTranslationBundle(),
+        new HWI\Bundle\OAuthBundle\HWIOAuthBundle(),
+        new Symfony\Bundle\AsseticBundle\AsseticBundle(),
+        new Duf\AdminBundle\DufAdminBundle(),
+        new Duf\CoreBundle\DufCoreBundle(),
+        new Duf\MessagingBundle\DufMessagingBundle(),
+	];
+
+    if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
+        // your other test bundles
+        
+        $bundles[] = new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle();
+    }
+}
+
+		</code>
+	</pre>
+
+	<p>
+		In order to use <code>BraincraftedBootstrapBundle</code>, you have to install a LESS compiler, using this command. If you encounter problems during this step, <a href="http://bootstrap.braincrafted.com/getting-started.html" target="_blank">please refer to the bundle's documentation</a>.
+	</p>
+
+	<pre>
+		<code>
+npm install -g less
+		</code>
+	</pre>
+
+	<p>
+		Then, add following configuration to your project :
+	</p>
+
+	<pre>
+		<code class="yml">
+# app/config/config.yml
+
+imports:
+    - { resource: "@DufAdminBundle/Resources/config/config.yml" }
+		</code>
+	</pre>
+
+	<pre>
+		<code class="yml">
+# app/config/routing.yml
+
+duf_admin:
+    resource: "@DufAdminBundle/Resources/config/routing.yml"
+    prefix:   /site-admin
+		</code>
+	</pre>
+
+	<pre>
+		<code class="yml">
+# app/config/security.yml
+
+security:
+    encoders:
+        Symfony\Component\Security\Core\User\User:
+            algorithm: plaintext
+        Duf\AdminBundle\Entity\User:
+            id: duf_admin.dufadminencoder
+    providers:
+        duf_admin_provider:
+            entity: { class: Duf\AdminBundle\Entity\User }
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        duf_admin:
+            provider: duf_admin_provider
+            anonymous: ~
+            form_login:
+                login_path: duf_admin_login
+                check_path: duf_admin_login_check
+                always_use_default_target_path: true
+                default_target_path: /site-admin
+            logout:
+                path: duf_admin_logout
+                target: duf_admin_homepage
+        duf_oauth:
+            provider: duf_admin_provider
+            anonymous: ~
+            oauth:
+                resource_owners:
+                    facebook:           facebook_login
+                login_path:        /oauth/login
+                use_forward:       false
+                failure_path:      /oauth/login
+                oauth_user_provider:
+                    oauth: hwi_oauth.user.provider.entity
+        main:
+            anonymous: ~
+    access_control:
+        - { path: ^/site-admin/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/site-admin, roles: ROLE_ADMIN }
+		</code>
+	</pre>
+
+	<p>
+		Finally, run <code>dufadminbundle:install</code> using CLI :
+	</p>
+
+	<pre>
+		<code>
+php bin/console dufadmin:install
+		</code>
+	</pre>
+
+	<p>
+		This will :
+
+		<ul>
+			<li>update database schema</li>
+			<li>create <code>ROLE_ADMIN</code> and <code>ROLE_USER</code></li>
+			<li>create <code>User</code> entity with <code>ROLE_ADMIN</code> privileges</li>
+			<li>create default languages</li>
+			<li>import the bundle's native translations</li>
+			<li>install assets</li>
+			<li>dump assetic assets</li>
+		</ul>
+	</p>
+</div>

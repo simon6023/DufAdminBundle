@@ -1,0 +1,500 @@
+<h4>CRUD fields types</h4>
+
+<p>DufAdminBundle offers a wide variety of input types :</p>
+
+<ul>
+	<li><a href="#field-text">Text</a></li>
+	<li><a href="#field-translatable-text">Translatable Text</a></li>
+	<li><a href="#field-date">Date</a></li>
+	<li><a href="#field-datetime">Datetime</a></li>
+	<li><a href="#field-email">Email</a></li>
+	<li><a href="#field-textarea">Textarea (using CKEditor)</a></li>
+	<li><a href="#field-translatable-textarea">Translatable Textarea (using CKEditor)</a></li>
+	<li><a href="#field-checkbox">Checkbox</a></li>
+	<li><a href="#field-password">Password</a></li>
+	<li><a href="#field-choice">Choice</a></li>
+	<li><a href="#field-entity">Entity</a></li>
+	<li><a href="#field-file">File</a></li>
+	<li><a href="#field-multiple-files">Multiple Files</a></li>
+	<li><a href="#field-number">Number</a></li>
+	<li><a href="#field-hidden">Hidden</a></li>
+</ul>
+
+<div class="field-description">
+	<p>
+		<strong>Global parameters :</strong>
+
+		<ul class="parameters">
+			<li>
+				<code>is_editable</code> : boolean | required
+			</li>
+
+			<li>
+				<code>type</code> : string | required
+				<br>
+				The type of input
+			</li>
+
+			<li>
+				<code>order</code> : integer | required
+				<br>
+				Display order of the field relative to the form
+			</li>
+
+			<li>
+				<code>label</code> : string | optional
+				<br>
+				The label to display above your text input
+			</li>
+
+			<li>
+				<code>required</code> : boolean | optional
+				<br>
+				If this field must not be empty on validation, set this parameter to <code>true</code>
+			</li>
+		</ul>
+	</p>
+</div>
+
+<div class="field-description">
+	<h5 id="field-text">Text</h5>
+
+	<p><strong>Property type :</strong> <code>string</code></p>
+	<p><strong>Definition :</strong></p>
+	<pre>
+		<code class="php">
+/**
+ * @var string
+ *
+ * @ORM\Column(name="title", type="string", length=255)
+ * @Editable(is_editable=true, label="Title", required=true, type="text", order=1, placeholder="Write your title")
+ */
+private $title;
+		</code>
+	</pre>
+	<p>
+		<strong>Parameters :</strong>
+
+		<ul class="parameters">
+			<li>
+				<code>placeholder</code> : string | optional
+				<br>
+				Text input placeholder
+			</li>
+		</ul>
+	</p>
+</div>
+
+<div class="field-description">
+	<h5 id="field-translatable-text">Translatable Text</h5>
+
+	<p>Import Gedmo annotations :</p>
+	<pre>
+		<code class="php">
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\Translatable\Translatable;
+		</code>
+	</pre>
+
+	<p><strong>Property type :</strong> <code>string</code></p>
+	<p><strong>Definition :</strong></p>
+	<pre>
+		<code class="php">
+/**
+ * @var string
+ *
+ * @ORM\Column(name="title", type="string", length=255)
+ * @Editable(is_editable=true, label="Title", required=true, type="translatable_text", order=1, placeholder="Write your title")
+ * @Gedmo\Translatable
+ */
+private $title;
+		</code>
+	</pre>
+	<p>
+		<strong>Parameters :</strong>
+
+		<ul class="parameters">
+			<li>
+				<code>placeholder</code> : string | optional
+				<br>
+				Text input placeholder
+			</li>
+		</ul>
+	</p>
+</div>
+
+<div class="field-description">
+	<h5 id="field-date">Date</h5>
+
+	<p><strong>Property type :</strong> <code>datetime</code></p>
+	<p><strong>Definition :</strong></p>
+	<pre>
+		<code class="php">
+/**
+ * @var \DateTime
+ *
+ * @ORM\Column(name="publish_date", type="datetime")
+ * @Editable(is_editable=true, label="Publish Date", required=true, type="date", order=1)
+ */
+public $publish_date;
+		</code>
+	</pre>
+</div>
+
+<div class="field-description">
+	<h5 id="field-datetime">Datetime</h5>
+
+	<p><strong>Property type :</strong> <code>datetime</code></p>
+	<p><strong>Definition :</strong></p>
+	<pre>
+		<code class="php">
+/**
+ * @var \DateTime
+ *
+ * @ORM\Column(name="publish_date", type="datetime")
+ * @Editable(is_editable=true, label="Publish Date", required=true, type="date", order=1)
+ */
+public $publish_date;
+		</code>
+	</pre>
+</div>
+
+<div class="field-description">
+	<h5 id="field-email">Email</h5>
+
+	<p><strong>Property type :</strong> <code>string</code></p>
+	<p><strong>Definition :</strong></p>
+	<pre>
+		<code class="php">
+/**
+ * @var string
+ *
+ * @ORM\Column(name="email", type="string", length=255)
+ * @Editable(is_editable=true, label="Email", required=true, type="email", order=1, placeholder="Write your email address")
+ */
+private $email;
+		</code>
+	</pre>
+	<p>
+		<strong>Parameters :</strong>
+
+		<ul class="parameters">
+			<li>
+				<code>placeholder</code> : string | optional
+				<br>
+				Text input placeholder
+			</li>
+		</ul>
+	</p>
+</div>
+
+<div class="field-description">
+	<h5 id="field-textarea">Textarea (using CKEditor)</h5>
+
+	<p>
+		The <code>textarea</code> field is rendered using CKEditor, providing a rich text input interface.
+	</p>
+
+	<p><strong>Property type :</strong> <code>text</code></p>
+	<p><strong>Definition :</strong></p>
+	<pre>
+		<code class="php">
+/**
+ * @var string
+ *
+ * @ORM\Column(name="content", type="text")
+ * @Editable(is_editable=true, label="Content", required=true, type="textarea", order=1)
+ * @Gedmo\Translatable
+ */
+private $content;
+		</code>
+	</pre>
+</div>
+
+<div class="field-description">
+	<h5 id="field-translatable-textarea">Translatable Textarea (using CKEditor)</h5>
+
+	<p>
+		The <code>translatable_textarea</code> field is rendered using CKEditor, providing a rich text input interface.
+	</p>
+
+	<p>Import Gedmo annotations :</p>
+	<pre>
+		<code class="php">
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\Translatable\Translatable;
+		</code>
+	</pre>
+
+	<p><strong>Property type :</strong> <code>text</code></p>
+	<p><strong>Definition :</strong></p>
+	<pre>
+		<code class="php">
+/**
+ * @var string
+ *
+ * @ORM\Column(name="content", type="text")
+ * @Editable(is_editable=true, label="Content", required=true, type="translatable_textarea", order=1)
+ * @Gedmo\Translatable
+ */
+private $content;
+		</code>
+	</pre>
+</div>
+
+<div class="field-description">
+	<h5 id="field-checkbox">Checkbox</h5>
+
+	<p>
+		Checkboxes are rendered using Bootstrap Switch. For more information on this plugin, please visit <a href="http://www.bootstrap-switch.org/" target="_blank">http://www.bootstrap-switch.org</a>.
+	</p>
+
+	<p><strong>Property type :</strong> <code>bool</code></p>
+	<p><strong>Definition :</strong></p>
+	<pre>
+		<code class="php">
+/**
+ * @var bool
+ *
+ * @ORM\Column(name="enabled", type="boolean", nullable=true)
+ * @Editable(is_editable=true, label="Enabled", required=true, type="checkbox", order=1)
+ */
+private $enabled;
+		</code>
+	</pre>
+</div>
+
+<div class="field-description">
+	<h5 id="field-password">Password</h5>
+
+	<p><strong>Property type :</strong> <code>string</code></p>
+	<p><strong>Definition :</strong></p>
+	<pre>
+		<code class="php">
+/**
+* @ORM\Column(name="password", type="string", length=255)
+* @Editable(is_editable=true, label="Password", required=true, type="password", order=1, placeholder="Password")
+*/
+private $password;
+		</code>
+	</pre>
+	<p>
+		<strong>Parameters :</strong>
+
+		<ul class="parameters">
+			<li>
+				<code>placeholder</code> : string | optional
+				<br>
+				Text input placeholder
+			</li>
+		</ul>
+	</p>
+</div>
+
+<div class="field-description">
+	<h5 id="field-choice">Choice</h5>
+
+	<p>
+		<code>select</code> inputs are rendered using Select2, for more informations on this plugin please visit <a href="https://select2.github.io/" target="_blank">https://select2.github.io/</a>
+	</p>
+
+	<p><strong>Property type :</strong> <code>string</code></p>
+	<p><strong>Definition :</strong></p>
+	<pre>
+		<code class="php">
+/**
+ * @var string
+ *
+ * @ORM\Column(name="my_choice", type="string", length=255)
+ * @Editable(is_editable=true, label="My choice", required=true, type="choice", order=1, choices={"first":"First choice", "second":"Second choice"})
+ */
+private $my_choice;
+		</code>
+	</pre>
+	<p>
+		<strong>Parameters :</strong>
+
+		<ul class="parameters">
+			<li>
+				<code>choices</code> : array | required
+				<br>
+				array of the choices, displayed in a select input
+			</li>
+		</ul>
+	</p>
+</div>
+
+<div class="field-description">
+	<h5 id="field-entity">Entity</h5>
+
+	<p>
+		This type of input allows you to select one or more entities B, linked to your entity A with a ManyToOne or a ManyToMany relation.
+	</p>
+
+	<p>
+		<code>select</code> inputs are rendered using Select2, for more informations on this plugin please visit <a href="https://select2.github.io/" target="_blank">https://select2.github.io/</a>
+	</p>
+
+	<p><strong>Property type :</strong> <code>ManyToOne</code></p>
+	<p><strong>Definition :</strong></p>
+	<pre>
+		<code class="php">
+/**
+ * @ORM\ManyToOne(targetEntity="AppBundle\Entity\EntityB")
+ * @ORM\JoinColumn(nullable=false)
+ * @Editable(is_editable=true, label="Other Entity", required=true, type="entity", order=1, relation_index="entity_b_name")
+ */
+ protected $entity_b;
+		</code>
+	</pre>
+	<p>
+		<strong>Parameters :</strong>
+
+		<ul class="parameters">
+			<li>
+				<code>relation_index</code> : string | required
+				<br>
+				name of the property of the inverse side of the ManyToOne relation. This property must be a string, as it is used in the <code>select</code> input as the option's name
+			</li>
+		</ul>
+	</p>
+
+	<p><strong>Property type :</strong> <code>ManyToMany</code></p>
+	<p><strong>Definition :</strong></p>
+	<pre>
+		<code class="php">
+/**
+ * @ORM\ManyToMany(targetEntity="AppBundle\Entity\EntityB", inversedBy="entity_bs")
+ * @Editable(is_editable=true, label="Other entities", required=true, multiple=true, type="entity", order=1, relation_index="title")
+ */
+private $entity_bs;
+		</code>
+	</pre>
+	<p>
+		<strong>Parameters :</strong>
+
+		<ul class="parameters">
+			<li>
+				<code>relation_index</code> : string | required
+				<br>
+				name of the property of the inverse side of the ManyToMany relation. This property must be a string, as it is used in the <code>select</code> input as the option's name
+			</li>
+
+			<li>
+				<code>multiple</code> : string | required
+				<br>
+				allows you to select multiple entities in the <code>select</code> input
+			</li>
+		</ul>
+	</p>
+</div>
+
+<div class="field-description">
+	<h5 id="field-file">File</h5>
+
+	<p>
+		<code>file</code> inputs are displayed in a modal. The file input itself if rendered using Bootstrap File Input. For more documentation on this plugin, please visit <a href="http://plugins.krajee.com/file-input" target="_blank">http://plugins.krajee.com/file-input</a>.
+	</p>
+
+	<p><strong>Property type :</strong> <code>ManyToOne</code></p>
+	<p><strong>Definition :</strong></p>
+	<pre>
+		<code class="php">
+/**
+ * @ORM\ManyToOne(targetEntity="Duf\AdminBundle\Entity\File")
+ * @ORM\JoinColumn(nullable=true)
+ * @Editable(is_editable=true, label="Cover", required=false, type="file", filetype="images", order=1)
+ */
+ protected $cover;
+		</code>
+	</pre>
+	<p>
+		<strong>Parameters :</strong>
+
+		<ul class="parameters">
+			<li>
+				<code>filetype</code> : string | required
+				<br>
+				Type of file to be uploaded : <code>images</code>, <code>videos</code> or <code>documents</code>
+			</li>
+		</ul>
+	</p>
+</div>
+
+<div class="field-description">
+	<h5 id="field-multiple-files">Multiple Files</h5>
+
+	<p>
+		<code>file</code> inputs are displayed in a modal. The file input itself if rendered using Bootstrap File Input. For more documentation on this plugin, please visit <a href="http://plugins.krajee.com/file-input" target="_blank">http://plugins.krajee.com/file-input</a>.
+	</p>
+
+	<p><strong>Property type :</strong> <code>json_array</code></p>
+	<p><strong>Definition :</strong></p>
+	<pre>
+		<code class="php">
+/**
+ * @var array
+ *
+ * @ORM\Column(name="pictures", type="json_array", nullable=true)
+ * @Editable(is_editable=true, label="Pictures", required=false, type="multiple_file", filetype="images", order=1)
+ */
+private $pictures;
+		</code>
+	</pre>
+	<p>
+		<strong>Parameters :</strong>
+
+		<ul class="parameters">
+			<li>
+				<code>filetype</code> : string | required
+				<br>
+				Type of file to be uploaded : <code>images</code>, <code>videos</code> or <code>documents</code>
+			</li>
+		</ul>
+	</p>
+</div>
+
+<div class="field-description">
+	<h5 id="field-number">Number</h5>
+
+	<p><strong>Property type :</strong> <code>integer</code> | <code>float</code></p>
+	<p><strong>Definition :</strong></p>
+	<pre>
+		<code class="php">
+/**
+ * @var float
+ *
+ * @ORM\Column(name="Price", type="float", nullable=true)
+ * @Editable(is_editable=true, label="Price", required=false, type="number", order=1, number_type="float")
+ */
+private $price;
+		</code>
+	</pre>
+	<p>
+		<strong>Parameters :</strong>
+
+		<ul class="parameters">
+			<li>
+				<code>number_type</code> : string | required
+				<br>
+				Type of number : <code>integer</code> or <code>float</code>
+			</li>
+		</ul>
+	</p>
+</div>
+
+<div class="field-description">
+	<h5 id="field-hidden">Hidden</h5>
+
+	<p><strong>Definition :</strong></p>
+	<pre>
+		<code class="php">
+ /**
+ * @ORM\ManyToOne(targetEntity="Duf\AdminBundle\Entity\File", inversedBy="metadatas", cascade={"persist"})
+ * @ORM\JoinColumn(name="file_id", referencedColumnName="id", nullable=false)
+ * @Editable(is_editable=true, label="", required=true, type="hidden", order=1, placeholder="")
+ */
+ private $file;
+		</code>
+	</pre>
+</div>
