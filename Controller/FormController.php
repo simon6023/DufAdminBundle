@@ -43,10 +43,12 @@ class FormController extends Controller
         $seo_config                 = $seo_service->getSeoConfig($entity_class);
 
         if (strpos($path, '/update/')) {
+            $is_update              = true;
             $entity_id              = $routing_service->getEntityId($path);
             $entity                 = $this->getDoctrine()->getRepository($entity_name)->findOneById($entity_id);
         }
         else {
+            $is_update              = false;
             $entity                 = new $entity_class;
         }
 
@@ -67,6 +69,24 @@ class FormController extends Controller
         $translatable_request       = $this->getTranslatableContent($request, $form_data, $form_service, $entity);
         $request                    = $translatable_request['request'];
 
+
+        // instantiate callbacks service
+        $callbacks_service          = $this
+                                        ->get('duf_admin.dufadmincallbacks')
+                                        ->initCallbacks($entity_name, $request, $entity);
+
+        // CALLBACK : save | before
+        if (!$is_update)
+            $callbacks_service->executeCallback('save', 'before');
+
+        // CALLBACK : update | before
+        if ($is_update)
+            $callbacks_service->executeCallback('update', 'before');
+
+        $entity                     = $callbacks_service->getEntityAfterCallback();
+        $request                    = $callbacks_service->getFormRequestAfterCallback();
+
+        // handle form request
         $form->handleRequest($request);
 
         //echo '<pre>'; print_r($form_data); echo '</pre>'; exit();
@@ -112,13 +132,17 @@ class FormController extends Controller
 
                             foreach ($value as $relation_entity_id) {
                                 $relation_entity        = $this->getDoctrine()->getRepository($relation_entity_class)->findOneById($relation_entity_id);
-                                $entity->{$relation_entity_setter}($relation_entity);
+
+                                if (!empty($relation_entity)) {
+                                    // don't know why but commenting this line makes things work................
+                                    //$entity->{$relation_entity_setter}($relation_entity);
+                                }
                             }
                         }
                     }
                 }
 
-                // TO DO : check if type is password and create encoded password
+                // check if type is password and create encoded password
                 foreach ($form_data as $field_name => $value) {
                     if (isset($form_options_properties['form_options'][$field_name]) && $form_options_properties['form_options'][$field_name]['type'] == 'password') {
                         $password           = $this->get('security.password_encoder')->encodePassword($entity, $value);
@@ -139,6 +163,12 @@ class FormController extends Controller
                     }
                 }
             }
+
+            // CALLBACK : persist | before
+            $callbacks_service->executeCallback('persist', 'before');
+
+            $entity                     = $callbacks_service->getEntityAfterCallback();
+            $request                    = $callbacks_service->getFormRequestAfterCallback();
 
             $em->persist($entity);
             $em->flush();
@@ -196,6 +226,14 @@ class FormController extends Controller
                 }
             }
 
+            // CALLBACK : save | after
+            if (!$is_update)
+                $callbacks_service->executeCallback('save', 'after');
+
+            // CALLBACK : update | after
+            if ($is_update)
+                $callbacks_service->executeCallback('update', 'after');
+
             // get redirect route
             $redirect_url = $routing_service->getEntityRoute($entity_name, 'index');
 
@@ -204,7 +242,8 @@ class FormController extends Controller
         else {
             echo '<pre>'; print_r($request->get('duf_admin_generic')); echo '</pre>';
 
-            foreach ($form->getErrors(true) as $form_error) {
+            foreach ($form->getErrors(true) as $key => $form_error) {
+                var_dump($key);
                 var_dump($form_error->getMessage());
 
                 echo '<pre>'; print_r($form_error->getMessageParameters()); echo '</pre>';
@@ -299,7 +338,10 @@ class FormController extends Controller
         }
 
         foreach ($form_data as $field_name => $field_value) {
-            if (is_array($field_value)) {
+            // check if field has @Gedmo\Translatable annotation
+            $is_translatable_field  = $form_service->isTranslatableField($field_name, get_class($entity));
+
+            if (is_array($field_value) && $is_translatable_field) {
                 foreach ($field_value as $translate_name => $translate_value) {
                     if (strpos($translate_name, 'translate_') !== false) {
                         $lang_name  = str_replace('translate_', '', $translate_name);

@@ -1,0 +1,6 @@
+{% for field_name, options in export_fields %}"{% if options.label is not null %}{{ options.label }}{% else %}{{ field_name }}{% endif %}";{% endfor %}
+
+{% for entity in entities %}
+{% for field_name, options in export_fields %}"{% if options.type == 'text' %}{{ attribute(entity, field_name) }}{% elseif options.type == 'count' %}{{ attribute(entity, field_name) | length }}{% elseif options.type == 'boolean' %}{% set bool_value = attribute(entity, field_name) %}{% if bool_value %}Yes{% else %}No{% endif %}{% elseif options.type == 'relation' and options.relation_field is not null %}{% set relation_entity = attribute(entity, field_name) %}{{ attribute(relation_entity, options.relation_field) }}{% elseif options.type == 'entities_collection' and options.relation_field is not null %}{% set relation_entities = attribute(entity, field_name) %}{% for sub_entity in relation_entities %}{{ attribute(sub_entity, options.relation_field) }}{% if loop.last == false %},{% endif %}{% endfor %}{% endif %}";{% endfor %}
+
+{% endfor %}

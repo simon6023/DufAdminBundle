@@ -16,6 +16,10 @@ duf_admin_messaging:
     resource: "@DufAdminBundle/Resources/config/routing/messaging.yml"
     prefix:   /messages
 
+duf_admin_export:
+    resource: "@DufAdminBundle/Resources/config/routing/export.yml"
+    prefix:   /export
+
 duf_admin_translations_edit:
     resource: "@LexikTranslationBundle/Resources/config/routing.yml"
     prefix:   /translations
@@ -174,6 +178,11 @@ duf_admin_tree_move:
 duf_admin_save_edit_image:
     path: /duf-admin-save-edit-image/{file_id}
     defaults: { _controller: "DufAdminBundle:File:saveEditImage" }
+    methods: [POST]
+
+duf_admin_get_thumbnail:
+    path: /duf-admin-get-thumbnail/{file_id}/{parent_entity_property}/{entity_class}/{entity_id}
+    defaults: { _controller: "DufAdminBundle:File:getThumbnail" }
     methods: [POST]
 
 duf_messaging:

@@ -42,14 +42,15 @@ class RoutingController extends Controller
 
     	switch ($action_type) {
     		case 'index':
-    			$template 						= 'DufAdminBundle:Crud:entities_index.html.twig';
-                $headers_properties             = $form_service->getIndexHeaders($entity_name, $entity_class);
+    			$template                           = 'DufAdminBundle:Crud:entities_index.html.twig';
+                $headers_properties                 = $form_service->getIndexHeaders($entity_name, $entity_class);
 
-                $view_variables['entities'] 	= $this->getViewEntities($entity_name, $action_type);
-                $view_variables['headers']      = $headers_properties['headers'];
-                $view_variables['properties']   = $headers_properties['properties'];
-                $view_variables['create_route'] = $routing_service->getEntityRoute($entity_name, 'create');
-                $view_variables['is_tree']      = $routing_service->isTree($entity_name);
+                $view_variables['entities']         = $this->getViewEntities($entity_name, $action_type);
+                $view_variables['headers']          = $headers_properties['headers'];
+                $view_variables['properties']       = $headers_properties['properties'];
+                $view_variables['create_route']     = $routing_service->getEntityRoute($entity_name, 'create');
+                $view_variables['is_tree']          = $routing_service->isTree($entity_name);
+                $view_variables['is_exportable']    = $routing_service->isExportable($entity_name);
     			break;
             case 'create':
                 $created_entity                         = new $entity_class;

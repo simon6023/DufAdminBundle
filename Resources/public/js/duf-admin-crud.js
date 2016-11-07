@@ -82,6 +82,36 @@ DufAdminCrud.prototype.getTreeView = function(entity_name)
 	});
 };
 
+DufAdminCrud.prototype.exportData = function(button)
+{
+	var entity_name 	= button.data('entity-name');
+	var format 			= button.data('format');
+	var items 			= new Array();
+
+	$('#duf-admin-index-table tbody td:nth-child(1)').each(function () {
+		var column_html 	= $(this).html();
+		column_html  		= column_html.replace(/\s/g,'');
+
+		items.push(column_html);
+	});
+
+	// 1. ajax call to create file
+	var route = Routing.generate('duf_admin_export_generate', { format: format, entity_name: entity_name });
+	$.ajax({
+        url : route,
+        type: "POST",
+        data : 'items=' + items,
+        success:function(export_id)  {
+        	// 2. redirect to download url
+        	var export_route = Routing.generate('duf_admin_export_download', {id: export_id});
+        	window.location.href = export_route;
+        },
+        error: function(error)  {
+            console.log(error);
+        }
+    });
+}
+
 DufAdminCrud.prototype.changeLangage = function(choice)
 {
 	var field_name 				= choice.attr('data-field-name');
@@ -216,4 +246,9 @@ $(document).on('click', '.node-action-5', function() {
 	console.log(edit_route);
 
 	window.location.href = edit_route;
+});
+
+$(document).on('click', '.export-link', function(e) {
+	e.preventDefault();
+	window.dufAdminCrud.exportData($(this));
 });

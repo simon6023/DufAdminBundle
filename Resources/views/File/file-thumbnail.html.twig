@@ -1,0 +1,41 @@
+<div class="col-sm-6 col-md-4 duf-admin-file-preview" id="file-preview-{{ previous_file.id }}">
+	<div class="thumbnail">
+		{% if previous_file.filetype == 'images' %}
+			{% if form is defined %}
+				{% set filepath = duf_admin_file.getFilePath(previous_file, form.parent.vars.data, name) %}
+			{% else %}
+				{% set filepath = previous_file.path ~ '/' ~ previous_file.filename %}
+			{% endif %}
+
+			<img id="preview-image-{{ name }}-{{ previous_file.id }}" src="{{ asset(filepath) }}">
+		{% elseif previous_file.filetype == 'documents' %}
+			<i class="fa fa-file-text" aria-hidden="true"></i>
+		{% elseif previous_file.filetype == 'videos' %}
+			<i class="fa fa-video-camera" aria-hidden="true"></i>
+		{% endif %}
+
+		<div class="caption">
+			<h3>{{ previous_file.filename }}</h3>
+
+			<div class="duf-admin-file-edit-buttons">
+				<div class="duf-admin-remove-selected-file" data-file-id="{{ previous_file.id }}" data-entity-property="{{ name }}">
+					<span class='action'><i class="fa fa-trash" aria-hidden="true"></i> Delete</span>
+				</div>
+
+				<div 
+					class="duf-admin-crop-selected-file pull-right" 
+					data-modal-name="edit-image" 
+					data-modal-title="Edit file" 
+					data-file-id="{{ previous_file.id }}" 
+					data-entity-property="{{ name }}" 
+					data-parent-entity-class="{% if form is defined and form.parent is defined and form.parent.vars is defined and form.parent.vars.data is defined %}{{ duf_admin_form.getEntityClass(form.parent.vars.data) }}{% elseif entity_class is defined and entity_class is not null %}{{ entity_class }}{% endif %}" 
+					data-parent-entity-id="{% if form is defined and form.parent is defined and form.parent.vars is defined and form.parent.vars.data is defined and form.parent.vars.data.id is defined %}{{ form.parent.vars.data.id }}{% elseif entity_id is defined and entity_id is not null %}{{ entity_id }}{% endif %}" 
+				>
+					
+					<span class='action'><i class="fa fa-pencil" aria-hidden="true"></i> Edit</span>
+				
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

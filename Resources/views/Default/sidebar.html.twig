@@ -44,7 +44,7 @@
 
 			{% if entities is defined and entities is not null %}
 				{% for entity_name, params in entities %}
-					{% if params.hidden is not defined or params.hidden == false %}
+					{% if params.hidden is not defined or params.hidden == false or params.hidden is null %}
 						{% if params.override_route is not defined %}
 							{% set entity_link = path('duf_admin_entity_index', { path: duf_admin_routing.getRouteFromEntityName(entity_name, 'content', 'index') }) %}
 						{% else %}

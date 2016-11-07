@@ -13,6 +13,7 @@ twig:
         duf_admin_file: "@duf_admin.dufadminfile"
         duf_admin_redmine: "@duf_admin.dufadminredmine"
         duf_admin_translate: "@duf_admin.dufadmintranslate"
+        duf_admin_acl: "@duf_admin.dufadminacl"
         duf_messaging: "@duf_messaging.messaging"
         duf_core_seo: "@duf_core.dufcoreseo"
 
@@ -89,3 +90,6 @@ fos_js_routing:
         - duf_admin_tree_remove
         - duf_admin_tree_move
         - duf_admin_save_edit_image
+        - duf_admin_get_thumbnail
+        - duf_admin_export_generate
+        - duf_admin_export_download

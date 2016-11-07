@@ -32,7 +32,6 @@ class UserRole extends DufAdminEntity implements RoleInterface, \Serializable
      */
     private $users;
 
-
     public function __construct()
     {
         $this->users = new ArrayCollection();
@@ -81,5 +80,39 @@ class UserRole extends DufAdminEntity implements RoleInterface, \Serializable
     public function getRole()
     {
         return $this->name;
+    }
+
+    /**
+     * Add user
+     *
+     * @param \Duf\AdminBundle\Entity\User $user
+     *
+     * @return UserRole
+     */
+    public function addUser(\Duf\AdminBundle\Entity\User $user)
+    {
+        $this->users[] = $user;
+
+        return $this;
+    }
+
+    /**
+     * Remove user
+     *
+     * @param \Duf\AdminBundle\Entity\User $user
+     */
+    public function removeUser(\Duf\AdminBundle\Entity\User $user)
+    {
+        $this->users->removeElement($user);
+    }
+
+    /**
+     * Get users
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getUsers()
+    {
+        return $this->users;
     }
 }

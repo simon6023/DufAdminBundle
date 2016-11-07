@@ -48,6 +48,13 @@ class FileEdit extends DufAdminEntity
     private $parent_entity_id;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="property", type="string", length=255)
+     */
+    private $property;
+
+    /**
      * @var array
      *
      * @ORM\Column(name="edit_data", type="json_array", nullable=false)
@@ -207,5 +214,29 @@ class FileEdit extends DufAdminEntity
     public function getEditData()
     {
         return $this->edit_data;
+    }
+
+    /**
+     * Set property
+     *
+     * @param string $property
+     *
+     * @return FileEdit
+     */
+    public function setProperty($property)
+    {
+        $this->property = $property;
+
+        return $this;
+    }
+
+    /**
+     * Get property
+     *
+     * @return string
+     */
+    public function getProperty()
+    {
+        return $this->property;
     }
 }

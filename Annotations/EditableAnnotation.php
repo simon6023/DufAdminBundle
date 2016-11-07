@@ -3,7 +3,7 @@
 namespace Duf\AdminBundle\Annotations;
 
 /**
- * Annotation for indexable entities in DufAdminBundle
+ * Annotation for editable entities in DufAdminBundle
  *
  * @author Simon Duflos <simon.duflos@gmail.com>
  *

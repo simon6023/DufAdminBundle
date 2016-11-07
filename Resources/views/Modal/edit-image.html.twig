@@ -40,7 +40,7 @@
 
 			<div class="modal-footer">
 				{% if file is defined and file is not null %}
-					<button type="button" class="btn btn-primary" id="save-image" data-file-id="{{ file.id }}" data-parent-entity="{{ parent_entity }}" data-parent-entity-id="{{ parent_entity_id }}">Save</button>
+					<button type="button" class="btn btn-primary" id="save-image" data-file-id="{{ file.id }}" data-parent-entity="{{ parent_entity }}" data-parent-entity-id="{{ parent_entity_id }}" data-property="{{ parent_property }}">Save</button>
 				{% endif %}
 
 				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

@@ -5,6 +5,12 @@ services:
         tags:
             - { name: kernel.event_subscriber }
 
+    duf_admin.permissions_controller_listener:
+        class: Duf\AdminBundle\EventListener\PermissionsControllerListener
+        arguments: ['@security.token_storage', '@service_container']
+        tags:
+            - { name: kernel.event_listener, event: kernel.response, method: listenControllerPermissions }
+
     duf_admin.dufadminencoder:
         class: Duf\AdminBundle\Service\DufAdminEncoder
 
@@ -14,6 +20,10 @@ services:
 
     duf_admin.dufadminconfig:
         class: Duf\AdminBundle\Service\DufAdminConfig
+        arguments: ['@service_container']
+
+    duf_admin.dufadminacl:
+        class: Duf\AdminBundle\Service\DufAdminAcl
         arguments: ['@service_container']
 
     duf_admin.dufadminform:
@@ -30,6 +40,10 @@ services:
 
     duf_admin.dufadmintranslate:
         class: Duf\AdminBundle\Service\DufAdminTranslate
+        arguments: ['@doctrine.orm.entity_manager', '@service_container']
+
+    duf_admin.dufadmincallbacks:
+        class: Duf\AdminBundle\Service\DufAdminCallbacks
         arguments: ['@doctrine.orm.entity_manager', '@service_container']
 
     duf_admin.twig.dufAdminBundle_extension:

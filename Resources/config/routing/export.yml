@@ -1,0 +1,8 @@
+duf_admin_export_generate:
+    path: /generate/{format}/{entity_name}
+    defaults: { _controller: "DufAdminBundle:Export:generate" }
+    methods: [POST]
+
+duf_admin_export_download:
+    path: /download/{id}
+    defaults: { _controller: "DufAdminBundle:Export:download" }

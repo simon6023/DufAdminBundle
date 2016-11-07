@@ -128,9 +128,10 @@ class FileController extends Controller
                 $edit_data          = json_decode($request->get('image_data'), true);
                 $parent_entity      = $request->get('parent_entity');
                 $parent_entity_id   = $request->get('parent_entity_id');
+                $property           = $request->get('property');
 
                 // create FileEdit entity
-                $file_edit          = $file_service->createFileEditEntity($file, $parent_entity, $parent_entity_id, $edit_data);
+                $file_edit          = $file_service->createFileEditEntity($file, $parent_entity, $parent_entity_id, $property, $edit_data);
 
                 // process FileEdit with Imagine
                 $new_filepath       = $file_service->createFileEdit($file_edit);
@@ -139,6 +140,23 @@ class FileController extends Controller
             }
 
             return new Response('file_does_not_exist', 500);
+        }
+
+        return new Response('file_not_found', 500);
+    }
+
+    public function getThumbnailAction($file_id, $parent_entity_property, $entity_class = null, $entity_id = null)
+    {
+        $file       = $this->getDoctrine()->getRepository('DufAdminBundle:File')->findOneById($file_id);
+
+        if (!empty($file)) {
+            return $this->render('DufAdminBundle:File:file-thumbnail.html.twig', array(
+                    'previous_file'     => $file,
+                    'name'              => $parent_entity_property,
+                    'entity_class'      => $entity_class,
+                    'entity_id'         => $entity_id,
+                )
+            );
         }
 
         return new Response('file_not_found', 500);

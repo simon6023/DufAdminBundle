@@ -233,35 +233,7 @@
 		<div class="duf-admin-selected-files-container multiple" id="files-container-{{ name }}">
 			{% if previous_files is defined and previous_files is not null %}
 				{% for previous_file in previous_files %}
-					<div class="duf-admin-file-preview" id="file-preview-{{ previous_file.id }}">
-						<div class="duf-admin-remove-selected-file" data-file-id="{{ previous_file.id }}" data-entity-property="{{ name }}">
-							<span class='action'><i class="fa fa-trash" aria-hidden="true"></i> Delete</span>
-						</div>
-
-						<div 
-							class="duf-admin-crop-selected-file" 
-							data-modal-name="edit-image" 
-							data-modal-title="Edit file" 
-							data-file-id="{{ previous_file.id }}" 
-							data-entity-property="{{ name }}" 
-							data-parent-entity-class="{% if form.parent is defined and form.parent.vars is defined and form.parent.vars.data is defined %}{{ duf_admin_form.getEntityClass(form.parent.vars.data) }}{% endif %}" 
-							data-parent-entity-id="{% if form.parent is defined and form.parent.vars is defined and form.parent.vars.data is defined and form.parent.vars.data.id is defined %}{{ form.parent.vars.data.id }}{% endif %}" 
-						>
-							
-							<span class='action'><i class="fa fa-pencil" aria-hidden="true"></i> Edit</span>
-						
-						</div>
-
-						{% if previous_file.filetype == 'images' %}
-							{% set filepath = duf_admin_file.getFilePath(previous_file, form.parent.vars.data) %}
-
-							<img id="preview-image-{{ previous_file.id }}" src="{{ asset(filepath) }}">
-						{% elseif previous_file.filetype == 'documents' %}
-							<i class="fa fa-file-text" aria-hidden="true"></i>
-						{% elseif previous_file.filetype == 'videos' %}
-							<i class="fa fa-video-camera" aria-hidden="true"></i>
-						{% endif %}
-					</div>
+					{% include 'DufAdminBundle:File:file-thumbnail.html.twig' %}
 				{% endfor %}
 			{% endif %}
 		</div>
@@ -292,35 +264,7 @@
 
 		<div class="duf-admin-selected-files-container" id="files-container-{{ name }}">
 			{% if file is not null %}
-				<div class="duf-admin-file-preview" id="file-preview-{{ file.id }}">
-					<div class="duf-admin-remove-selected-file" data-file-id="{{ file.id }}" data-entity-property="{{ name }}">
-						<i class="fa fa-trash" aria-hidden="true"></i> Delete
-					</div>
-
-					<div 
-						class="duf-admin-crop-selected-file" 
-						data-modal-name="edit-image" 
-						data-modal-title="Edit file" 
-						data-file-id="{{ file.id }}" 
-						data-entity-property="{{ name }}" 
-						data-parent-entity-class="{% if form.parent is defined and form.parent.vars is defined and form.parent.vars.data is defined %}{{ duf_admin_form.getEntityClass(form.parent.vars.data) }}{% endif %}" 
-						data-parent-entity-id="{% if form.parent is defined and form.parent.vars is defined and form.parent.vars.data is defined and form.parent.vars.data.id is defined %}{{ form.parent.vars.data.id }}{% endif %}" 
-					>
-						
-						<span class='action'><i class="fa fa-pencil" aria-hidden="true"></i> Edit</span>
-					
-					</div>
-
-					{% if file.filetype == 'images' %}
-						{% set filepath = duf_admin_file.getFilePath(file, form.parent.vars.data) %}
-
-						<img id="preview-image-{{ file.id }}" src="{{ asset(filepath) }}">
-					{% elseif file.filetype == 'documents' %}
-						<i class="fa fa-file-text" aria-hidden="true"></i>
-					{% elseif file.filetype == 'videos' %}
-						<i class="fa fa-video-camera" aria-hidden="true"></i>
-					{% endif %}
-				</div>
+				{% include 'DufAdminBundle:File:file-thumbnail.html.twig' with { 'previous_file' : file } %}
 			{% endif %}
 		</div>
 	</div>

@@ -68,6 +68,7 @@ DufAdminFileSystem.prototype.renderModal = function(link)
 
 	if (modal_name == 'edit-image') {
 		form_data.append('file_id', link.data('file-id'));
+		form_data.append('entity_property', link.data('entity-property'));
 	}
 
 	// open metadata modal
@@ -108,6 +109,7 @@ DufAdminFileSystem.prototype.saveImage = function(button)
 	form_data.append('image_data', image_data);
 	form_data.append('parent_entity', button.data('parent-entity'));
 	form_data.append('parent_entity_id', button.data('parent-entity-id'));
+	form_data.append('property', button.data('property'));
 
 	$.ajax({
 		url: save_route,
@@ -117,11 +119,14 @@ DufAdminFileSystem.prototype.saveImage = function(button)
 		processData: false,
 		contentType: false,
 		success: function(new_filepath) {
+			// set new thumbnail
+			var edited_path 	= new_filepath + '?timestamp=' + new Date().getTime();
+			$('#preview-image-' + button.data('property') + '-' + file_id).attr('src', edited_path);
+
+			console.log(edited_path);
+
 			// close modal
 			window.dufAdminFileSystem.closeModal();
-
-			// set new thumbnail
-			$('#preview-image-' + file_id).attr('src', new_filepath + '?timestamp=' + new Date().getTime());
     	},
     	error: function(data) {
     		console.log('error');
@@ -130,7 +135,7 @@ DufAdminFileSystem.prototype.saveImage = function(button)
 	});
 }
 
-DufAdminFileSystem.prototype.setSelectedFileForEntity = function(selected_file_id, parent_entity_property)
+DufAdminFileSystem.prototype.setSelectedFileForEntity = function(selected_file_id, parent_entity_property, parent_entity_class, parent_entity_id)
 {
 	// append selected file to form
 	var parent_select 			= $('#duf-admin-select-file-' + parent_entity_property);
@@ -143,21 +148,20 @@ DufAdminFileSystem.prototype.setSelectedFileForEntity = function(selected_file_i
 	}
 
 	// set file preview
-	window.dufAdminFileSystem.setFilePreview(selected_file_id, parent_entity_property);
+	window.dufAdminFileSystem.setFilePreview(selected_file_id, parent_entity_property, parent_entity_class, parent_entity_id);
 
 	// close modal
 	window.dufAdminFileSystem.closeModal();
 }
 
-DufAdminFileSystem.prototype.setFilePreview = function(file_id, parent_entity_property)
+DufAdminFileSystem.prototype.setFilePreview = function(file_id, parent_entity_property, parent_entity_class, parent_entity_id)
 {
 	var route 	= Routing.generate('duf_admin_get_file', { file_id: file_id });
 	$.ajax({
 		url: route,
 		type: 'POST',
 		success: function(json) {
-			var preview_html = window.dufAdminFileSystem.getPreviewHtml(json, parent_entity_property);
-			$('#files-container-' + parent_entity_property).append(preview_html);
+			window.dufAdminFileSystem.getPreviewHtml(json, parent_entity_property, parent_entity_class, parent_entity_id);
     	},
     	error: function(data) {
     		console.log(data);
@@ -165,14 +169,17 @@ DufAdminFileSystem.prototype.setFilePreview = function(file_id, parent_entity_pr
 	});
 }
 
-DufAdminFileSystem.prototype.getPreviewHtml = function(file_json, parent_entity_property)
+DufAdminFileSystem.prototype.getPreviewHtml = function(file_json, parent_entity_property, parent_entity_class, parent_entity_id)
 {
-	var html 		= '<div class="duf-admin-file-preview" id="file-preview-' + file_json.id + '">';
-	html 			= html + '<div class="duf-admin-remove-selected-file" data-file-id="' + file_json.id + '" data-entity-property="' + parent_entity_property + '"><i class="fa fa-times" aria-hidden="true"></i> Delete</div>';
-	html 			= html + '<img src="/' + file_json.path.replace('../web/', '/') + '/' + file_json.filename + '">';
-	html 			= html + '</div>';
+	var get_html_route 	= Routing.generate('duf_admin_get_thumbnail', { file_id: file_json.id, parent_entity_property: parent_entity_property, entity_class: parent_entity_class, entity_id: parent_entity_id });
 
-	return html;
+	$.ajax({
+		url: get_html_route,
+		type: 'POST',
+		success: function(html) {
+			$('#files-container-' + parent_entity_property).append(html);
+		}
+	});
 }
 
 DufAdminFileSystem.prototype.removeSelectedFile = function(button)
@@ -241,7 +248,11 @@ $(document).on('click', '.render-file-select-modal, .duf-admin-add-multiple-file
 $(document).on('click', '.duf-admin-modal.modal#select-file .duf-admin-file-gallery', function(e) {
 	var selected_file_id 		= $(this).find('.duf-admin-select-file').data('file-id');
 	var parent_entity_property 	= $(this).find('.duf-admin-select-file').data('parent-entity-property');
-	window.dufAdminFileSystem.setSelectedFileForEntity(selected_file_id, parent_entity_property);
+	var parent_entity_class		= $(this).find('.duf-admin-select-file').data('parent-entity-class');
+	var parent_entity_id		= $(this).find('.duf-admin-select-file').data('parent-entity-id');
+
+
+	window.dufAdminFileSystem.setSelectedFileForEntity(selected_file_id, parent_entity_property, parent_entity_class, parent_entity_id);
 });
 
 $(document).on('click', '.duf-admin-remove-selected-file', function() {

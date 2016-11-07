@@ -222,6 +222,19 @@ class DufAdminRouting
         return false;
     }
 
+    public function isExportable($entity_name)
+    {
+        $config_entities = $this->container->get('duf_admin.dufadminconfig')->getDufAdminConfig(array('entities'));
+
+        foreach ($config_entities as $config_entity_name => $config_entity_params) {
+            if ($config_entity_name === $entity_name && isset($config_entity_params['is_exportable']) && true === $config_entity_params['is_exportable']) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function getEntityGenericForm($entity)
     {
 

@@ -5,6 +5,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\DependencyInjection\ContainerInterface as Container;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ORM\EntityManager as EntityManager;
@@ -82,7 +83,9 @@ class DufAdminForm
                                             ),
                                     );
 
-                                if (null !== $relationship_entity && $annotation->type !== 'hidden' && $annotation->type !== 'entity_hidden') {
+                                $excluded_annotation_types = array('hidden', 'entity_hidden');
+
+                                if (null !== $relationship_entity && !in_array($annotation->type, $excluded_annotation_types)) {
                                     $form_options[$property_name]['parameters']['class']            = $relationship_entity;
                                     $form_options[$property_name]['parameters']['choice_label']     = $annotation->relation_index;
                                     $form_options[$property_name]['parameters']['multiple']         = $is_multiple;
@@ -457,5 +460,23 @@ class DufAdminForm
         }
 
         return $previous_files;
+    }
+
+    public function isTranslatableField($field_name, $entity_class)
+    {
+        $entity_properties      = $this->getEntityProperties($entity_class);
+
+        if (in_array($field_name, $entity_properties)) {
+            $annotationReader       = new AnnotationReader();
+            $reflectionClass        = new \ReflectionProperty($entity_class, $field_name);
+            $annotations            = $annotationReader->getPropertyAnnotations($reflectionClass);
+
+            foreach ($annotations as $annotation) {
+                if ('Gedmo\Mapping\Annotation\Translatable' === get_class($annotation))
+                    return true;
+            }
+        }
+
+        return false;
     }
 }

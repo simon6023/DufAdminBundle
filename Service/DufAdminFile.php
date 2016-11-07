@@ -112,7 +112,7 @@ class DufAdminFile
             );
     }
 
-    public function createFileEditEntity($file, $parent_entity, $parent_entity_id, $edit_data)
+    public function createFileEditEntity($file, $parent_entity, $parent_entity_id, $property, $edit_data)
     {
         $cache_path     = $this->getCachePath($parent_entity);
         $new_filename   = $this->getNewFilename($file, $parent_entity, $parent_entity_id, false);
@@ -128,6 +128,7 @@ class DufAdminFile
         $file_edit->setPath($cache_path);
         $file_edit->setFilename($new_filename);
         $file_edit->setCreatedAt(new \DateTime());
+        $file_edit->setProperty($property);
 
         $this->em->persist($file_edit);
         $this->em->flush();
@@ -182,7 +183,7 @@ class DufAdminFile
         return '/' . $new_filepath;
     }
 
-    public function getFilePath($file, $parent_entity)
+    public function getFilePath($file, $parent_entity, $property)
     {
         if (!is_object($file))
             $file       = $this->em->getRepository('DufAdminBundle:File')->findOneById($file);
@@ -196,6 +197,7 @@ class DufAdminFile
                             'file'                  => $file,
                             'parent_entity_id'      => $parent_entity->getId(),
                             'parent_entity'         => get_class($parent_entity),
+                            'property'              => $property,
                         )
                     );
 

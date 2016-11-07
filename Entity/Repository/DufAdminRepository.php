@@ -47,4 +47,15 @@ class DufAdminRepository extends EntityRepository
                          ->getQuery()
                          ->getResult();
     }
+
+    public function findByExport($entity_name, $items)
+    {
+        return $this->_em->createQueryBuilder()
+                         ->select('u')
+                         ->from($entity_name, 'u')
+                         ->where('u.id IN (:items)')
+                         ->setParameter('items', $items)
+                         ->getQuery()
+                         ->getResult();
+    }
 }
