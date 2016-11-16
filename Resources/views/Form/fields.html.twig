@@ -139,7 +139,7 @@
 	<div class="form-group">
 		<label for="">{{ label }}{% if form.vars.required is defined and form.vars.required == true %}*{% endif %}</label>
 		<br />
-		<input type="checkbox" id="" name="{{ full_name }}" value="1" {% if form.vars.required %}required{% endif %} {% if value is defined and value is not null and value == 1 %}checked{% endif %}>
+		<input type="checkbox" id="" name="{{ full_name }}" value="1" {% if form.vars.required %}required{% endif %} {% if form.vars.data is defined and form.vars.data is not null and form.vars.data == true %}checked{% endif %}>
 	</div>
 {% endblock %}
 
