@@ -13,6 +13,7 @@ class DufAdminExtension extends Extension
         $configuration 		= new Configuration();
         $processedConfig 	= $this->processConfiguration($configuration, $configs);
 
+        $container->setParameter('duf_admin.sidebar_sections', $processedConfig['sidebar_sections']);
         $container->setParameter('duf_admin.entities', $processedConfig['entities']);
         $container->setParameter('duf_admin.site_name', $processedConfig['site_name']);
         $container->setParameter('duf_admin.user_entity', $processedConfig['user_entity']);

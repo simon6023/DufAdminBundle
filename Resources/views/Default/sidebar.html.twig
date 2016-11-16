@@ -43,7 +43,7 @@
 			<li class="header uppercase">{{ 'sidebar.content' | trans }}</li>
 
 			{% if entities is defined and entities is not null %}
-				{% for entity_name, params in entities %}
+				{% for entity_name, params in entities if params.sidebar_section is not defined %}
 					{% if params.hidden is not defined or params.hidden == false or params.hidden is null %}
 						{% if params.override_route is not defined %}
 							{% set entity_link = path('duf_admin_entity_index', { path: duf_admin_routing.getRouteFromEntityName(entity_name, 'content', 'index') }) %}
@@ -59,6 +59,28 @@
 					{% endif %}
 				{% endfor %}
 			{% endif %}
+
+			{% for section_name, section_config in sections %}
+				<li class="header uppercase">{{ section_name | trans }}</li>
+
+				{% for entity_name, params in entities if params.sidebar_section is defined %}
+					{% if params.sidebar_section == section_config.id %}
+						{% if params.hidden is not defined or params.hidden == false or params.hidden is null %}
+							{% if params.override_route is not defined %}
+								{% set entity_link = path('duf_admin_entity_index', { path: duf_admin_routing.getRouteFromEntityName(entity_name, 'content', 'index') }) %}
+							{% else %}
+								{% set entity_link = path(params.override_route) %}
+							{% endif %}
+
+							<li class="treeview">
+								<a href="{{ entity_link }}">
+									<i class="fa {{ params.icon }}"></i> <span>{{ params.title }}</span>
+								</a>
+							</li>
+						{% endif %}
+					{% endif %}
+				{% endfor %}
+			{% endfor %}
 
 			<li class="header uppercase">{{ 'sidebar.files' | trans }}</li>
 

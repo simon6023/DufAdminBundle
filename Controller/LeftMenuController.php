@@ -8,6 +8,9 @@ class LeftMenuController extends Controller
 {
     public function renderAction()
     {
+        // get custom sections
+        $sections           = $this->get('duf_admin.dufadminconfig')->getDufAdminConfig(array('sidebar_sections'));
+
     	// get managable entities
     	$entities 			= $this->get('duf_admin.dufadminconfig')->getDufAdminConfig(array('entities'));
 
@@ -26,6 +29,7 @@ class LeftMenuController extends Controller
         $messaging          = (isset($bundles['DufMessagingBundle'])) ? true : false;
 
         return $this->render('DufAdminBundle:Default:sidebar.html.twig', array(
+                'sections'              => $sections,
         		'entities' 				=> $entities,
         		'user_entity' 			=> $user_entity,
         		'user_role_entity' 		=> $user_role_entity,
