@@ -24,5 +24,6 @@ class DufAdminExtension extends Extension
         $container->setParameter('duf_admin.file_system_items_per_page', $processedConfig['file_system_items_per_page']);
         $container->setParameter('duf_admin.allowed_upload_extensions', $processedConfig['allowed_upload_extensions']);
         $container->setParameter('duf_admin.redmine', $processedConfig['redmine']);
+        $container->setParameter('duf_admin.admin_assets', $processedConfig['admin_assets']);
     }
 }

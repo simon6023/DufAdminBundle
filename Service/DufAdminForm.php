@@ -113,6 +113,11 @@ class DufAdminForm
                                     $form_options[$property_name]['parameters']['widget']           = 'single_text';
                                 }
 
+                                if ($annotation->type == 'date') {
+                                    $form_options[$property_name]['parameters']['format']           = 'dd/MM/yyyy';
+                                    $form_options[$property_name]['parameters']['widget']           = 'single_text';
+                                }
+
                                 if ($annotation->type == 'number') {
                                     $form_options[$property_name]['parameters']['number_type']      = $annotation->number_type;
                                 }

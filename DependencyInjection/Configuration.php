@@ -84,6 +84,12 @@ class Configuration implements ConfigurationInterface
                     ->prototype('scalar')
                     ->end()
                 ->end()
+                ->arrayNode('admin_assets')
+                    ->prototype('array')
+                        ->prototype('scalar')
+                        ->end()
+                    ->end()
+                ->end()
             ->end()
         ;
 

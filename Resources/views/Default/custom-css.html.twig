@@ -1,0 +1,5 @@
+{% if custom_css is defined %}
+	{% for asset_css in custom_css %}
+		<link rel="stylesheet" href="{{ asset(asset_css) }}">
+	{% endfor %}
+{% endif %}

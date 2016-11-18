@@ -1,0 +1,5 @@
+{% if custom_js is defined %}
+    {% for asset_js in custom_js %}
+        <script src="{{ asset(asset_js) }}"></script>
+    {% endfor %}
+{% endif %}

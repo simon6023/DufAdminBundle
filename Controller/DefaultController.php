@@ -64,6 +64,30 @@ class DefaultController extends Controller
         return $this->render('DufAdminBundle:Default:phpinfo.html.twig', array('phpinfo' => $phpinfo));
     }
 
+    public function getCustomCSSAction()
+    {
+        // get custom assets
+        $admin_assets  = $this->get('duf_admin.dufadminconfig')->getDufAdminConfig('admin_assets');
+
+        return $this->render('DufAdminBundle:Default:custom-css.html.twig',
+            array(
+                'custom_css'    => (isset($admin_assets['css'])) ? $admin_assets['css'] : null,
+            )
+        );
+    }
+
+    public function getCustomJSAction()
+    {
+        // get custom assets
+        $admin_assets  = $this->get('duf_admin.dufadminconfig')->getDufAdminConfig('admin_assets');
+
+        return $this->render('DufAdminBundle:Default:custom-js.html.twig',
+            array(
+                'custom_js'     => (isset($admin_assets['js'])) ? $admin_assets['js'] : null,
+            )
+        );
+    }
+
     private function getUnreadNotifications($user)
     {
         $notifications      = array();
