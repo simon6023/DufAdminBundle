@@ -17,3 +17,51 @@
 		Edit images
 	</li>
 </ul>
+
+<h5>Configuration</h5>
+
+<p>
+	If you want to use the file system, you have to configure the upload path for your assets :
+</p>
+
+<pre>
+	<code class="yml">
+duf_admin:
+    upload_dir: "uploads/"
+	</code>
+</pre>
+
+<p>
+	Then, you have to set which extensions the users can upload :
+</p>
+
+<pre>
+	<code class="yml">
+duf_admin:
+    allowed_upload_extensions:
+        images:
+            - jpg
+            - png
+        documents:
+            - docx
+            - pdf
+        videos:
+            - avi
+            - mp4
+	</code>
+</pre>
+
+<p>
+	You can specify the number of items you want to display on each file system's page (for instance : http://your-domain/site-admin/files/images)
+</p>
+
+<pre>
+	<code class="yml">
+duf_admin:
+    file_system_items_per_page: 4
+	</code>
+</pre>
+
+<p>
+	In your forms, the "File" and "Multiple Files" field types open modals, in which you can select the previously uploaded files, so that your users don't have to upload the same file twice.
+</p>

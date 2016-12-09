@@ -1,0 +1,21 @@
+<div class="documentation-section" id="features">
+	<h3>
+		<span aria-hidden="true" class="octicon octicon-link"></span> Features
+	</h3>
+
+	<div id="sub-content"></div>
+
+	<script type="text/javascript">
+		$(function() {
+			// get active link
+			$('.dufadminbundle-toc a').each(function() {
+				if ($(this).hasClass('active')) {
+					var link 	= $(this).attr('href').replace('#', '');
+					var parent 	= $(this).data('parent');
+
+					$('#sub-content').load('pages/' + parent + '/' + link + '.html')
+				}
+			});
+		});
+	</script>
+</div>

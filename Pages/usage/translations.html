@@ -1,0 +1,147 @@
+<h4>Translations</h4>
+
+<h5>Languages management</h5>
+
+<p>The available languages on your website are managed directly in the admin panel : http://your-domain/site-admin/languages/dufadminbundle/language/index</p>
+
+<p>You can also access this page using the navigation menu (section "Localization", menu item "Languages").</p>
+
+<p>Each language must have a name, and a two letter code. Example : "English", "en".</p>
+
+<p>You can chose to use the language in the admin panel or not, by switching the "Admin Language" option to <code>true</code>.</p>
+
+<h5>Entity configuration</h5>
+
+<p>In order to make your content translatable, you have to set your entities in the following manner :</p>
+
+<p>The languages created in this section will be displayed in each translatable field of your forms.</p>
+
+<pre>
+	<code>
+// AppBundle\Entity\YourEntity.php
+
+// import DufAdminEntity
+use Duf\AdminBundle\Entity\DufAdminEntity;
+
+// import Indexable and Editable annotations
+use Duf\AdminBundle\Annotations\IndexableAnnotation as Indexable;
+use Duf\AdminBundle\Annotations\EditableAnnotation as Editable;
+
+// import Gedmo Translatable annotations
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\Translatable\Translatable;
+
+class YourEntity extends DufAdminEntity implements Translatable
+	</code>
+</pre>
+
+<p>
+	Then, configure your entity properties<br><strong>(NOTE : you have to use the "translatable_text" field type for translatable properties - see Crud Field types below for more informations)</strong>
+</p>
+
+<pre>
+	<code>
+/**
+ * @var string
+ *
+ * @ORM\Column(name="title", type="string", length=255)
+ * @Indexable(index_column=true, index_column_name="Title")
+ * @Editable(is_editable=true, label="Title", required=true, type="translatable_text", order=1, placeholder="Write your title")
+ * @Gedmo\Translatable
+ */
+private $title;
+	</code>
+</pre>
+
+<p>
+	Finally, add the "locale" property and the appropriate setter :
+</p>
+
+<pre>
+	<code>
+/**
+ * @Gedmo\Locale
+ */
+private $locale;
+
+public function setTranslatableLocale($locale)
+{
+    $this->locale = $locale;
+}
+	</code>
+</pre>
+
+<h5>CRUD field types</h5>
+
+<p>
+	For your text properties, you have two field types available : <code>translatable_text</code> and <code>translatable_textarea</code>. Each field will be rendered once for every language you set in the configuration.
+</p>
+
+<div class="field-description">
+	<h5 id="field-text">Translatable Text</h5>
+
+	<p><strong>Property type :</strong> <code>string</code></p>
+	<p><strong>Definition :</strong></p>
+	<pre>
+		<code class="php">
+/**
+ * @var string
+ *
+ * @ORM\Column(name="title", type="string", length=255)
+ * @Editable(is_editable=true, label="Title", required=true, type="translatable_text", order=1, placeholder="Write your title")
+ */
+private $title;
+		</code>
+	</pre>
+	<p>
+		<strong>Parameters :</strong>
+
+		<ul class="parameters">
+			<li>
+				<code>placeholder</code> : string | optional
+				<br>
+				Text input placeholder
+			</li>
+		</ul>
+	</p>
+</div>
+
+<div class="field-description">
+	<h5 id="field-textarea">Translatable Textarea (using CKEditor)</h5>
+
+	<p>
+		The <code>translatable_textarea</code> field is rendered using CKEditor, providing a rich text input interface.
+	</p>
+
+	<p><strong>Property type :</strong> <code>text</code></p>
+	<p><strong>Definition :</strong></p>
+	<pre>
+		<code class="php">
+/**
+ * @var string
+ *
+ * @ORM\Column(name="content", type="text")
+ * @Editable(is_editable=true, label="Content", required=true, type="translatable_textarea", order=1)
+ * @Gedmo\Translatable
+ */
+private $content;
+		</code>
+	</pre>
+</div>
+
+<h5>Find a translatable entity in a controller</h5>
+
+<p>In your front-end controllers or services, you can find an entity based on the current locale and your route parameters :</p>
+
+<pre>
+	<code>
+$entity 	= $this->get('duf_core.dufcoretranslation')->findEntityTranslatable(
+	array(
+		'locale'        => $request->getLocale(),
+		'entity_name'   => 'AppBundle:YourEntity',
+		'search_field'  => 'slug',
+		'search_value'  => $slug,
+	)
+);
+	</code>
+</pre>
