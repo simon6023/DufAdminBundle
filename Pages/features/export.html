@@ -1,5 +1,83 @@
 <h4>Export</h4>
 
+<h5>Basic usage</h5>
+
 <p>
-	
+	Using the default CRUD index page, an export feature is available at the bottom of the list table. Two formats are available right now, CSV and Excel (.xls).
 </p>
+
+<p>
+	To enable this feature for your entity, you have to configure your entity. First, import the annotation :
+</p>
+
+<pre>
+	<code>
+// AppBundle\Entity\YourEntity.php
+
+use Duf\AdminBundle\Annotations\ExportableAnnotation as Exportable;
+	</code>
+</pre>
+
+<p>
+	Then, on each property you want to export, add the annotation like this :
+</p>
+
+<pre>
+	<code>
+/**
+ * @var string
+ *
+ * @ORM\Column(name="title", type="string", length=255)
+ * @Exportable(is_exportable=true, label="Title", type="text")
+ */
+private $title;
+	</code>
+</pre>
+
+<h5>Export field types</h5>
+
+<p>
+	For each property type (text, boolean, entity relationship...), an export type is defined :
+</p>
+
+<div class="field-description">
+	<p>
+		<strong>Global parameters :</strong>
+
+		<ul class="parameters">
+			<li>
+				<code>is_exportable</code> : boolean | required
+			</li>
+
+			<li>
+				<code>type</code> : string | required
+				<br>
+				The type of input
+			</li>
+
+			<li>
+				<code>label</code> : string | required
+				<br>
+				The label to display as your column header
+			</li>
+		</ul>
+	</p>
+</div>
+
+<div class="field-description">
+	<h5 id="field-text">Text</h5>
+
+	<p><strong>Property type :</strong> <code>text</code></p>
+	<p><strong>Definition :</strong></p>
+	<pre>
+		<code class="php">
+/**
+ * @var string
+ *
+ * @ORM\Column(name="title", type="string", length=255)
+ * @Exportable(is_exportable=true, label="Title", type="text")
+ */
+private $title;
+		</code>
+	</pre>
+</div>
