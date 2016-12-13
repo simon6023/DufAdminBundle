@@ -81,3 +81,98 @@ private $title;
 		</code>
 	</pre>
 </div>
+
+<div class="field-description">
+	<h5 id="field-text">Boolean</h5>
+
+	<p><strong>Property type :</strong> <code>boolean</code></p>
+	<p><strong>Definition :</strong></p>
+	<pre>
+		<code class="php">
+/**
+ * @var bool
+ *
+ * @ORM\Column(name="enabled", type="boolean")
+ * @Exportable(is_exportable=true, label="Enabled", type="boolean")
+ */
+private $enabled;
+		</code>
+	</pre>
+</div>
+
+<div class="field-description">
+	<h5 id="field-text">Entities Collection</h5>
+
+	<p>
+		Use this type to export the content of a collection property. For example, a blog article with multiple tags. All the tags will be displayed in one single column in the export file.
+	</p>
+
+	<p><strong>Property type :</strong> <code>boolean</code></p>
+	<p><strong>Definition :</strong></p>
+	<pre>
+		<code class="php">
+/**
+ * @ORM\ManyToMany(targetEntity="AppBundle\Entity\YourOtherEntity", inversedBy="your_entity")
+ * @Exportable(is_exportable=true, label="Your Label", type="entities_collection", relation_field="title")
+ */
+private $otherEntities;
+		</code>
+	</pre>
+	<p>
+		<strong>Parameters :</strong>
+
+		<ul class="parameters">
+			<li>
+				<code>relation_field</code> : string | required
+				<br>
+				The name of the property of the targetEntity. The value of this property will be displayed in the exported file
+			</li>
+		</ul>
+	</p>
+</div>
+
+<div class="field-description">
+	<h5 id="field-text">Relation</h5>
+
+	<p><strong>Property type :</strong> <code>ManyToMany</code> | <code>ManyToOne</code> | <code>OneToOne</code></p>
+	<p><strong>Definition :</strong></p>
+	<pre>
+		<code class="php">
+/**
+ * @ORM\ManyToOne(targetEntity="AppBundle\Entity\YourOtherEntity")
+ * @ORM\JoinColumn(nullable=true)
+ * @Exportable(is_exportable=true, label="Your Label", type="relation", relation_field="title")
+ */
+ protected $entity;
+		</code>
+	</pre>
+	<p>
+		<strong>Parameters :</strong>
+
+		<ul class="parameters">
+			<li>
+				<code>relation_field</code> : string | required
+				<br>
+				The name of the property of the targetEntity. The value of this property will be displayed in the exported file
+			</li>
+		</ul>
+	</p>
+</div>
+
+<div class="field-description">
+	<h5 id="field-text">Count</h5>
+
+	<p><strong>Property type :</strong> <code>array</code> | <code>ManyToMany</code></p>
+	<p><strong>Definition :</strong></p>
+	<pre>
+		<code class="php">
+/**
+ * @var array
+ *
+ * @ORM\Column(name="collection", type="json_array")
+ * @Exportable(is_exportable=true, label="Collection", type="count")
+ */
+private $collection;
+		</code>
+	</pre>
+</div>

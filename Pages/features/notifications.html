@@ -1,0 +1,49 @@
+<h4>Notification System</h4>
+
+<p>
+	DufAdminBundle provides a rather simple but efficient Notification System, usefull to execute any kind of action, triggered by certain events (post/pre persist, for example).
+</p>
+
+<h5>Usage</h5>
+
+<p>
+	First, go to http://yourdomain/site-admin/content/dufcorebundle/dufcorenotificationtype/index or click on the left panel link <strong>Notification Types</strong>, in the <strong>Parameters</strong> tab.
+</p>
+
+<p>
+	Then, click on "Create new Notification Types". You should get this form :
+</p>
+
+<div class="preview-container">
+	<img src="/DufAdminBundle/imgs/features/notifications/form.png">
+</div>
+
+<p>
+	Here his the explanation of each of these fields :
+</p>
+
+<div class="field-description">
+	<h4 id="field-text">Title</h4>
+
+	<p><strong>required</strong></p>
+	<p>
+		The name of your Notification Type.
+	</p>
+</div>
+
+<div class="field-description">
+	<h4 id="field-text">Enabled</h4>
+
+	<p><strong>required</strong></p>
+	<p>
+		Enable or disable the Notification Type. If disabled, no event will be triggered.
+	</p>
+</div>
+
+<div class="field-description">
+	<h4 id="field-text">Priority</h4>
+
+	<p>
+		A Notification Type with a priority of 1 will be executed before anoter Notification Type with a priority of 10.
+	</p>
+</div>
