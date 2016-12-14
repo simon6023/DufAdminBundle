@@ -1,0 +1,79 @@
+<h4>Sitemap</h4>
+
+<p>
+	DufAdminBundle offers you a simple way to generate your sitemap.xml file, using custom annotations in your entities. The sitemap file will be automatically available at http://yourdomain/sitemap.xml
+</p>
+
+<p>
+	The <code>SitemapableAnnotation</code> takes several parameters :
+</p>
+
+<ul>
+	<li>
+		<code>route</code> : the name of the route used to create the urls in the sitemap. For example, if you have an Article entity, you can decide to generate URLs for every article in the sitemap.
+	</li>
+
+	<li>
+		<code>route_params</code> : if your route takes parameters, indicate it here in an array : keys are the name of the route parameter, values are the name of the entity property.
+	</li>
+
+	<li>
+		<code>find_by</code> : if you want to filters the entities displayed in the sitemap, you can indicate it here.
+	</li>
+
+	<li>
+		<code>changefreq</code> : the URL changefreq
+	</li>
+
+	<li>
+		<code>priority</code> : the URL priority
+	</li>
+</ul>
+
+<p>
+	To use this feature, update your entity class :
+</p>
+
+<pre>
+	<code style="php">
+// AppBundle/Entity/YourEntity
+
+use Duf\CoreBundle\Annotations\SitemapableAnnotation as Sitemapable;
+
+/**
+ * YourEntity
+ *
+ * @ORM\Table(name="your_entity")
+ * @ORM\Entity()
+ * @Sitemapable(route="your_route_name", route_params={"slug":"slug"}, find_by={"enabled":"1"}, changefreq="daily", priority="1.0")
+ */
+class YourEntity extends DufAdminEntity implements Translatable
+{
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="title", type="string", length=255)
+     */
+    private $title;
+
+    /**
+     * @ORM\Column(length=128, unique=true)
+     */
+    private $slug;
+}
+	</code>
+</pre>
+
+<p>
+	If you want to display static URLS in your sitemap, simply add the routes in your <code>config.yml</code> file :
+</p>
+
+<pre>
+	<code>
+# app/config/config.yml
+
+duf_core:
+    static_urls:
+        - who_is
+	</code>
+</pre>

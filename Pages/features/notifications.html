@@ -23,7 +23,7 @@
 </p>
 
 <div class="field-description">
-	<h4 id="field-text">Title</h4>
+	<h5 id="field-text">Title</h5>
 
 	<p><strong>required</strong></p>
 	<p>
@@ -32,7 +32,7 @@
 </div>
 
 <div class="field-description">
-	<h4 id="field-text">Enabled</h4>
+	<h5 id="field-text">Enabled</h5>
 
 	<p><strong>required</strong></p>
 	<p>
@@ -41,9 +41,196 @@
 </div>
 
 <div class="field-description">
-	<h4 id="field-text">Priority</h4>
+	<h5 id="field-text">Priority</h5>
 
 	<p>
 		A Notification Type with a priority of 1 will be executed before anoter Notification Type with a priority of 10.
 	</p>
 </div>
+
+<div class="field-description">
+	<h5 id="field-text">Access Level</h5>
+
+	<p>
+		Limit the Notification to specific <code>ROLE</code>. If a role is selected, the notification will be triggered only if the current user has that role.
+	</p>
+</div>
+
+<div class="field-description">
+	<h5 id="field-text">Listener Type</h5>
+
+	<p>
+		Chose <code>controller</code> or <code>doctrine</code>.
+	</p>
+
+	<ul>
+		<li>
+			<code>controller</code> will listen to any given Action of the Controller, specified in the Event Class field.
+		</li>
+
+		<li>
+			<code>doctrine</code> will listen to Doctrine Lifecycle Events - for the moment, only <code>postPersist</code>, <code>postUpdate</code> and <code>postDelete</code> are available.
+		</li>
+	</ul>
+</div>
+
+<div class="field-description">
+	<h5 id="field-text">Event Class</h5>
+
+	<p>
+		The class of your Controller or your Doctrine Entity, depending on the value of the Listener Type field. Namespace is required.
+	</p>
+</div>
+
+<div class="field-description">
+	<h5 id="field-text">Event Action</h5>
+
+	<ul>
+		<li>
+			For the <code>controller</code> Listener Type, write the Action of this controller, which will trigger the Notification.
+		</li>
+
+		<li>
+			For the <code>doctrine</code> Listener Type, write the Lifecycle Event you want to listen to.
+		</li>
+	</ul>
+</div>
+
+<div class="field-description">
+	<h5 id="field-text">Target Class</h5>
+
+	<p>
+		Indicates which Symfony service will be called if this Notification Type is triggered. Namespace is required.
+	</p>
+
+	<p>
+		This is where you do your custom logic : write something to the database, send notification emails, etc.
+	</p>
+
+	<p>
+		The service must extend <code>Duf\CoreBundle\Service\DufCoreNotification</code> and implement <code>Duf\CoreBundle\Interfaces\DufCoreNotificationInterface</code>. See the NotificationService sample below for more information on the way to write your custom logic.
+	</p>
+</div>
+
+<h5>Writing your Target Class</h5>
+
+<p>
+	Your custom logic must be written in a Symfony Service. Let's say we use the service <code>AppBundle\Service\NotificationService</code> for this example.
+</p>
+
+<p>
+	First, define the service in your bundle configuration :
+</p>
+
+<pre>
+	<code>
+# AppBundle/Resources/config/services.yml
+
+services:
+    app.notifications:
+        class: AppBundle\Service\NotificationService
+	</code>
+</pre>
+
+<p>
+	Then, your Service class must look like this :
+</p>
+
+<pre>
+	<code class="php">
+// AppBundle/Service/NotificationService
+
+namespace AppBundle\Service;
+
+use Symfony\Component\HttpFoundation\Response;
+
+use Duf\CoreBundle\Service\DufCoreNotification;
+use Duf\CoreBundle\Interfaces\DufCoreNotificationInterface;
+
+class NotificationService extends DufCoreNotification implements DufCoreNotificationInterface
+{
+    public function processNotification($notification_type, $listener_data, $user = null)
+    {
+        $notification       = null;
+        $notification_data  = null;
+
+        switch ($notification_type->getName()) {
+            case 'user_follow':
+                if (null !== $user) {
+                    $request = $listener_data;
+                    $notification_data  = array(
+                        'follower_id'   => $user->getId(),
+                        'followee_id'   => $request->get('user_id'),
+                    );
+                }
+            break;
+        }
+
+        if (null !== $notification_data) {
+            $notification   = $this->createNotification($notification_type, $notification_data);
+        }
+
+        return $notification;
+    }
+	
+    public function getNotifications($user, array $notification_types = null, $read_status = false)
+    {
+        $notifications = null;
+
+        if (null === $notification_types || empty($notification_types))
+            $notification_types = $this->getNotificationTypes();
+
+        foreach ($notification_types as $notification_type) {
+            switch ($notification_type->getName()) {
+                case 'user_follow':
+                    $qb = $this->getQueryBuilder();
+                    $qb->select('n')
+                       ->from('DufCoreBundle:DufCoreNotification', 'n')
+                       ->where('n.notification_data LIKE :user_follow_query')
+                       ->andWhere('n.is_read = :read_status')
+                       ->setParameter('user_follow_query', '%"followee_id":"' . $user->getId() . '"%')
+                       ->setParameter('read_status', $this->getReadStatusForQuery($read_status));
+
+                       $notifications['user_follow'] = $qb->getQuery()->getResult();
+                    break;
+            }
+        }
+
+        return $notifications;
+    }
+}
+	</code>
+</pre>
+
+<p>
+	The <code>processNotification</code> function is called if a Notification Type is triggered. Here, you can check which Notification Type is being triggered, and do whatever you want then.
+</p>
+
+<p>
+	The <code>getNotifications</code> function is used to retrieve read or unread notifications for a given user. See the Get User's Notifications section below for more informations.
+</p>
+
+<h5>Get User's Notifications</h5>
+
+<p>
+	In a Controller, use this function to retrieve read/unread notifications :
+</p>
+
+<pre>
+	<code class="php">
+private function getUnreadNotifications($user)
+{
+    $notifications   = array();
+    $target_classes  = $this->getDoctrine()->getRepository('DufCoreBundle:DufCoreNotificationType')->findByDistinctTargetClasses();
+
+    foreach ($target_classes as $target_class) {
+        if (class_exists($target_class)) {
+            $class            = new $target_class($this->getDoctrine()->getManager(), $this->container);
+            $notifications[]  = $class->getNotifications($this->getUser());
+        }
+    }
+
+    return $notifications;
+}
+	</code>
+</pre>
