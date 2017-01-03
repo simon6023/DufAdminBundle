@@ -36,7 +36,7 @@ class DufAdminRedmine
     {
         $this->setConfig();
         $this->setUser($user);
-        $this->setClient();
+        $this->setClient($user);
         $this->setStatuses();
 
         return $this;
@@ -211,10 +211,10 @@ class DufAdminRedmine
         return $this;
     }
 
-    private function setClient()
+    private function setClient($user)
     {
         $this->client       = new Redmine\Client($this->config['host'], $this->config['api_key']);
-        $this->client->setImpersonateUser($this->user->getRedmineUsername());
+        $this->client->setImpersonateUser($user->getRedmineUsername());
     }
 
     private function setStatuses()
