@@ -1,8 +1,16 @@
 <h4>Sitemap</h4>
 
+<h5>Description</h5>
+
 <p>
 	DufAdminBundle offers you a simple way to generate your sitemap.xml file, using custom annotations in your entities. The sitemap file will be automatically available at http://yourdomain/sitemap.xml
 </p>
+
+<p>
+	The sitemap.xml file is in fact a sitemap index. A different XML file will be generated dynamically for each content type, and a single XML file will be generated for the static URLs.
+</p>
+
+<h5>Usage</h5>
 
 <p>
 	The <code>SitemapableAnnotation</code> takes several parameters :
@@ -77,3 +85,9 @@ duf_core:
         - who_is
 	</code>
 </pre>
+
+<h5>Translations</h5>
+
+<p>
+	The Sitemap feature handles translations automatically, using Gedmo Translatable annotation.
+</p>

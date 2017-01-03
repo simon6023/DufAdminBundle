@@ -1,0 +1,45 @@
+<h4>Redmine</h4>
+
+<p>
+	DufAdminBundle provides an implementation of the Redmine API, using <a href="https://github.com/kbsali/php-redmine-api" target="_blank">kbsali/redmine-api</a> Bundle. For more information on this bundle, please visit the github repo.
+</p>
+
+<h5>Configuration</h5>
+
+<p>
+	To use this feature, simply define some configuration variables :
+</p>
+
+<pre>
+	<code>
+# AppBundle/config/config.yml
+
+duf_admin:
+    redmine:
+        host: http://your-redmine-host/
+        project: your-project
+        api_key: your-api-key
+	</code>
+</pre>
+
+<p>
+	<strong>Then you must set the Redmine username to each user</strong>. To do so, simply edit the right user (select "Users" in the navigation menu), and edit the "Redmine Username" field.
+</p>
+
+<p>
+	When the user authenticates to the admin section of your website, the Redmine link will be available in the navigation menu :
+</p>
+
+<div class="preview-container">
+	<img src="/DufAdminBundle/imgs/project-management/redmine/menu.png">
+</div>
+
+<h5>Usage</h5>
+
+<p>
+	On the list view (http://your-domain/site-admin/redmine), you'll find every issue existing for the project set in the configuration.
+</p>
+
+<p>
+	For the moment, you can only create new issues, but you can't edit an issue. This will be fixed soon.
+</p>
