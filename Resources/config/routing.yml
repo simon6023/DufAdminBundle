@@ -185,13 +185,5 @@ duf_admin_get_thumbnail:
     defaults: { _controller: "DufAdminBundle:File:getThumbnail" }
     methods: [POST]
 
-duf_messaging:
-    resource: "@DufMessagingBundle/Resources/config/routing.yml"
-    prefix:   /
-
-duf_core:
-    resource: "@DufCoreBundle/Resources/config/routing.yml"
-    prefix:   /
-
 fos_js_routing:
     resource: "@FOSJsRoutingBundle/Resources/config/routing/routing.xml"
