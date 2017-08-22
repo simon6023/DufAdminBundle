@@ -28,6 +28,10 @@ duf_admin_messaging:
     resource: "@DufAdminBundle/Resources/config/routing/messaging.yml"
     prefix:   /messages
 
+duf_core:
+    resource: "@DufCoreBundle/Resources/config/routing.yml"
+    prefix:   /
+
 duf_admin_export:
     resource: "@DufAdminBundle/Resources/config/routing/export.yml"
     prefix:   /export
