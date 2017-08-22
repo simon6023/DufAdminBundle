@@ -27,7 +27,9 @@
         "doctrine/doctrine-fixtures-bundle": "dev-master",
         "imagine/imagine":"dev-master",
         "simonduflos/dufcorebundle":"@dev",
-        "simonduflos/dufmessagingbundle":"@dev"
+        "simonduflos/dufmessagingbundle":"@dev",
+        "simonduflos/dufecommercebundle":"@dev",
+        "simonduflos/dufaggregatorbundle":"@dev"
     },
     "autoload": {
         "psr-4": { "Duf\\AdminBundle\\": "" }

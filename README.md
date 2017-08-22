@@ -41,6 +41,8 @@ public function registerBundles()
         new Duf\AdminBundle\DufAdminBundle(),
         new Duf\CoreBundle\DufCoreBundle(),
         new Duf\MessagingBundle\DufMessagingBundle(),
+        new Duf\MessagingBundle\DufECommerceBundle(),
+        new Duf\MessagingBundle\DufAggregatorBundle(),
 	];
 
     if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
