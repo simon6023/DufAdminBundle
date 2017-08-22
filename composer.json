@@ -24,7 +24,7 @@
         "lexik/translation-bundle": "~4.0",
         "hwi/oauth-bundle": "0.5.0",
         "stof/doctrine-extensions-bundle": "1.2.2",
-        "doctrine/doctrine-fixtures-bundle": "dev-master",
+        "doctrine/doctrine-fixtures-bundle": "@dev",
         "imagine/imagine":"dev-master",
         "facebook/graph-sdk":"5.6.0",
         "smirik/php-datetime-ago": "dev-master",
