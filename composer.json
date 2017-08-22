@@ -30,10 +30,10 @@
         "smirik/php-datetime-ago": "dev-master",
         "abraham/twitteroauth":"dev-master",
         "guzzlehttp/guzzle":"dev-master",
-        "simonduflos/dufcorebundle":"@dev",
-        "simonduflos/dufmessagingbundle":"@dev",
-        "simonduflos/dufecommercebundle":"@dev",
-        "simonduflos/dufaggregatorbundle":"@dev"
+        "simonduflos/dufcorebundle":"dev-master",
+        "simonduflos/dufmessagingbundle":"dev-master",
+        "simonduflos/dufecommercebundle":"dev-master",
+        "simonduflos/dufaggregatorbundle":"dev-master"
     },
     "autoload": {
         "psr-4": { "Duf\\AdminBundle\\": "" }
