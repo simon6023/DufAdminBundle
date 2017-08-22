@@ -45,6 +45,11 @@ doctrine:
                 alias: GedmoTree
                 is_bundle: false
 
+        # DufAdminUserInterface
+        resolve_target_entities:
+            Duf\AdminBundle\Model\DufAdminUserInterface: AppBundle\Entity\User
+            Duf\AdminBundle\Model\DufAdminUserRoleInterface: AppBundle\Entity\UserRole
+
 # Stof Doctrine Extensions configuration
 stof_doctrine_extensions:
     default_locale: en_US

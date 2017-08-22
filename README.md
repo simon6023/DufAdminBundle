@@ -84,7 +84,7 @@ security:
     encoders:
         Symfony\Component\Security\Core\User\User:
             algorithm: plaintext
-        Duf\AdminBundle\Entity\User:
+        Duf\AdminBundle\Model\DufAdminUserInterface:
             id: duf_admin.dufadminencoder
     providers:
         duf_admin_provider:
