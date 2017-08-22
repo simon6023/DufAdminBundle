@@ -1,0 +1,11 @@
+duf_admin_aggregator_view_posts:
+    path:     /posts/{account_id}/{page}
+    defaults: { _controller: DufAggregatorBundle:Admin\Aggregator:viewPosts, page: 1 }
+
+duf_admin_aggregator_refresh:
+    path:     /refresh/{account_id}
+    defaults: { _controller: DufAggregatorBundle:Admin\Aggregator:refresh }
+
+duf_admin_aggregator_update_post_state:
+    path:     /update-post-state/{post_id}/{state}
+    defaults: { _controller: DufAggregatorBundle:Admin\Aggregator:updatePostState }

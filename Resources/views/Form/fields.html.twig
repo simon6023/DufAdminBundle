@@ -1,7 +1,21 @@
 {% block duf_admin_text_widget %}
 	<div class="form-group">
 		<label for="">{{ label }}{% if form.vars.required is defined and form.vars.required == true %}*{% endif %}</label>
-		<input name="{{ full_name }}" type="text" class="form-control" id="" {% if form.vars.attr.placeholder is defined %}placeholder="{{ form.vars.attr.placeholder }}"{% endif %} {% if form.vars.required %}required{% endif %} {% if value is defined and value is not null %}value="{{ value }}"{% endif %}>
+		<input name="{{ full_name }}" type="text" class="form-control" id="{{ form.vars.id }}" {% if form.vars.attr.placeholder is defined %}placeholder="{{ form.vars.attr.placeholder }}"{% endif %} {% if form.vars.required %}required{% endif %} {% if value is defined and value is not null %}value="{{ value }}"{% endif %}>
+	</div>
+{% endblock %}
+
+{% block duf_admin_email_widget %}
+	<div class="form-group">
+		<label for="">{{ label }}{% if form.vars.required is defined and form.vars.required == true %}*{% endif %}</label>
+		<input name="{{ full_name }}" type="email" class="form-control" id="{{ form.vars.id }}" {% if form.vars.attr.placeholder is defined %}placeholder="{{ form.vars.attr.placeholder }}"{% endif %} {% if form.vars.required %}required{% endif %} {% if value is defined and value is not null %}value="{{ value }}"{% endif %}>
+	</div>
+{% endblock %}
+
+{% block duf_admin_url_widget %}
+	<div class="form-group">
+		<label for="">{{ label }}{% if form.vars.required is defined and form.vars.required == true %}*{% endif %}</label>
+		<input name="{{ full_name }}" type="url" class="form-control" id="{{ form.vars.id }}" {% if form.vars.attr.placeholder is defined %}placeholder="{{ form.vars.attr.placeholder }}"{% endif %} {% if form.vars.required %}required{% endif %} {% if value is defined and value is not null %}value="{{ value }}"{% endif %}>
 	</div>
 {% endblock %}
 
@@ -72,21 +86,21 @@
 {% block duf_admin_number_widget %}
 	<div class="form-group">
 		<label for="">{{ label }}{% if form.vars.required is defined and form.vars.required == true %}*{% endif %}</label>
-		<input name="{{ full_name }}" type="number" {% if form.vars.number_type == 'float' %}step="0.01"{% endif %} class="form-control duf-admin-numbers {% if form.vars.number_type == 'integer' %}integer{% elseif form.vars.number_type == 'float' %}float{% endif %}" id="" {% if form.vars.required %}required{% endif %} {% if value is defined and value is not null %}value="{{ value }}"{% endif %}>
+		<input name="{{ full_name }}" type="number" {% if form.vars.number_type == 'float' %}step="0.01"{% endif %} class="form-control duf-admin-numbers {% if form.vars.number_type == 'integer' %}integer{% elseif form.vars.number_type == 'float' %}float{% endif %}" id="{{ form.vars.id }}" {% if form.vars.required %}required{% endif %} {% if value is defined and value is not null %}value="{{ value }}"{% endif %}>
 	</div>
 {% endblock %}
 
 {% block duf_admin_date_widget %}
 	<div class="form-group">
 		<label for="">{{ label }}{% if form.vars.required is defined and form.vars.required == true %}*{% endif %}</label>
-		<input name="{{ full_name }}" type="text" class="form-control duf-admin-date" id="" {% if form.vars.required %}required{% endif %} {% if value is defined and value is not null %}value="{{ value }}"{% endif %}>
+		<input name="{{ full_name }}" type="text" class="form-control duf-admin-date" id="{{ form.vars.id }}" {% if form.vars.required %}required{% endif %} {% if value is defined and value is not null %}value="{{ value }}"{% endif %}>
 	</div>
 {% endblock %}
 
 {% block duf_admin_datetime_widget %}
 	<div class="form-group">
 		<label for="">{{ label }}{% if form.vars.required is defined and form.vars.required == true %}*{% endif %}</label>
-		<input name="{{ full_name }}" type="text" class="form-control duf-admin-datetime" id="" {% if form.vars.required %}required{% endif %} {% if value is defined and value is not null %}value="{{ value }}"{% endif %}>
+		<input name="{{ full_name }}" type="text" class="form-control duf-admin-datetime" id="{{ form.vars.id }}" {% if form.vars.required %}required{% endif %} {% if value is defined and value is not null %}value="{{ value }}"{% endif %}>
 	</div>
 {% endblock %}
 
@@ -272,4 +286,138 @@
 
 {% block duf_admin_hidden_widget %}
 	<input type="hidden" name="{{ full_name }}" {% if value is defined and value is not null %}value="{{ value }}"{% endif %}>
+{% endblock %}
+
+{% block duf_admin_prices_widget %}
+	<div class="currency-crud-box-container">
+		{% for currency in currencies %}
+			<div class="col-md-3 currency-box">
+				<div class="box box-success">
+					<div class="box-header with-border currencies-box-header">
+						<h3 class="box-title" data-currency-name="{{ currency.name }}" data-currency-code="{{ currency.code }}">
+							{{ currency.code }} - {{ currency.name }}
+						</h3>
+					</div>
+
+					<div class="box-body">
+						{% for territory in currency.territories %}
+							{% set price_value = null %}
+							{% if value is defined and value is not null %}
+								{% for value_country_code, value_currencies in value %}
+									{% if value_country_code == territory.code %}
+										{% for value_currency_code, value_currency_value in value_currencies %}
+											{% if value_currency_code == currency.code %}
+												{% set price_value = value_currency_value %}
+											{% endif %}
+										{% endfor %}
+									{% endif %}
+								{% endfor %}
+							{% endif %}
+
+							<br>
+							<label for="prices-{{ currency.code }}">{{ territory.name }}</label>
+							<div class="input-group mb-2 mr-sm-2 mb-sm-0">
+								<div class="input-group-addon">{{ currency.symbol }}</div>
+
+								<input id="prices-{{ currency.code }}" class="form-control" type="text" name="{{ full_name }}[{{territory.code}}][{{ currency.code }}]" {% if price_value is not null %}value="{{ price_value }}"{% endif %}>
+							</div>
+						{% endfor %}
+					</div>
+				</div>
+			</div>
+		{% endfor %}
+	</div>
+{% endblock %}
+
+{% block duf_admin_day_picker_widget %}
+	<div class="day-picker-container">
+		<label>{{ label }}</label>
+
+		<div class="day-picker-item">
+			<h4>{{ 'default.all' }}</h4>
+			<input id="{{ form.vars.id }}" class="day-picker all" type="checkbox">
+		</div>
+	</div>
+
+	<div class="day-picker-container">
+		{% for day in form.vars.choices %}
+			{% set input_id = form.vars.id ~ '-' ~ day.value %}
+			{% set selected = '' %}
+
+			{% if form.vars.days is defined and form.vars.days is not null %}
+				{% for selected_day in form.vars.days %}
+					{% if selected_day == day.value  %}
+						{% set selected = 'checked' %}
+					{% endif %}
+				{% endfor %}
+			{% endif %}
+
+			<div class="day-picker-item">
+				<h4>{{ day.label }}</h4>
+				<input id="{{ input_id }}" class="day-picker day" type="checkbox" name="{{ full_name }}[]" value="{{ day.value }}" {{ selected }}>
+			</div>
+		{% endfor %}
+	</div>
+{% endblock %}
+
+{% block duf_admin_hour_picker_widget %}
+	<div class="hour-picker-container">
+		<label>{{ label }}</label>
+
+		<div class="hour-picker-item">
+			<h4>{{ 'default.all' }}</h4>
+			<input id="{{ form.vars.id }}" class="hour-picker all" type="checkbox">
+		</div>
+	</div>
+
+	<div class="hour-picker-container">
+		{% for hour in form.vars.choices %}
+			{% set input_id = form.vars.id ~ '-' ~ hour.value %}
+			{% set selected = '' %}
+
+			{% if form.vars.hours is defined and form.vars.hours is not null %}
+				{% for selected_hour in form.vars.hours %}
+					{% if selected_hour == hour.value  %}
+						{% set selected = 'checked' %}
+					{% endif %}
+				{% endfor %}
+			{% endif %}
+
+			<div class="hour-picker-item">
+				<h4>{{ hour.label }}</h4>
+				<input id="{{ input_id }}" class="hour-picker hour" type="checkbox" name="{{ full_name }}[]" value="{{ hour.value }}" {{ selected }}>
+			</div>
+		{% endfor %}
+	</div>
+{% endblock %}
+
+{% block duf_admin_minute_picker_widget %}
+	<div class="minute-picker-container">
+		<label>{{ label }}</label>
+
+		<div class="minute-picker-item">
+			<h4>{{ 'default.all' }}</h4>
+			<input id="{{ form.vars.id }}" class="minute-picker all" type="checkbox">
+		</div>
+	</div>
+
+	<div class="minute-picker-container">
+		{% for minute in form.vars.choices %}
+			{% set input_id = form.vars.id ~ '-' ~ minute.value %}
+			{% set selected = '' %}
+
+			{% if form.vars.minutes is defined and form.vars.minutes is not null %}
+				{% for selected_minute in form.vars.minutes %}
+					{% if selected_minute == minute.value  %}
+						{% set selected = 'checked' %}
+					{% endif %}
+				{% endfor %}
+			{% endif %}
+
+			<div class="minute-picker-item">
+				<h4>{{ minute.label }}</h4>
+				<input id="{{ input_id }}" class="minute-picker minute" type="checkbox" name="{{ full_name }}[]" value="{{ minute.value }}" {{ selected }}>
+			</div>
+		{% endfor %}
+	</div>
 {% endblock %}

@@ -1,0 +1,11 @@
+duf_admin_cron_logs:
+    path:     /logs
+    defaults: { _controller: DufAdminBundle:Cron:logs }
+
+duf_admin_cron_logs_delete:
+    path:     /logs/delete/{timestamp}
+    defaults: { _controller: DufAdminBundle:Cron:delete }
+
+duf_admin_cron_logs_view:
+    path:     /logs/view/{timestamp}
+    defaults: { _controller: DufAdminBundle:Cron:view }

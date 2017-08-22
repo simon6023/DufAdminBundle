@@ -46,6 +46,8 @@
 <script src="{{ asset('bundles/dufadmin/js/duf-admin-file-system.js') }}"></script>
 <script src="{{ asset('bundles/dufadmin/js/duf-admin-crud.js') }}"></script>
 <script src="{{ asset('bundles/dufadmin/js/duf-admin-messaging.js') }}"></script>
+<script src="{{ asset('bundles/dufaggregator/js/duf-admin-aggregator.js') }}"></script>
+<script src="{{ asset('bundles/dufecommerce/js/duf-store-crud.js') }}"></script>
 
 <!-- Select2 -->
 <link rel="stylesheet" href="{{ asset('bundles/dufadmin/plugins/select2/select2.min.css') }}">
@@ -103,6 +105,13 @@
         window.dufAdminFileSystem   = new DufAdminFileSystem();
         window.dufAdminCrud         = new DufAdminCrud();
         window.dufAdminMessaging    = new DufAdminMessaging();
+        window.dufProductCrud       = new DufProductCrud();
+        window.dufAdminAggregator   = new DufAdminAggregator();
+
+        if ($('#ecommerce-map-picker').length > 0) {
+            window.dufProductCrud.checkIsVirtual();
+            window.dufProductCrud.setMap();
+        }
 
         $('a.translatable-choice').on('click', function(e) {
             e.preventDefault();

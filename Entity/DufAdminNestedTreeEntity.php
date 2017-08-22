@@ -7,6 +7,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 
 use Duf\AdminBundle\Entity\DufAdminAbstractEntity;
 use Duf\AdminBundle\Annotations\IndexableAnnotation;
+use Duf\AdminBundle\Annotations\EditableAnnotation;
 
 /**
  * @Gedmo\Tree(type="nested")
@@ -23,7 +24,7 @@ abstract class DufAdminNestedTreeEntity extends DufAdminAbstractEntity
      * @ORM\GeneratedValue(strategy="AUTO")
      * @IndexableAnnotation(index_column=true, index_column_name="Id", index_column_order=1)
      */
-    public $id;
+    private $id;
 
     /**
      * @var \DateTime
@@ -31,7 +32,7 @@ abstract class DufAdminNestedTreeEntity extends DufAdminAbstractEntity
      * @ORM\Column(name="created_at", type="datetime")
      * @IndexableAnnotation(index_column=true, index_column_name="Created At", index_column_order=2)
      */
-    public $created_at;
+    private $created_at;
 
     /**
      * @var \DateTime
@@ -39,30 +40,39 @@ abstract class DufAdminNestedTreeEntity extends DufAdminAbstractEntity
      * @ORM\Column(name="updated_at", type="datetime", nullable=true)
      * @IndexableAnnotation(index_column=true, index_column_name="Updated At", index_column_order=3)
      */
-    public $updated_at;
+    private $updated_at;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="title", type="string", length=255)
+     * @IndexableAnnotation(index_column=true, index_column_name="Title")
+     * @EditableAnnotation(is_editable=true, label="Title", required=true, type="text", order=1, placeholder="Write your title")
+     */
+    private $title;
 
     /**
      * @ORM\Column(name="enabled", type="boolean")
      */
-    public $enabled;
+    private $enabled;
 
     /**
      * @Gedmo\TreeLeft
      * @ORM\Column(type="integer")
      */
-    public $lft;
+    private $lft;
 
     /**
      * @Gedmo\TreeLevel
      * @ORM\Column(type="integer")
      */
-    public $lvl;
+    private $lvl;
 
     /**
      * @Gedmo\TreeRight
      * @ORM\Column(type="integer")
      */
-    public $rgt;
+    private $rgt;
 
     public function getId()
     {
@@ -74,7 +84,7 @@ abstract class DufAdminNestedTreeEntity extends DufAdminAbstractEntity
      *
      * @param \DateTime $createdAt
      *
-     * @return User
+     * @return DufAdminNestedTreeEntity
      */
     public function setCreatedAt($createdAt)
     {
@@ -98,7 +108,7 @@ abstract class DufAdminNestedTreeEntity extends DufAdminAbstractEntity
      *
      * @param \DateTime $updatedAt
      *
-     * @return User
+     * @return DufAdminNestedTreeEntity
      */
     public function setUpdatedAt($updatedAt)
     {
@@ -126,6 +136,31 @@ abstract class DufAdminNestedTreeEntity extends DufAdminAbstractEntity
     {
         return $this->updated_at->format('d/m/Y');
     }
+
+    /**
+     * Set title
+     *
+     * @param string $title
+     *
+     * @return DufAdminNestedTreeEntity
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
+    /**
+     * Get title
+     *
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
 
     /**
      * Set enabled

@@ -7,41 +7,38 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\Form\FormInterface;
 
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 
-use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\BufferedOutput;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\KernelInterface;
-
-use Symfony\Component\Process\Process;
-use Symfony\Component\Process\Exception\ProcessFailedException;
-
-class DufAdminChoiceType extends AbstractType
+class DufAdminPricesType extends AbstractType
 {
     public function configureOptions(OptionsResolver $resolver)
     {
-
+        $resolver->setDefaults(array(
+            'currencies'     => null,
+        ));
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-
+        $builder->setAttribute('currencies', $options['currencies']);
     }
  
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
-
+        $view->vars['currencies']        = $options['currencies'];
     }
  
     public function getDefaultOptions(array $options)
     {
-
+        $defaultOptions = array(
+            'currencies'         => array(),
+        );
+ 
+        return array_replace($defaultOptions, $options);
     }
 
     public function getParent()
     {
-        return ChoiceType::class;
+        return TextType::class;
     }
 }

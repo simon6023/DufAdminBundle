@@ -29,4 +29,13 @@ class DufAdminNestedTreeRepository extends EntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    public function getCategoriesArray($entity_name)
+    {
+        $qb     = $this->_em->createQueryBuilder()
+                            ->select('category')
+                            ->from($entity_name, 'category');
+
+        return $qb->getQuery()->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY);
+    }
 }

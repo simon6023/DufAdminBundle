@@ -1,6 +1,8 @@
 # import services
 imports:
     - { resource: "@DufCoreBundle/Resources/config/config.yml" }
+    - { resource: "@DufAggregatorBundle/Resources/config/config.yml" }
+    - { resource: "@DufECommerceBundle/Resources/config/config.yml" }
     - { resource: "@DufAdminBundle/Resources/config/services.yml" }
 
 # Twig Configuration
@@ -61,6 +63,18 @@ lexik_translation:
     fallback_locale: [en]
     managed_locales: [en, fr]
     base_layout: "DufAdminBundle:Default:index.html.twig"
+
+# Monolog config
+monolog:
+    use_microseconds: false
+    channels: [dufcorecron]
+    handlers:
+        dufcorecron:
+            level: debug
+            type: rotating_file
+            path: "%kernel.logs_dir%/%kernel.environment%.dufcorecron.log"
+            channels: [dufcorecron]
+            max_files: 30
 
 # FOS JS Routing configuration
 fos_js_routing:

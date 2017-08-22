@@ -412,3 +412,200 @@ textarea.no-editor {
 .permission-list .bootstrap-switch {
 	float:right;
 }
+
+.tab-content.ecommerce .tab-pane {
+	border-style:solid;
+	border-width:0 1px 1px 1px;
+	border-color:#ddd;
+	padding:20px;
+}
+
+.ecommerce-territories-container {
+	float:left;
+	width:100%;
+}
+
+.ecommerce-territory {
+	float:left;
+	width:25%;
+}
+
+.ecommerce-territory input[type="checkbox"] {
+	margin-right:5px;
+}
+
+.currencies-box-header {
+	height:65px;
+}
+
+.currency-box {
+	margin:10px 0;
+}
+
+.currency-box-bottom {
+	width:100%;
+	margin:10px 0;
+}
+
+.currencies-filter-container {
+	margin:20px 0;
+}
+
+.currency-crud-box-container {
+	width:100%;
+	display:inline-block;
+}
+
+.crud-map-picker {
+	width:100%;
+	height:250px;
+	margin-top:10px;
+}
+
+.store-md-6 {
+	display:inline-block;
+	width:45%;
+	padding-right:2.5%;
+	vertical-align:top;
+}
+
+.store-md-6 .form-group {
+	margin-top:0 !important;
+}
+
+.select2-container--default, .select2-container--single {
+	border-color:#555 !important;
+}
+
+.duf-ecommerce-address-box {
+	
+}
+
+.categories-tree-crud {
+	padding:0;
+	list-style-type:none;
+}
+
+.categories-tree-crud .parent {
+	padding:0;
+}
+
+.categories-tree-crud .children {
+	padding-left:20px;
+}
+
+#store-products-list-ajax-container {
+	margin-top:20px;
+}
+
+.posts-list {
+	margin-top:30px;
+}
+
+.posts-list .post {
+	border-style: solid;
+	border-width: 1px;
+	border-color: #cacaca;
+	padding:10px;
+	margin-left:2%;
+	height:450px;
+	position:relative;
+}
+
+.posts-list .post .list-inline {
+	position:absolute;
+	bottom:0;
+	left:2%;
+	width:98%;
+}
+
+.posts-list .post:last-of-type {
+    border-bottom: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: #cacaca;
+}
+
+.posts-list .post .post-state .enable .visible,
+.posts-list .post .post-state .disable .visible {
+	display:block;
+}
+
+.posts-list .post .post-state .enable .hidden,
+.posts-list .post .post-state .disable .hidden {
+	display:none;
+}
+
+.posts-list .post .post-state .enable {
+	color:green;
+}
+
+.posts-list .post .post-state .disable {
+	color:red;
+}
+
+.no-more-posts {
+	display:inline-block;
+	width:100%;
+    text-align: center;
+    margin: 40px 0;
+}
+
+.day-picker-container {
+	display: inline-block;
+	width:100%;
+	margin:0 0 30px 0;
+}
+
+.day-picker-container .day-picker-item {
+	display: inline-block;
+	width:19%;
+}
+
+.day-picker-container label,
+.day-picker-container .day-picker-item h4 {
+	width:100%;
+}
+
+.day-picker-container .day-picker-item h4 {
+	font-size:1em;
+}
+
+.hour-picker-container {
+	display: inline-block;
+	width:100%;
+	margin:0 0 30px 0;
+}
+
+.hour-picker-container .hour-picker-item {
+	display: inline-block;
+	width:12%;
+}
+
+.hour-picker-container label,
+.hour-picker-container .hour-picker-item h4 {
+	width:100%;
+}
+
+.hour-picker-container .hour-picker-item h4 {
+	font-size:1em;
+}
+
+.minute-picker-container {
+	display: inline-block;
+	width:100%;
+	margin:0 0 30px 0;
+}
+
+.minute-picker-container .minute-picker-item {
+	display: inline-block;
+	width:12%;
+}
+
+.minute-picker-container label,
+.minute-picker-container .minute-picker-item h4 {
+	width:100%;
+}
+
+.minute-picker-container .minute-picker-item h4 {
+	font-size:1em;
+}

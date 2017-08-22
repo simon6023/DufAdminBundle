@@ -2,19 +2,52 @@
 namespace Duf\AdminBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+
 use Symfony\Component\Security\Core\User\UserInterface;
 
-use Duf\AdminBundle\Entity\DufAdminEntity;
-
+use Duf\AdminBundle\Entity\DufAdminAbstractEntity;
 use Duf\AdminBundle\Annotations\IndexableAnnotation;
 use Duf\AdminBundle\Annotations\EditableAnnotation;
 
 /**
- * @ORM\Table(name="duf_admin_users")
- * @ORM\Entity(repositoryClass="Duf\AdminBundle\Entity\Repository\UserRepository")
+ * @ORM\MappedSuperclass
+ * @ORM\HasLifecycleCallbacks
  */
-class User extends DufAdminEntity implements UserInterface, \Serializable
+abstract class DufAdminUser extends DufAdminAbstractEntity implements UserInterface, \Serializable
 {
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @IndexableAnnotation(index_column=true, index_column_name="Id", index_column_order=1)
+     */
+    public $id;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created_at", type="datetime")
+     * @IndexableAnnotation(index_column=true, index_column_name="Created At", index_column_order=2)
+     */
+    public $created_at;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="updated_at", type="datetime", nullable=true)
+     * @IndexableAnnotation(index_column=true, index_column_name="Updated At", index_column_order=3)
+     */
+    public $updated_at;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="form_token", type="string", length=255, nullable=true)
+     */
+    public $form_token;
+
     /**
      * @var string
      *
@@ -22,7 +55,7 @@ class User extends DufAdminEntity implements UserInterface, \Serializable
      * @IndexableAnnotation(index_column=true, index_column_name="Username")
      * @EditableAnnotation(is_editable=true, label="Username", required=true, type="text", order=1, placeholder="Username")
      */
-    private $username;
+    public $username;
 
     /**
      * @var string
@@ -31,7 +64,7 @@ class User extends DufAdminEntity implements UserInterface, \Serializable
      * @IndexableAnnotation(index_column=true, index_column_name="Firstname")
      * @EditableAnnotation(is_editable=true, label="Firstname", required=false, type="text", order=2, placeholder="Firstname")
      */
-    private $firstname;
+    public $firstname;
 
     /**
      * @var string
@@ -40,7 +73,7 @@ class User extends DufAdminEntity implements UserInterface, \Serializable
      * @IndexableAnnotation(index_column=true, index_column_name="Lastname")
      * @EditableAnnotation(is_editable=true, label="Lastname", required=false, type="text", order=3, placeholder="Lastname")
      */
-    private $lastname;
+    public $lastname;
 
     /**
      * @var string
@@ -48,25 +81,25 @@ class User extends DufAdminEntity implements UserInterface, \Serializable
      * @ORM\Column(name="email", type="string", length=100, nullable=false, unique=true)
      * @EditableAnnotation(is_editable=true, label="Email", required=true, type="text", order=4, placeholder="Email")
      */
-    private $email;
+    public $email;
 
     /**
      * @var \DateTime
      *
      * @ORM\Column(name="last_login", type="datetime", nullable=true)
      */
-    private $last_login;
+    public $last_login;
 
     /**
     * @ORM\Column(name="password", type="string", length=255, nullable=true)
     * @EditableAnnotation(is_editable=true, label="Password", required=false, type="password", order=10, placeholder="Password")
     */
-    private $password;
+    public $password;
 
     /**
     * @ORM\Column(name="salt", type="string", length=255, nullable=true)
     */
-    private $salt;
+    public $salt;
 
     /**
      * @var string
@@ -74,77 +107,141 @@ class User extends DufAdminEntity implements UserInterface, \Serializable
      * @ORM\Column(name="redmine_username", type="string", length=100, nullable=true)
      * @EditableAnnotation(is_editable=true, label="Redmine Username", required=false, type="text", order=8, placeholder="Redmine Username")
      */
-    private $redmine_username;
-
-    /**
-     * @ORM\ManyToMany(targetEntity="Duf\AdminBundle\Entity\UserRole", inversedBy="users")
-     * @EditableAnnotation(is_editable=true, label="Roles", required=true, multiple=true, type="entity", order=6, relation_index="name")
-     */
-    private $roles;
-
-    /**
-     * @ORM\OneToMany(targetEntity="Duf\AdminBundle\Entity\UserPhone", orphanRemoval=true, mappedBy="user", cascade={"persist","remove"})
-     * @EditableAnnotation(is_editable=true, label="Phone Numbers", required=false, type="embed")
-     */
-     private $phonesNbrs;
+    public $redmine_username;
 
     /**
      * @ORM\Column(name="is_active", type="boolean")
      * @EditableAnnotation(is_editable=true, label="Enabled", required=true, type="checkbox", order=5)
      */
-    private $isActive;
+    public $isActive;
 
     /**
      * @ORM\Column(name="optin_messages", type="boolean")
      * @EditableAnnotation(is_editable=true, label="Can receive messages", required=false, type="checkbox", order=9)
      */
-    private $optinMessages;
+    public $optinMessages;
 
     /**
      * @ORM\ManyToOne(targetEntity="Duf\AdminBundle\Entity\File")
      * @ORM\JoinColumn(nullable=true)
      * @EditableAnnotation(is_editable=true, label="Avatar", required=false, type="file", filetype="images", order=7)
      */
-     protected $avatar;
+     public $avatar;
 
-    public function __toString()
-    {
-        return $this->username;
-    }
+    /**
+     * @ORM\ManyToMany(targetEntity="Duf\AdminBundle\Model\DufAdminUserRoleInterface", inversedBy="users")
+     * @EditableAnnotation(is_editable=true, label="Roles", required=true, multiple=true, type="entity", order=6, relation_index="name")
+     * @var DufAdminUserRoleInterface
+     */
+    public $roles;
 
-    public function eraseCredentials()
-    {
-    }
-
-    /** @see \Serializable::serialize() */
-    public function serialize()
-    {
-        return serialize(array(
-            $this->id,
-            $this->username,
-            $this->password,
-            // see section on salt below
-            // $this->salt,
-        ));
-    }
-
-    /** @see \Serializable::unserialize() */
-    public function unserialize($serialized)
-    {
-        list (
-            $this->id,
-            $this->username,
-            $this->password,
-            // see section on salt below
-            // $this->salt
-        ) = unserialize($serialized);
-    }
     /**
      * Constructor
      */
     public function __construct()
     {
         $this->roles = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    public function __toString()
+    {
+        return $this->username;
+    }
+
+    /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     *
+     * @return User
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->created_at = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->created_at;
+    }
+
+    /**
+     * Set updatedAt
+     *
+     * @param \DateTime $updatedAt
+     *
+     * @return User
+     */
+    public function setUpdatedAt($updatedAt)
+    {
+        $this->updated_at = $updatedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get updatedAt
+     *
+     * @return \DateTime
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updated_at;
+    }
+
+    public function getcreated_at()
+    {
+        return $this->created_at->format('d/m/Y');
+    }
+
+    public function getupdated_at()
+    {
+        return $this->updated_at->format('d/m/Y');
+    }
+
+    /**
+     * Set formToken
+     *
+     * @param string $formToken
+     *
+     * @return User
+     */
+    public function setFormToken($formToken)
+    {
+        $this->form_token = $formToken;
+
+        return $this;
+    }
+
+    /**
+     * Get formToken
+     *
+     * @return string
+     */
+    public function getFormToken()
+    {
+        return $this->form_token;
+    }
+
+    public function eraseCredentials()
+    {
     }
 
     /**
@@ -341,74 +438,6 @@ class User extends DufAdminEntity implements UserInterface, \Serializable
     }
 
     /**
-     * Add role
-     *
-     * @param \Duf\AdminBundle\Entity\UserRole $role
-     *
-     * @return User
-     */
-    public function addRole(\Duf\AdminBundle\Entity\UserRole $role)
-    {
-        $this->roles[] = $role;
-
-        return $this;
-    }
-
-    /**
-     * Remove role
-     *
-     * @param \Duf\AdminBundle\Entity\UserRole $role
-     */
-    public function removeRole(\Duf\AdminBundle\Entity\UserRole $role)
-    {
-        $this->roles->removeElement($role);
-    }
-
-    /**
-     * Get roles
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getRoles()
-    {
-        return $this->roles->toArray();
-    }
-
-    /**
-     * Add phonesNbr
-     *
-     * @param \Duf\AdminBundle\Entity\UserPhone $phonesNbr
-     *
-     * @return User
-     */
-    public function addPhonesNbr(\Duf\AdminBundle\Entity\UserPhone $phonesNbr)
-    {
-        $this->phonesNbrs[] = $phonesNbr;
-
-        return $this;
-    }
-
-    /**
-     * Remove phonesNbr
-     *
-     * @param \Duf\AdminBundle\Entity\UserPhone $phonesNbr
-     */
-    public function removePhonesNbr(\Duf\AdminBundle\Entity\UserPhone $phonesNbr)
-    {
-        $this->phonesNbrs->removeElement($phonesNbr);
-    }
-
-    /**
-     * Get phonesNbrs
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getPhonesNbrs()
-    {
-        return $this->phonesNbrs;
-    }
-
-    /**
      * Set avatar
      *
      * @param \Duf\AdminBundle\Entity\File $avatar
@@ -478,5 +507,63 @@ class User extends DufAdminEntity implements UserInterface, \Serializable
     public function getOptinMessages()
     {
         return $this->optinMessages;
+    }
+
+    /**
+     * Add role
+     *
+     * @param \Duf\AdminBundle\Model\DufAdminUserRoleInterface $role
+     *
+     * @return User
+     */
+    public function addRole(\Duf\AdminBundle\Model\DufAdminUserRoleInterface $role)
+    {
+        $this->roles[] = $role;
+
+        return $this;
+    }
+
+    /**
+     * Remove role
+     *
+     * @param \Duf\AdminBundle\Model\DufAdminUserRoleInterface $role
+     */
+    public function removeRole(\Duf\AdminBundle\Model\DufAdminUserRoleInterface $role)
+    {
+        $this->roles->removeElement($role);
+    }
+
+    /**
+     * Get roles
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getRoles()
+    {
+        return $this->roles->toArray();
+    }
+
+    /** @see \Serializable::serialize() */
+    public function serialize()
+    {
+        return serialize(array(
+            $this->id,
+            $this->username,
+            $this->password,
+            // see section on salt below
+            // $this->salt,
+        ));
+    }
+
+    /** @see \Serializable::unserialize() */
+    public function unserialize($serialized)
+    {
+        list (
+            $this->id,
+            $this->username,
+            $this->password,
+            // see section on salt below
+            // $this->salt
+        ) = unserialize($serialized);
     }
 }

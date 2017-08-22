@@ -19,6 +19,7 @@ class RoutingController extends Controller
         $routing_service                = $this->get('duf_admin.dufadminrouting');
         $form_service                   = $this->get('duf_admin.dufadminform');
         $seo_service                    = $this->get('duf_core.dufcoreseo');
+        $ecommerce_service              = $this->get('duf_ecommerce.dufecommerce');
 
     	// get action type
     	$action_type 			        = $routing_service->getActionType($path);
@@ -40,17 +41,57 @@ class RoutingController extends Controller
         $view_variables['entity_name']  = $entity_name;
         $view_variables['seo_config']   = $seo_config;
 
+        // current aggregator service
+        $view_variables['aggregator_service']   = (stripos($entity_name, 'DufAggregatorBundle:AggregatorAccount') !== false && isset($_GET['service'])) ? $_GET['service']: null;
+
     	switch ($action_type) {
     		case 'index':
-    			$template                           = 'DufAdminBundle:Crud:entities_index.html.twig';
-                $headers_properties                 = $form_service->getIndexHeaders($entity_name, $entity_class);
+    			$template                               = 'DufAdminBundle:Crud:entities_index.html.twig';
+                $headers_properties                     = $form_service->getIndexHeaders($entity_name, $entity_class);
 
-                $view_variables['entities']         = $this->getViewEntities($entity_name, $action_type);
-                $view_variables['headers']          = $headers_properties['headers'];
-                $view_variables['properties']       = $headers_properties['properties'];
-                $view_variables['create_route']     = $routing_service->getEntityRoute($entity_name, 'create');
-                $view_variables['is_tree']          = $routing_service->isTree($entity_name);
-                $view_variables['is_exportable']    = $routing_service->isExportable($entity_name);
+                $view_variables['entities']             = $this->getViewEntities($entity_name, $action_type);
+                $view_variables['headers']              = $headers_properties['headers'];
+                $view_variables['properties']           = $headers_properties['properties'];
+                $view_variables['create_route']         = $routing_service->getEntityRoute($entity_name, 'create');
+                $view_variables['is_tree']              = $routing_service->isTree($entity_name);
+                $view_variables['is_exportable']        = $routing_service->isExportable($entity_name);
+
+                // get average execution duration if is cron task
+                if (strpos('DufCoreBundle:DufCoreCronTask', $entity_name) !== false) {
+                    foreach ($view_variables['entities'] as $cron_task) {
+                        $execution_average          = 0;
+                        $execution_average_count    = 0;
+
+                        // get DufCoreCronTaskTrace for this task
+                        $cron_traces = $this->getDoctrine()->getRepository('DufCoreBundle:DufCoreCronTaskTrace')->findBy(
+                            array(
+                                'cronTask' => $cron_task,
+                            )
+                        );
+
+                        if (!empty($cron_traces)) {
+                            foreach ($cron_traces as $cron_trace) {
+                                $execution_average += $cron_trace->getDuration();
+                                $execution_average_count++;
+                            }
+
+                            if ($execution_average_count > 0)
+                                $execution_average = $execution_average / $execution_average_count;
+                        }
+                    }
+
+                    array_splice($view_variables['headers'], 4, 0, array('Average Duration'));
+                    array_splice($view_variables['properties'], 4, 0, array(
+                            array(
+                                'name'              => 'dufcorecron_average_duration',
+                                'relation_entity'   => null,
+                                'relation_index'    => null,
+                                'is_boolean'        => 0,
+                                'value'             => number_format($execution_average, 4) . ' sec.',
+                            )
+                        )
+                    );
+                }
     			break;
             case 'create':
                 $created_entity                         = new $entity_class;
@@ -72,6 +113,9 @@ class RoutingController extends Controller
                 $view_variables['form_properties']      = $form_options_properties['form_properties'];
                 $view_variables['content_type']         = $routing_service->getContentType($entity_name);
 
+                // set view variables for ecommerce
+                $this->setViewVariablesForECommerce($view_variables, $entity_name, $entity_class);
+
                 // create embed forms
                 if (!empty($form_options_properties['form_embed'])) {
                     foreach ($form_options_properties['form_embed'] as $form_embed) {
@@ -83,7 +127,7 @@ class RoutingController extends Controller
                 $entity_id                      = $routing_service->getEntityId($path);
                 $form_entity                    = $this->getDoctrine()->getRepository($entity_name)->findOneById($entity_id);
                 $template                       = 'DufAdminBundle:Crud:entities_edit.html.twig';
-                $form_options_properties        = $form_service->getFormOptions($entity_name, $entity_class);
+                $form_options_properties        = $form_service->getFormOptions($entity_name, $entity_class, $form_entity);
                 $generic_form_class             = $routing_service->getEntityGenericForm($form_entity);
 
                 $create_form                    = $this->createForm($generic_form_class, $form_entity, array(
@@ -93,7 +137,7 @@ class RoutingController extends Controller
                                                         )
                                                     );
 
-                $config_entities                = $this->container->get('duf_admin.dufadminconfig')->getDufAdminConfig(array('entities'));
+                $config_entities                = $this->getConfigEntities();
 
                 if (isset($config_entities[$entity_name]) && isset($config_entities[$entity_name]['title_field'])) {
                     $getter         = 'get' . ucfirst($config_entities[$entity_name]['title_field']);
@@ -109,6 +153,9 @@ class RoutingController extends Controller
                 $view_variables['form_properties']      = $form_options_properties['form_properties'];
                 $view_variables['entity']               = $form_entity;
                 $view_variables['content_type']         = $routing_service->getContentType($entity_name);
+
+                // set view variables for ecommerce
+                $this->setViewVariablesForECommerce($view_variables, $entity_name, $entity_class, $entity_id);
 
                 // create embed forms
                 if (!empty($form_options_properties['form_embed'])) {
@@ -166,6 +213,90 @@ class RoutingController extends Controller
 
     private function getViewEntities($entity_name, $action_type)
     {
+        if (stripos($entity_name, 'DufAggregatorBundle:AggregatorAccount') !== false && isset($_GET['service']))
+            return $this->getDoctrine()->getRepository('DufAggregatorBundle:AggregatorAccount')->findBy(
+                array(
+                    'service'   => $_GET['service'],
+                )
+            );
+        
         return $this->getDoctrine()->getRepository($entity_name)->findAll();
+    }
+
+    private function getConfigEntities()
+    {
+        $entities               = $this->get('duf_admin.dufadminconfig')->getDufAdminConfig(array('entities'));
+        $ecommerce_entities     = $this->get('duf_admin.dufadminconfig')->getDufAdminConfig(array('ecommerce_entities'));
+
+        if (is_array($ecommerce_entities))
+            return array_merge($entities, $ecommerce_entities);
+
+        return $entities;
+    }
+
+    private function setViewVariablesForECommerce(&$view_variables, $entity_name, $entity_class, $entity_id = null)
+    {
+        $config_service                 = $this->get('duf_admin.dufadminconfig');
+        $routing_service                = $this->get('duf_admin.dufadminrouting');
+        $ecommerce_service              = $this->get('duf_ecommerce.dufecommerce');
+
+        // check if entity is product
+        $view_variables['is_product']           = $routing_service->isProduct($entity_name);
+
+        // get ecommerce entities
+        $categories_entity_name              = $ecommerce_service->getCategoryEntityName();
+
+        if (null !== $categories_entity_name)
+            $view_variables['categories_class']     = $categories_entity_name;
+
+        // if entity is product, get more details
+        if ($view_variables['is_product']) {
+            $view_variables['price_type']       = $ecommerce_service->getPriceType($entity_class);
+
+            if (null !== $categories_entity_name) {
+                // get categories and categories entity name
+                $view_variables['categories']           = $this->getDoctrine()->getRepository($categories_entity_name)->childrenHierarchy();
+
+                // get categories for this product
+                if (null !== $entity_id) {
+                    $view_variables['product_categories']   = $ecommerce_service->getProductCategories($entity_id, $entity_name, $categories_entity_name, true);
+                }
+            }
+        }
+
+        // check if entity is store
+        $view_variables['is_store']             = $routing_service->isStore($entity_name);
+
+        // if entity is store, get more details
+        if ($view_variables['is_store']) {
+            $view_variables['gmap_key']         = $this->getParameter('gmap_api_key');
+
+            if (null !== $categories_entity_name) {
+                // get list of product categories
+                $view_variables['categories']   = $this->getDoctrine()->getRepository($categories_entity_name)->childrenHierarchy();
+            }
+
+            if (null !== $entity_id) {
+                // get list of products for this store
+                $view_variables['products']     = $ecommerce_service->getStoreProducts($entity_name, $entity_id, true);
+            }
+        }
+    }
+
+    private function array_insert($arr, $insert, $position) {
+        $i = 0;
+
+        foreach ($arr as $key => $value) {
+            if ($i == $position) {
+                foreach ($insert as $ikey => $ivalue) {
+                    $ret[$ikey] = $ivalue;
+                }
+            }
+            
+            $ret[$key] = $value;
+            $i++;
+        }
+
+        return $ret;
     }
 }

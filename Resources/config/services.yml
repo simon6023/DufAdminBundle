@@ -62,7 +62,7 @@ services:
 
     duf_admin.form.dufadmingenericType:
         class: Duf\AdminBundle\Form\DufAdminGenericType
-        arguments: ["@doctrine.orm.entity_manager"]
+        arguments: ['@doctrine.orm.entity_manager', '@request_stack', '@service_container']
         tags:
             - { name: form.type }
 

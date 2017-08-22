@@ -2,7 +2,7 @@
 
 {% block main %}
 	<div class="row">
-		<form name="duf_admin_create_form" action="{{ path('duf_admin_entity_form_request', { path: duf_admin_routing.getRouteFromEntityName(entity_name, 'form-request/' ~ content_type, 'save') }) }}" method="post">
+		<form name="duf_admin_create_form" action="{{ path('duf_admin_entity_form_request', { path: duf_admin_routing.getRouteFromEntityName(entity_name, 'form-request/' ~ content_type, 'save') }) }}{% if aggregator_service is not null %}?service={{ aggregator_service }}{% endif %}" method="post">
 			<div class="{% if seo_config is defined and seo_config is not null %}col-md-8{% else %}col-xs-12{% endif %}">
 				<div class="box">
 					<div class="box-header">
@@ -18,9 +18,15 @@
 					</div>
 
 					<div class="box-body">
-						{% for form_property in form_properties %}
-							{{ form_widget(attribute(create_form, form_property)) }}
-						{% endfor %}
+						{% if is_product is defined and true == is_product %}
+							{% include 'DufECommerceBundle:Admin\\Crud:tabs.html.twig' %}
+						{% elseif is_store is defined and true == is_store %}
+							{% include 'DufECommerceBundle:Admin\\Crud:store.html.twig' %}
+						{% else %}
+							{% for form_property in form_properties %}
+								{{ form_widget(attribute(create_form, form_property)) }}
+							{% endfor %}
+						{% endif %}
 					</div>
 				</div>
 
@@ -78,7 +84,7 @@
 	<script type="text/javascript">
 		$(document).ready(function() {
             // set bootstrap switches
-            $('input[type="checkbox"]').bootstrapSwitch({
+            $('input[type="checkbox"]').not('.category-checkbox').bootstrapSwitch({
             	onText: 'Yes',
             	offText: 'No',
             });
@@ -87,4 +93,13 @@
             $('.select2').select2();
 		});
 	</script>
+{% endblock %}
+
+{% block javascript_footer %}
+	{% if is_store is defined and true == is_store %}
+		{% if gmap_key is defined and gmap_key is not null %}
+			<script type="text/javascript" src='http://maps.google.com/maps/api/js?libraries=places&key={{ gmap_key }}'></script>
+			<script src="{{ asset('bundles/dufadmin/js/locationpicker/locationpicker.jquery.js') }}"></script>
+		{% endif %}
+	{% endif %}
 {% endblock %}

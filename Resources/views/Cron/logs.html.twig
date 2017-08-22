@@ -1,0 +1,48 @@
+{% extends 'DufAdminBundle:Default:index.html.twig' %}
+
+{% block main %}
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="box">
+				<div class="box-header">
+					<h3 class="box-title">{{ 'sidebar.cron.logs' }}</h3>
+				</div>
+
+				<div class="box-body">
+					<table id="duf-admin-index-table" class="table table-bordered table-hover">
+						<thead>
+							<tr>
+								<th>Environment</th>
+								<th>Date</th>
+								<th>Filename</th>
+								<th>Size</th>
+
+								{# actions #}
+								<th>Actions</th>
+							</tr>
+						</thead>
+
+						<tbody>
+							{% for log in logs %}
+								<tr>
+									<td>{{ log.env }}</td>
+									<td>{{ log.date | date('Y-m-d') }}</td>
+									<td>{{ log.filename }}</td>
+									<td>{{ log.size }}</td>
+
+									<td>
+										<button class="btn btn-danger duf_admin_delete" data-confirm-message="Confirm delete ?" data-delete-path="{{ path('duf_admin_cron_logs_delete', { timestamp: log.timestamp }) }}">{{ 'default.delete' | trans }}</button>
+
+										<a href="{{ path('duf_admin_cron_logs_view', { timestamp: log.timestamp }) }}" target="_blank">
+											<button class="btn btn-default"><i class="fa fa-eye"></i> {{ 'default.view' | trans }}</button>
+										</a>
+									</td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

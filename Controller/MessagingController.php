@@ -260,7 +260,10 @@ class MessagingController extends Controller
             }
         }
         else {
-            $_users = $this->getDoctrine()->getRepository('DufAdminBundle:User')->findBy(
+            // get User entity
+            $user_entity    = $this->get('duf_admin.dufadminconfig')->getDufAdminConfig('user_entity');
+
+            $_users         = $this->getDoctrine()->getRepository($user_entity)->findBy(
                     array(
                         'isActive'          => true,
                         'optinMessages'     => true,

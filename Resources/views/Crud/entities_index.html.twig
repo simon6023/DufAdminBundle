@@ -50,42 +50,54 @@
 								{% for entity in entities %}
 									<tr>
 										{% for property in properties %}
-											{% set row_variable = attribute(entity, property.name) %}
+											{% if property.name == 'dufcorecron_average_duration' %}
+												<td>
+													{{ property.value }}
+												</td>
+											{% else %}
+												{% set row_variable = attribute(entity, property.name) %}
 
-											{% if property.relation_entity is not null %}
-												{% set entity_relation 	= attribute(entity, property.name) %}
-												{% if entity_relation is not null %}
-													{% set row_variable = attribute(entity_relation, property.relation_index) %}
-												{% endif %}
-											{% endif %}
-
-											<td>
-												{% if row_variable.timestamp is defined and row_variable is not null %}
-													{{ duf_admin_form.getPropertyPrefix(entity, property.name) }}{{ row_variable | date('d/m/Y H:i') }}{{ duf_admin_form.getPropertySuffix(entity, property.name) }}
-												{% else %}
-													{% if property.is_boolean is defined and true == property.is_boolean %}
-														{% if true == row_variable or '1' == row_variable %}
-															<span class="label label-success">{{ 'crud.boolean.label.true' | trans }}</span>
-														{% else %}
-															<span class="label label-danger">{{ 'crud.boolean.label.false' | trans }}</span>
-														{% endif %}
-													{% else %}
-														{{ duf_admin_form.getPropertyPrefix(entity, property.name) }}{{ row_variable }}{{ duf_admin_form.getPropertySuffix(entity, property.name) }}
+												{% if property.relation_entity is not null %}
+													{% set entity_relation 	= attribute(entity, property.name) %}
+													{% if entity_relation is not null %}
+														{% set row_variable = attribute(entity_relation, property.relation_index) %}
 													{% endif %}
 												{% endif %}
-											</td>
+
+												<td>
+													{% if row_variable.timestamp is defined and row_variable is not null %}
+														{{ duf_admin_form.getPropertyPrefix(entity, property.name) }}{{ row_variable | date('d/m/Y H:i') }}{{ duf_admin_form.getPropertySuffix(entity, property.name) }}
+													{% else %}
+														{% if property.is_boolean is defined and true == property.is_boolean %}
+															{% if true == row_variable or '1' == row_variable %}
+																<span class="label label-success">{{ 'crud.boolean.label.true' | trans }}</span>
+															{% else %}
+																<span class="label label-danger">{{ 'crud.boolean.label.false' | trans }}</span>
+															{% endif %}
+														{% else %}
+															{{ duf_admin_form.getPropertyPrefix(entity, property.name) }}{{ row_variable }}{{ duf_admin_form.getPropertySuffix(entity, property.name) }}
+														{% endif %}
+													{% endif %}
+												</td>
+											{% endif %}
 										{% endfor %}
 
 										{# actions #}
 										<td>
 											{% if duf_admin_acl.isAllowed(entity_name, 'edit', app.user) %}
-												<a href="{{ path(duf_admin_routing.getEntityRouteName(entity_name), { path: duf_admin_routing.getRouteFromEntityName(entity_name, duf_admin_routing.getContentType(entity_name), 'edit', entity.id) }) }}">
+												<a href="{{ path(duf_admin_routing.getEntityRouteName(entity_name), { path: duf_admin_routing.getRouteFromEntityName(entity_name, duf_admin_routing.getContentType(entity_name), 'edit', entity.id) }) }}{% if aggregator_service is not null %}?service={{ aggregator_service }}{% endif %}">
 													<button class="btn btn-primary">Edit</button>
 												</a>
 											{% endif %}
 
 											{% if duf_admin_acl.isAllowed(entity_name, 'delete', app.user) %}
 												<button class="btn btn-danger duf_admin_delete" data-confirm-message="Confirm delete ?" data-delete-path="{{ path('duf_admin_entity_delete', { id: entity.id, entity_name: entity_name }) }}">Delete</button>
+											{% endif %}
+
+											{% if aggregator_service is not null %}
+												<a href="{{ path('duf_admin_aggregator_view_posts', { account_id: entity.id }) }}">
+													<button class="btn btn-default">View posts</button>
+												</a>
 											{% endif %}
 										</td>
 									</tr>

@@ -44,20 +44,83 @@
 
 			{% if entities is defined and entities is not null %}
 				{% for entity_name, params in entities if params.sidebar_section is not defined %}
-					{% if params.hidden is not defined or params.hidden == false or params.hidden is null %}
-						{% if params.override_route is not defined %}
-							{% set entity_link = path('duf_admin_entity_index', { path: duf_admin_routing.getRouteFromEntityName(entity_name, 'content', 'index') }) %}
-						{% else %}
-							{% set entity_link = path(params.override_route) %}
-						{% endif %}
+					{% include 'DufAdminBundle:Default:sidebar-entity-item.html.twig' %}
+				{% endfor %}
+			{% endif %}
 
+			{% if ecommerce == true %}
+				<li class="header uppercase">{{ 'sidebar.ecommerce' | trans }}</li>
+
+				<li class="treeview">
+					<a href="{{ path('duf_admin_ecommerce_index') }}">
+						<i class="fa fa-dashboard"></i> <span>Dashboard</span>
+					</a>
+				</li>
+
+				{# ECOMMERCE PRODUCTS LOOP #}
+				{% if ecommerce_products is defined and ecommerce_products is not null %}
+					<li class="treeview">
+						<a href="#">
+							<i class="fa fa-cart-plus"></i> <span>Products</span> <i class="fa fa-angle-left pull-right"></i>
+						</a>
+
+						<ul class="treeview-menu">
+							{% for entity_name, params in ecommerce_products if params.sidebar_section is not defined %}
+								{% include 'DufAdminBundle:Default:sidebar-entity-item.html.twig' %}
+							{% endfor %}
+						</ul>
+					</li>
+				{% endif %}
+
+				{% if ecommerce_entities is defined and ecommerce_entities is not null %}
+					{% for entity_name, params in ecommerce_entities if params.sidebar_section is not defined %}
+						{% include 'DufAdminBundle:Default:sidebar-entity-item.html.twig' %}
+					{% endfor %}
+				{% endif %}
+
+				{# ECOMMERCE TERRITORIES #}
+				<li class="treeview">
+					<a href="{{ path('duf_admin_ecommerce_territories') }}">
+						<i class="fa fa-globe"></i> <span>{{ 'ecommerce.territories' | trans }}</span>
+					</a>
+				</li>
+
+				{# ECOMMERCE CURRENCIES #}
+				<li class="treeview">
+					<a href="{{ path('duf_admin_ecommerce_currencies') }}">
+						<i class="fa fa-money"></i> <span>{{ 'ecommerce.currencies' | trans }}</span>
+					</a>
+				</li>
+
+				{# ECOMMERCE STORES LOOP #}
+				{% if ecommerce_stores is defined and ecommerce_stores is not null %}
+					<li class="treeview">
+						<a href="#">
+							<i class="fa fa-map-marker"></i> <span>Stores</span> <i class="fa fa-angle-left pull-right"></i>
+						</a>
+
+						<ul class="treeview-menu">
+							{% for entity_name, params in ecommerce_stores if params.sidebar_section is not defined %}
+								{% include 'DufAdminBundle:Default:sidebar-entity-item.html.twig' %}
+							{% endfor %}
+						</ul>
+					</li>
+				{% endif %}
+			{% endif %}
+
+			{# AGGREGATOR #}
+			{% if aggregator == true %}
+				<li class="header uppercase">{{ 'sidebar.aggregator' | trans }}</li>
+
+				{% if aggregator_services is defined and aggregator_services is not null %}
+					{% for service_name, service_config in aggregator_services %}
 						<li class="treeview">
-							<a href="{{ entity_link }}">
-								<i class="fa {{ params.icon }}"></i> <span>{{ params.title }}</span>
+							<a href="{{ path('duf_admin_entity_index', { path: duf_admin_routing.getRouteFromEntityName('AggregatorAccount', 'content', 'index') }) }}?service={{ service_config.id }}">
+								<i class="fa fa-{{ service_config.icon }}"></i> <span>{{ service_config.name }}</span>
 							</a>
 						</li>
-					{% endif %}
-				{% endfor %}
+					{% endfor %}
+				{% endif %}
 			{% endif %}
 
 			{% for section_name, section_config in sections %}
@@ -142,7 +205,7 @@
 
 			<li class="treeview">
 				<a href="#">
-					<i class="fa Example of archive fa-archive"></i> <span>Cache</span> <i class="fa fa-angle-left pull-right"></i>
+					<i class="fa fa-archive"></i> <span>Cache</span> <i class="fa fa-angle-left pull-right"></i>
 				</a>
 
 				<ul class="treeview-menu">
@@ -167,6 +230,28 @@
 					<a href="{{ path('duf_core_sitemap') }}" target="_blank">
 						<i class="fa fa-sitemap" aria-hidden="true"></i> <span>Sitemap</span>
 					</a>
+				</li>
+			{% endif %}
+
+			{% if cron is defined and cron == true %}
+				<li class="treeview">
+					<a href="#">
+						<i class="fa fa-clock-o"></i> <span>{{ 'sidebar.cron' | trans }}</span> <i class="fa fa-angle-left pull-right"></i>
+					</a>
+
+					<ul class="treeview-menu">
+						<li>
+							<a href="{{ path('duf_admin_entity_index', { path: duf_admin_routing.getRouteFromEntityName('DufCoreBundle:DufCoreCronTask', 'content', 'index') }) }}">
+								<i class="fa fa-clock-o"></i> {{ 'sidebar.cron.tasks' | trans }}
+							</a>
+						</li>
+
+						<li>
+							<a href="{{ path('duf_admin_cron_logs') }}">
+								<i class="fa fa-history"></i> {{ 'sidebar.cron.logs' | trans }}
+							</a>
+						</li>
+					</ul>
 				</li>
 			{% endif %}
 

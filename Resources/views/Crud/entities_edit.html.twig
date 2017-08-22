@@ -2,14 +2,14 @@
 
 {% block main %}
 	<div class="row">
-		<form name="duf_admin_create_form" action="{{ path('duf_admin_entity_form_request', { path: duf_admin_routing.getRouteFromEntityName(entity_name, 'form-request/' ~ content_type, 'update', entity.id) }) }}" method="post" data-parent-entity-class="{{ duf_admin_form.getEntityClass(entity) }}" data-parent-entity-id="{{ entity.id }}">
+		<form name="duf_admin_create_form" action="{{ path('duf_admin_entity_form_request', { path: duf_admin_routing.getRouteFromEntityName(entity_name, 'form-request/' ~ content_type, 'update', entity.id) }) }}{% if aggregator_service is not null %}?service={{ aggregator_service }}{% endif %}" method="post" data-parent-entity-class="{{ duf_admin_form.getEntityClass(entity) }}" data-parent-entity-id="{{ entity.id }}">
 			<div class="col-md-8">
 				<div class="box">
 					<div class="box-header">
 						<h3 class="box-title">Edit "{{ page_title }}"</h3>
 
 						<div class="pull-right box-tools">
-							<a href="{{ path(duf_admin_routing.getEntityRouteName(entity_name), { path: duf_admin_routing.getRouteFromEntityName(entity_name, duf_admin_routing.getContentType(entity_name), 'index') }) }}">
+							<a href="{{ path(duf_admin_routing.getEntityRouteName(entity_name), { path: duf_admin_routing.getRouteFromEntityName(entity_name, duf_admin_routing.getContentType(entity_name), 'index') }) }}{% if aggregator_service is not null %}?service={{ aggregator_service }}{% endif %}">
 								<p class="btn btn-default">Cancel</p>
 							</a>
 
@@ -20,9 +20,15 @@
 					</div>
 
 					<div class="box-body">
-						{% for form_property in form_properties %}
-							{{ form_widget(attribute(create_form, form_property)) }}
-						{% endfor %}
+						{% if is_product is defined and true == is_product %}
+							{% include 'DufECommerceBundle:Admin\\Crud:tabs.html.twig' %}
+						{% elseif is_store is defined and true == is_store %}
+							{% include 'DufECommerceBundle:Admin\\Crud:store.html.twig' with { 'edit' : true } %}
+						{% else %}
+							{% for form_property in form_properties %}
+								{{ form_widget(attribute(create_form, form_property)) }}
+							{% endfor %}
+						{% endif %}
 					</div>
 				</div>
 
@@ -60,6 +66,19 @@
 							{% include 'DufAdminBundle:Form:seo.html.twig' %}
 						</div>
 					</div>
+				{% endif %}
+
+				{% set display_edit_map = false %}
+				{% if is_store is defined and is_store == true %}
+					{% set display_edit_map = true %}
+				{% endif %}
+
+				{% if is_product is defined and is_product == true %}
+					{% set display_edit_map = false %}
+				{% endif %}
+				
+				{% if display_edit_map %}
+					{% include 'DufECommerceBundle:Admin\\Crud:edit-map.html.twig' %}
 				{% endif %}
 			</div>
 		</form>
@@ -106,7 +125,7 @@
 	<script type="text/javascript">
 		$(document).ready(function() {
             // set bootstrap switches
-            $('input[type="checkbox"]').bootstrapSwitch({
+            $('input[type="checkbox"]').not('.category-checkbox').bootstrapSwitch({
             	onText: 'Yes',
             	offText: 'No',
             });
@@ -117,4 +136,13 @@
 	        {% endif %}
 		});
 	</script>
+{% endblock %}
+
+{% block javascript_footer %}
+	{% if is_store is defined and true == is_store %}
+		{% if gmap_key is defined and gmap_key is not null %}
+			<script type="text/javascript" src='http://maps.google.com/maps/api/js?libraries=places&key={{ gmap_key }}'></script>
+			<script src="{{ asset('bundles/dufadmin/js/locationpicker/locationpicker.jquery.js') }}"></script>
+		{% endif %}
+	{% endif %}
 {% endblock %}

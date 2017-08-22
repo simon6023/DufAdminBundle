@@ -3,7 +3,9 @@
 namespace Duf\AdminBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+
 use Duf\AdminBundle\Entity\DufAdminEntity;
+use Duf\AdminBundle\Model\DufAdminUserInterface;
 
 use Duf\AdminBundle\Annotations\IndexableAnnotation;
 use Duf\AdminBundle\Annotations\EditableAnnotation;
@@ -14,7 +16,7 @@ use Duf\AdminBundle\Annotations\EditableAnnotation;
  * @ORM\Table(name="task")
  * @ORM\Entity(repositoryClass="Duf\AdminBundle\Entity\Repository\TaskRepository")
  */
-class Task extends DufAdminEntity
+class Task extends DufAdminEntity implements DufAdminUserInterface
 {
     /**
      * @var string
@@ -43,9 +45,10 @@ class Task extends DufAdminEntity
     private $description;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Duf\AdminBundle\Entity\User")
+     * @ORM\ManyToOne(targetEntity="Duf\AdminBundle\Model\DufAdminUserInterface")
      * @ORM\JoinColumn(nullable=false)
-     * @EditableAnnotation(is_editable=true, label="User", required=false, type="entity_hidden", class="DufAdminBundle:User", hidden_value="current_user", order=4)
+     * @EditableAnnotation(is_editable=true, label="User", required=false, type="entity_hidden", class="user_entity", hidden_value="current_user", order=4)
+     * @var DufAdminUserInterface
      */
      private $user;
 
@@ -124,11 +127,11 @@ class Task extends DufAdminEntity
     /**
      * Set user
      *
-     * @param \Duf\AdminBundle\Entity\User $user
+     * @param \Duf\AdminBundle\Model\DufAdminUserInterface $user
      *
      * @return Task
      */
-    public function setUser(\Duf\AdminBundle\Entity\User $user)
+    public function setUser(\Duf\AdminBundle\Model\DufAdminUserInterface $user)
     {
         $this->user = $user;
 
@@ -138,7 +141,7 @@ class Task extends DufAdminEntity
     /**
      * Get user
      *
-     * @return \Duf\AdminBundle\Entity\User
+     * @return \Duf\AdminBundle\Model\DufAdminUserInterface
      */
     public function getUser()
     {

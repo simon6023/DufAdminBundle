@@ -1,0 +1,23 @@
+{% if categories_class is defined %}
+	<ul class="categories-tree-crud {% if start is defined and start == true %}parent{% else %}children{% endif %}">
+		{% for category in categories %}
+			{% set checked = false %}
+			{% if product_categories is defined %}
+				{% for selected_category in product_categories %}
+					{% if selected_category.id == category.id %}
+						{% set checked = true %}
+					{% endif %}
+				{% endfor %}
+			{% endif %}
+
+			<li>
+				<input type="checkbox" name="{{ create_form.vars.name }}[categories][{{ categories_class }}][]" value="{{ category.id }}" class="category-checkbox" id="category-tree-checkbox-{{ category.id }}" {% if checked == true %}checked{% endif %}>
+				<label for="category-tree-checkbox-{{ category.id }}">{{ category.title }}</label>
+
+				{% if category.__children is defined and category.__children | length > 0 %}
+					{% include 'DufAdminBundle:Form:category-tree-crud.html.twig' with { 'categories' : category.__children, 'start' : false } %}
+				{% endif %}
+			</li>
+		{% endfor %}
+	</ul>
+{% endif %}

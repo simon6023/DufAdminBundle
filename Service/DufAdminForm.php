@@ -6,6 +6,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\DependencyInjection\ContainerInterface as Container;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Intl\Intl;
+
+use Doctrine\Bundle\DoctrineBundle\DependencyInjection\Configuration;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ORM\EntityManager as EntityManager;
@@ -38,21 +41,37 @@ class DufAdminForm
                                     );
     }
 
-    public function getFormOptions($entity_name, $entity_class)
+    public function getFormOptions($entity_name, $entity_class, $entity = null)
     {
         $form_options           = array();
         $form_properties        = array();
         $form_embed_tmp         = array();
         $form_embed             = array();
+        $_entity_class          = $entity_class;
 
         $entity_properties      = $this->getEntityProperties($entity_class);
         $annotationReader       = new AnnotationReader();
 
         foreach ($entity_properties as $property_name) {
+            $entity_class               = $_entity_class;
+
+            $process_property           = false;
             if (property_exists($entity_class, $property_name)) {
+                $process_property       = true;
+            }
+            else {
+                // get parent entity
+                $reflection_class = new \ReflectionClass($entity_class);
+                if(!$reflection_class->isAbstract()){
+                    $entity_class   = get_parent_class(new $entity_class);
+                    if (property_exists($entity_class, $property_name))
+                        $process_property   = true;
+                }
+            }
+
+            if ($process_property) {
                 $reflectionClass        = new \ReflectionProperty($entity_class, $property_name);
                 $annotations            = $annotationReader->getPropertyAnnotations($reflectionClass);
-
                 $relationship_entity    = null;
                 $is_multiple            = false;
 
@@ -123,6 +142,11 @@ class DufAdminForm
                                 }
 
                                 if ($annotation->type == 'entity') {
+                                    // check if entity is interface
+                                    if (isset($form_options[$property_name]['parameters']['class'])) {
+                                        exit('check if entity is interface');
+                                    }
+
                                     $form_options[$property_name]['parameters']['multiple']         = $annotation->multiple;
 
                                     if (isset($annotation->empty_value) && true === $annotation->empty_value) {
@@ -137,10 +161,38 @@ class DufAdminForm
                                 }
 
                                 if ($annotation->type == 'entity_hidden') {
-                                    $form_options[$property_name]['class']                          = $annotation->class;
+                                    $config_user_entity     = $this->container->get('duf_admin.dufadminconfig')->getDufAdminConfig('user_entity');
+                                    $form_options[$property_name]['class']  = ('user_entity' !== $annotation->class) ? $annotation->class: $config_user_entity;
 
                                     if ($annotation->hidden_value === 'current_user') {
                                         $form_options[$property_name]['parameters']['data']         = $this->token_storage->getToken()->getUser()->getId();
+                                    }
+                                }   
+
+                                $cron_annotation_types = array('day_picker', 'hour_picker', 'minute_picker');
+                                if (in_array($annotation->type, $cron_annotation_types)) {
+                                    $form_options[$property_name]['parameters']['mapped']   = false;
+                                    $form_options[$property_name]['parameters']['multiple'] = true;
+
+                                    if ($annotation->type === 'day_picker') {
+                                        $form_options[$property_name]['parameters']['choices'] = $this->getDays();
+
+                                        if (null !== $entity)
+                                            $form_options[$property_name]['parameters']['days'] = $this->getCronTaskSelectedValues('days', $entity);
+                                    }
+
+                                    if ($annotation->type === 'hour_picker') {
+                                        $form_options[$property_name]['parameters']['choices'] = $this->getHours();
+
+                                        if (null !== $entity)
+                                            $form_options[$property_name]['parameters']['hours'] = $this->getCronTaskSelectedValues('hours', $entity);
+                                    }
+
+                                    if ($annotation->type === 'minute_picker') {
+                                        $form_options[$property_name]['parameters']['choices'] = $this->getMinutes();
+
+                                        if (null !== $entity)
+                                            $form_options[$property_name]['parameters']['minutes'] = $this->getCronTaskSelectedValues('minutes', $entity);
                                     }
                                 }
                             }
@@ -156,6 +208,45 @@ class DufAdminForm
                 }
             }
         }
+
+        // set prices field if product entity with multiple prices
+        if ($this->container->get('duf_admin.dufadminrouting')->isProduct($entity_name)) {
+            // set prices form field
+            $form_options['prices']      = array(
+                'property_name'     => 'prices',
+                'type'              => 'prices',
+                'parameters'        => array(
+                        'label'             => 'Prices',
+                        'required'          => false,
+                        'currencies'        => $this->container->get('duf_ecommerce.dufecommerce')->getCurrencies(true),
+                    ),
+            );
+
+            // set categories form field
+            $form_options['categories']  = array(
+                'property_name'     => 'categories',
+                'type'              => 'text',
+                'parameters'        => array(
+                    'mapped'        => false,
+                ),
+            );
+        }
+
+        // set form fields if store entity
+        if ($this->container->get('duf_admin.dufadminrouting')->isStore($entity_name)) {
+            // set country choices
+            $countries                                          = Intl::getRegionBundle()->getCountryNames();
+            $form_options['country']['parameters']['choices']   = array_flip($countries);
+
+            // set products field
+            $form_options['products']  = array(
+                'property_name'     => 'products',
+                'type'              => 'text',
+                'parameters'        => array(
+                    'mapped'        => false,
+                ),
+            );
+        }        
 
         if (!empty($form_embed_tmp)) {
             foreach ($form_embed_tmp as $embed_tmp) {
@@ -281,8 +372,14 @@ class DufAdminForm
         $entity_properties      = $this->getEntityProperties($entity_class);
         $annotationReader       = new AnnotationReader();
 
-        $indexable_columns      = array();
-        $index_properties       = array();
+        $indexable_columns          = array();
+        $index_properties           = array();
+        $default_indexable_columns  = array();
+        $default_index_properties   = array();
+
+        $last_order                 = rand(999, 1500);
+        $order_default_properties   = rand(-999, -1500);
+        $default_properties         = array('created_at', 'updated_at');
 
         foreach ($entity_properties as $property_name) {
             if (property_exists($entity_class, $property_name)) {
@@ -311,18 +408,34 @@ class DufAdminForm
                                 $order = $annotation->index_column_order;
                             }
                             else {
-                                $order = rand(999, 1500);
+                                $order = $last_order++;
                             }
+
+                            if (in_array($property_name, $default_properties))
+                                $order = $order_default_properties = $order_default_properties + 1;
 
                             $is_boolean     = (isset($annotation->boolean_column) && true === $annotation->boolean_column) ? true : false;
 
-                            $indexable_columns[$order]  = $annotation->index_column_name;
-                            $index_properties[$order]   = array(
+                            if (in_array($property_name, $default_properties)) {
+                                $default_indexable_columns[$order]  = $annotation->index_column_name;
+
+                                $default_index_properties[$order]   = array(
                                     'name'                  => $property_name,
                                     'relation_entity'       => $relationship_entity,
                                     'relation_index'        => $annotation->relation_index,
                                     'is_boolean'            => $is_boolean,
                                 );
+                            }
+                            else {
+                                $indexable_columns[$order]  = $annotation->index_column_name;
+
+                                $index_properties[$order]   = array(
+                                    'name'                  => $property_name,
+                                    'relation_entity'       => $relationship_entity,
+                                    'relation_index'        => $annotation->relation_index,
+                                    'is_boolean'            => $is_boolean,
+                                );
+                            }
                         }
                     }
                 }
@@ -331,6 +444,9 @@ class DufAdminForm
 
         ksort($indexable_columns);
         ksort($index_properties);
+
+        $index_properties   = array_merge($index_properties, $default_index_properties);
+        $indexable_columns  = array_merge($indexable_columns, $default_indexable_columns);
 
         return array(
             'headers'       => $indexable_columns,
@@ -473,15 +589,124 @@ class DufAdminForm
 
         if (in_array($field_name, $entity_properties)) {
             $annotationReader       = new AnnotationReader();
-            $reflectionClass        = new \ReflectionProperty($entity_class, $field_name);
-            $annotations            = $annotationReader->getPropertyAnnotations($reflectionClass);
 
-            foreach ($annotations as $annotation) {
-                if ('Gedmo\Mapping\Annotation\Translatable' === get_class($annotation))
-                    return true;
+            if (property_exists($entity_class, $field_name)) {
+                $reflectionClass        = new \ReflectionProperty($entity_class, $field_name);
+                $annotations            = $annotationReader->getPropertyAnnotations($reflectionClass);
+
+                foreach ($annotations as $annotation) {
+                    if ('Gedmo\Mapping\Annotation\Translatable' === get_class($annotation))
+                        return true;
+                }
             }
         }
 
         return false;
+    }
+
+    public function getDays()
+    {
+        $days       = array();
+        $timestamp  = strtotime('next Monday');
+
+        for ($i = 1; $i <= 7; $i++) {
+            $days[strftime('%A', $timestamp)] = $i;
+            $timestamp  = strtotime('+1 day', $timestamp);
+        }
+
+        return $days;
+    }
+
+    public function getHours()
+    {
+        $hours       = array();
+
+        for ($i = 0; $i < 24; $i++) {
+            $hour_double    = (strlen($i) === 1) ? '0' . $i: $i;
+            $date           = new \DateTime('2000-01-01 ' . $i . ':00:00');
+
+            $hours[$date->format('H:i')] = $i;
+        }
+
+        return $hours;
+    }
+
+    public function getMinutes()
+    {
+        $minutes       = array();
+
+        for ($i = 0; $i < 60; $i++) {
+            $minutes_double = (strlen($i) === 1) ? '0' . $i: $i;
+
+            $minutes[$minutes_double] = $i;
+        }
+
+        return $minutes;
+    }
+
+    public function getCronTaskSelectedValues($picker_type, $entity)
+    {
+        $cron_task_fields = $this->getCronTaskFields(false, true);
+
+        if (!isset($cron_task_fields[$picker_type]))
+            return null;
+
+        if (!is_object($entity))
+            return null;
+
+        if (!method_exists($entity, $cron_task_fields[$picker_type]))
+            return null;
+
+        $selected_values = $entity->{$cron_task_fields[$picker_type]}();
+
+        if (null === $selected_values || strlen($selected_values) <= 1)
+            return null;
+
+        return json_decode($selected_values);
+    }
+
+    public function getCronTaskRequest($request)
+    {
+        $form_data                  = $request->get('duf_admin_generic');
+        $fields                     = $this->getCronTaskFields();
+
+        foreach ($fields as $field) {
+            if (!isset($form_data[$field]))
+                continue;
+
+            $selected_values = array();
+
+            foreach ($form_data[$field] as $key => $selected_array) {
+                foreach ($selected_array as $selected_key => $selected_value) {
+                    $selected_values[] = $selected_value;
+                }
+            }
+
+            $form_data[$field] = $selected_values;
+        }
+
+        $request->request->set('duf_admin_generic', $form_data);
+
+        return $request;
+    }
+
+    public function getCronTaskFields($with_setter = false, $with_getter = false)
+    {
+        if (!$with_setter && !$with_getter)
+            return array('days', 'hours', 'minutes');
+
+        if ($with_setter && !$with_getter)
+            return array(
+                'days'      => 'setDays',
+                'hours'     => 'setHours',
+                'minutes'   => 'setMinutes',
+            );
+
+        if ($with_getter && !$with_setter)
+            return array(
+                'days'      => 'getDays',
+                'hours'     => 'getHours',
+                'minutes'   => 'getMinutes',
+            );
     }
 }

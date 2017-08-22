@@ -16,6 +16,9 @@ class InstallCommand extends ContainerAwareCommand
     protected $admin_username;
     protected $admin_password;
 
+    protected $user_class;
+    protected $user_role_class;
+
     public function __construct()
     {
         parent::__construct();
@@ -39,6 +42,12 @@ class InstallCommand extends ContainerAwareCommand
     {
         $this->container        = $this->getContainer();
         $this->em               = $this->container->get('doctrine.orm.entity_manager');
+
+        $user_entity_name       = $this->container->get('duf_admin.dufadminconfig')->getDufAdminConfig('user_entity');
+        $user_role_entity_name  = $this->container->get('duf_admin.dufadminconfig')->getDufAdminConfig('user_role_entity');
+
+        $this->user_class       = $this->container->get('duf_admin.dufadminrouting')->getEntityClass($user_entity_name);
+        $this->user_role_class  = $this->container->get('duf_admin.dufadminrouting')->getEntityClass($user_role_entity_name);
 
         $output->writeln([
                 'Create Database',
@@ -104,7 +113,7 @@ class InstallCommand extends ContainerAwareCommand
     {
         $roles  = array('ROLE_ADMIN', 'ROLE_USER');
         foreach ($roles as $role_name) {
-            $role = new \Duf\AdminBundle\Entity\UserRole();
+            $role = new $this->user_role_class;
             $role->setName($role_name);
 
             $this->em->persist($role);
@@ -115,7 +124,7 @@ class InstallCommand extends ContainerAwareCommand
 
     private function createAdminUser()
     {
-        $role       = $this->em->getRepository('DufAdminBundle:UserRole')->findOneByName('ROLE_ADMIN');
+        $role       = $this->em->getRepository($this->user_role_class)->findOneByName('ROLE_ADMIN');
         $user_infos = array(
                 'username'          => $this->admin_username,
                 'firstname'         => $this->admin_firstname,
@@ -125,7 +134,7 @@ class InstallCommand extends ContainerAwareCommand
                 'salt'              => uniqid(),
             );
 
-        $user       = new \Duf\AdminBundle\Entity\User();
+        $user       = new $this->user_class;
         $encoder    = $this->container->get('security.encoder_factory')->getEncoder($user);
         $password   = $encoder->encodePassword($user_infos['password'], $user_infos['salt']);
 

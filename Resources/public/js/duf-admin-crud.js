@@ -243,12 +243,34 @@ $(document).on('click', '.node-action-5', function() {
 	var edit_route 	= $('#edit-route').val();
 	edit_route 		= edit_route.replace('/***', '/' + node_id);
 
-	console.log(edit_route);
-
 	window.location.href = edit_route;
 });
 
 $(document).on('click', '.export-link', function(e) {
 	e.preventDefault();
 	window.dufAdminCrud.exportData($(this));
+});
+
+$('.day-picker.all').on('switchChange.bootstrapSwitch', function(e, state) {
+	$('.day-picker.day').each(function() {
+		if (state !== $(this).prop('checked')) {
+			$(this).bootstrapSwitch('toggleState');
+		}
+	});
+});
+
+$('.hour-picker.all').on('switchChange.bootstrapSwitch', function(e, state) {
+	$('.hour-picker.hour').each(function() {
+		if (state !== $(this).prop('checked')) {
+			$(this).bootstrapSwitch('toggleState');
+		}
+	});
+});
+
+$('.minute-picker.all').on('switchChange.bootstrapSwitch', function(e, state) {
+	$('.minute-picker.minute').each(function() {
+		if (state !== $(this).prop('checked')) {
+			$(this).bootstrapSwitch('toggleState');
+		}
+	});
 });

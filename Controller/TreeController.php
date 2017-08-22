@@ -36,6 +36,7 @@ class TreeController extends Controller
             $entity->setTitle($request->get('name'));
             $entity->setParent($parent);
             $entity->setEnabled(true);
+            $entity->setCreatedAt(new \DateTime());
 
             if (null !== $position && null !== $related && null !== $parent) {
                 $related_entity     = $repo->findOneById($related);

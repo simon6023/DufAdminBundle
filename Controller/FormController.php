@@ -14,6 +14,8 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Duf\AdminBundle\Entity\DufAdminEntity;
 use Duf\AdminBundle\Form\DufAdminGenericType;
 use Duf\CoreBundle\Entity\DufCoreSeo;
+use Duf\ECommerceBundle\Entity\DufECommerceProductCategory;
+use Duf\ECommerceBundle\Entity\DufECommerceStoreProduct;
 
 class FormController extends Controller
 {
@@ -24,6 +26,7 @@ class FormController extends Controller
         $form_service               = $this->get('duf_admin.dufadminform');
         $entity_tools_service       = $this->get('duf_core.dufcoreentitytools');
         $seo_service                = $this->get('duf_core.dufcoreseo');
+        $ecommerce_service          = $this->get('duf_ecommerce.dufecommerce');
 
         // get entity name
         if (null !== $request->get('form_entity_name')) {
@@ -69,7 +72,6 @@ class FormController extends Controller
         $translatable_request       = $this->getTranslatableContent($request, $form_data, $form_service, $entity);
         $request                    = $translatable_request['request'];
 
-
         // instantiate callbacks service
         $callbacks_service          = $this
                                         ->get('duf_admin.dufadmincallbacks')
@@ -86,10 +88,14 @@ class FormController extends Controller
         $entity                     = $callbacks_service->getEntityAfterCallback();
         $request                    = $callbacks_service->getFormRequestAfterCallback();
 
+        // format post data if Cron Task
+        if ($entity_name === 'DufCoreBundle:DufCoreCronTask') {
+            $request = $form_service->getCronTaskRequest($request);
+            $form_data = $request->get('duf_admin_generic');
+        }
+
         // handle form request
         $form->handleRequest($request);
-
-        //echo '<pre>'; print_r($form_data); echo '</pre>'; exit();
 
         if ($form->isValid()) {
             $em             = $this->getDoctrine()->getManager();
@@ -164,11 +170,30 @@ class FormController extends Controller
                 }
             }
 
+            // json encode values for Cron Task
+            if ($entity_name === 'DufCoreBundle:DufCoreCronTask') {
+                $cron_fields = $form_service->getCronTaskFields(true);
+
+                foreach ($cron_fields as $cron_field_name => $cron_field_setter) {
+                    if (!isset($form_data[$cron_field_name]))
+                        continue;
+
+                    if (!method_exists($entity, $cron_field_setter))
+                        continue;
+
+                    $entity->{$cron_field_setter}(json_encode($form_data[$cron_field_name]));
+                }
+            }
+
             // CALLBACK : persist | before
             $callbacks_service->executeCallback('persist', 'before');
 
             $entity                     = $callbacks_service->getEntityAfterCallback();
             $request                    = $callbacks_service->getFormRequestAfterCallback();
+
+            // set service type if aggregator account
+            if (stripos($entity_name, 'DufAggregatorBundle:AggregatorAccount') !== false && isset($_GET['service']))
+                $entity->setService($_GET['service']);
 
             $em->persist($entity);
             $em->flush();
@@ -226,6 +251,128 @@ class FormController extends Controller
                 }
             }
 
+            // persist categories if is product
+            if ($routing_service->isProduct($entity_name) && isset($form_data['categories'])) {
+                $product_categories     = $form_data['categories'];
+
+                foreach ($product_categories as $categories_entity_name => $category_ids) {
+                    // delete categories that are not used anymore
+                    // get product categories
+                    $previous_product_categories     = $ecommerce_service->getProductCategories($entity->getId(), $entity_name, $categories_entity_name, true);
+
+                    if (!empty($previous_product_categories)) {
+                        foreach ($previous_product_categories as $previous_product_category) {
+                            if (!in_array($previous_product_category['id'], $category_ids)) {
+                                // get DufECommerceProductCategory entity
+                                $product_category_to_remove = $this->getDoctrine()->getRepository('DufECommerceBundle:DufECommerceProductCategory')->findOneBy(
+                                    array(
+                                        'product_id'        => $entity->getId(),
+                                        'category_id'       => $previous_product_category['id'],
+                                        'category_entity'   => $categories_entity_name,
+                                        'product_entity'    => $entity_name,
+                                    )
+                                );
+
+                                if (!empty($product_category_to_remove)) {
+                                    $em->remove($product_category_to_remove);
+                                }
+                            }
+                        }
+
+                        $em->flush();
+                    }
+
+                    foreach ($category_ids as $category_id) {
+                        // check if DufECommerceProductCategory entity exists
+                        $check_product_category = $this->getDoctrine()->getRepository('DufECommerceBundle:DufECommerceProductCategory')->findOneBy(
+                            array(
+                                'product_id'        => $entity->getId(),
+                                'category_id'       => $category_id,
+                                'category_entity'   => $categories_entity_name,
+                                'product_entity'    => $entity_name,
+                            )
+                        );
+
+                        if (empty($check_product_category)) {
+                            // create DufECommerceProductCategory entity
+                            $category_entity    = new DufECommerceProductCategory();
+                            $category_entity->setProductId($entity->getId());
+                            $category_entity->setCategoryId($category_id);
+                            $category_entity->setCategoryEntity($categories_entity_name);
+                            $category_entity->setProductEntity($entity_name);
+
+                            $em->persist($category_entity);
+                        }
+                    }
+                }
+
+                $em->flush();
+            }
+
+            // persist products if is store
+            if ($routing_service->isStore($entity_name) && isset($form_data['products']) && !empty($form_data['products'])) {
+                // get previous store products
+                $previous_store_products     = $ecommerce_service->getStoreProducts($entity_name, $entity->getId(), true);
+
+                foreach ($previous_store_products as $previous_store_product) {
+                    $delete_store_product = true;
+
+                    foreach ($form_data['products'] as $selected_product_check) {
+                        $selected_product_elements   = explode('|', $selected_product_check);
+                        $selected_product_id         = $selected_product_elements[0];
+                        $selected_product_class      = $selected_product_elements[1];
+
+                        if ($selected_product_class == $previous_store_product['class_name'] && $selected_product_id == $previous_store_product['id']) {
+                            $delete_store_product = false;
+                        }
+                    }
+
+                    if ($delete_store_product) {
+                        $previous_store_product_entity    = $this->getDoctrine()->getRepository('DufECommerceBundle:DufECommerceStoreProduct')->findOneBy(
+                            array(
+                                'product_entity'    => $previous_store_product['class_name'],
+                                'product_id'        => $previous_store_product['id'],
+                                'store_entity'      => $entity_name,
+                                'store_id'          => $entity->getId(),
+                            )
+                        );
+
+                        $em->remove($previous_store_product_entity);
+                    }
+                }
+
+                $em->flush();
+
+                // persist products
+                foreach ($form_data['products'] as $selected_product) {
+                    $product_elements   = explode('|', $selected_product);
+                    $product_id         = $product_elements[0];
+                    $product_class      = $product_elements[1];
+
+                    // check if product is already associated to store
+                    $check_store_product    = $this->getDoctrine()->getRepository('DufECommerceBundle:DufECommerceStoreProduct')->findOneBy(
+                        array(
+                            'product_entity'    => $product_class,
+                            'product_id'        => $product_id,
+                            'store_entity'      => $entity_name,
+                            'store_id'          => $entity->getId(),
+                        )
+                    );
+
+                    if (empty($check_store_product)) {
+                        $store_product      = new DufECommerceStoreProduct();
+                        $store_product->setProductId($product_id);
+                        $store_product->setStoreId($entity->getId());
+                        $store_product->setProductEntity($product_class);
+                        $store_product->setStoreEntity($entity_name);
+
+                        $em->persist($store_product);
+                    }
+                }
+
+                $em->flush();
+            }
+
             // CALLBACK : save | after
             if (!$is_update)
                 $callbacks_service->executeCallback('save', 'after');
@@ -237,6 +384,13 @@ class FormController extends Controller
             // get redirect route
             $redirect_url = $routing_service->getEntityRoute($entity_name, 'index');
 
+            if (
+                stripos($entity_name, 'DufAggregatorBundle:AggregatorAccount') !== false 
+                && stripos($redirect_url, 'service=') === false 
+                && isset($_GET['service'])
+            )
+                $redirect_url .= '?service=' . $_GET['service'];
+
             return $this->redirect($redirect_url);
         }
         else {
@@ -244,8 +398,9 @@ class FormController extends Controller
 
             foreach ($form->getErrors(true) as $key => $form_error) {
                 var_dump($key);
+                echo '<br>';
                 var_dump($form_error->getMessage());
-
+                echo '<br>';
                 echo '<pre>'; print_r($form_error->getMessageParameters()); echo '</pre>';
             }
 

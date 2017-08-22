@@ -12,6 +12,18 @@ duf_admin_login_check:
 duf_admin_logout:
     path:    /logout
 
+duf_admin_cron:
+    resource: "@DufAdminBundle/Resources/config/routing/cron.yml"
+    prefix:   /cron
+
+duf_admin_aggregator:
+    resource: "@DufAdminBundle/Resources/config/routing/aggregator.yml"
+    prefix:   /aggregator
+
+duf_admin_ecommerce:
+    resource: "@DufAdminBundle/Resources/config/routing/ecommerce.yml"
+    prefix:   /shop
+
 duf_admin_messaging:
     resource: "@DufAdminBundle/Resources/config/routing/messaging.yml"
     prefix:   /messages

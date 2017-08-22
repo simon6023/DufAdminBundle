@@ -29,10 +29,13 @@ class DufAdminRouting
         $entity_name = str_replace(':', '/', $entity_name);
 
         if (null !== $entity_id) {
-            return $route_prefix . '/' . $entity_name . '/' . $action . '/' . $entity_id;
+            $route = $route_prefix . '/' . $entity_name . '/' . $action . '/' . $entity_id;
+        }
+        else {
+            $route = $route_prefix . '/' . $entity_name . '/' . $action;
         }
 
-        return $route_prefix . '/' . $entity_name . '/' . $action;
+        return $route;
     }
 
     public function getEntityId($path)
@@ -79,9 +82,9 @@ class DufAdminRouting
         }
 
         if ($is_user) {
-            $config_entities = array();
-            $config_entities[] = $this->container->get('duf_admin.dufadminconfig')->getDufAdminConfig(array('user_entity'));
-            $config_entities[] = $this->container->get('duf_admin.dufadminconfig')->getDufAdminConfig(array('user_role_entity'));
+            $config_entities    = array();
+            $config_entities[]  = $this->container->get('duf_admin.dufadminconfig')->getDufAdminConfig(array('user_entity'));
+            $config_entities[]  = $this->container->get('duf_admin.dufadminconfig')->getDufAdminConfig(array('user_role_entity'));
 
             foreach ($config_entities as $config_entity_name) {
                 $config_entity_route = $this->getRouteFromEntityName($config_entity_name, '', '');
@@ -94,7 +97,7 @@ class DufAdminRouting
             $entity_name = $this->language_entity;
         }
         else {
-            $config_entities = $this->container->get('duf_admin.dufadminconfig')->getDufAdminConfig(array('entities'));
+            $config_entities = $this->getConfigEntities();
 
             foreach ($config_entities as $config_entity_name => $params) {
                 $config_entity_route = $this->getRouteFromEntityName($config_entity_name, '', '');
@@ -102,6 +105,11 @@ class DufAdminRouting
                     $entity_name = $config_entity_name;
                 }
             }
+        }
+
+        if (null === $entity_name) {
+            if (stripos($path, 'aggregatoraccount') !== false)
+                $entity_name = 'DufAggregatorBundle:AggregatorAccount';
         }
 
         return $entity_name;
@@ -135,18 +143,21 @@ class DufAdminRouting
     public function getPageTitle($entity_name)
     {
         $page_title             = '';
-        $config_entities        = $this->container->get('duf_admin.dufadminconfig')->getDufAdminConfig(array('entities'));
+        $config_entities        = $this->getConfigEntities();
 
-        if ($entity_name == $this->user_entity) {
+        if ($entity_name == $this->user_entity)
             return 'Users';
-        }
 
-        if ($entity_name == $this->user_role_entity) {
+        if ($entity_name == $this->user_role_entity)
             return 'User roles';
-        }
 
-        if ($entity_name == $this->language_entity) {
+        if ($entity_name == $this->language_entity)
             return 'Languages';
+
+        // get aggregator account
+        if ($entity_name === 'DufAggregatorBundle:AggregatorAccount' && isset($_GET['service'])) {
+            if (null !== ($service = $this->container->get('duf_aggregator.dufaggregatorconfig')->getService($_GET['service'])))
+                return $service['name'] . ' accounts';
         }
 
         foreach ($config_entities as $config_entity_name => $params) {
@@ -171,11 +182,16 @@ class DufAdminRouting
             $route_name = 'duf_admin_entity_index_languages';
         }
 
-        return $router->generate($route_name,
-            array(
-                    'path' => $this->getRouteFromEntityName($entity_name, $content_type, $action_type),
-                )
-            );
+        $route = $router->generate($route_name,
+                    array(
+                        'path' => $this->getRouteFromEntityName($entity_name, $content_type, $action_type),
+                    )
+                );
+
+        if (stripos($entity_name, 'DufAggregatorBundle:AggregatorAccount') !== false && isset($_GET['service']))
+            $route .= '?service=' . $_GET['service'];
+
+        return $route;
     }
 
     public function getEntityRouteName($entity_name)
@@ -196,6 +212,7 @@ class DufAdminRouting
     public function getContentType($entity_name)
     {
         $content_type = 'content';
+
         if ($entity_name == $this->user_entity || $entity_name == $this->user_role_entity) {
             $content_type = 'users';
         }
@@ -211,7 +228,7 @@ class DufAdminRouting
 
     public function isTree($entity_name)
     {
-        $config_entities = $this->container->get('duf_admin.dufadminconfig')->getDufAdminConfig(array('entities'));
+        $config_entities        = $this->getConfigEntities();
 
         foreach ($config_entities as $config_entity_name => $config_entity_params) {
             if ($config_entity_name === $entity_name && isset($config_entity_params['is_tree']) && true === $config_entity_params['is_tree']) {
@@ -224,7 +241,7 @@ class DufAdminRouting
 
     public function isExportable($entity_name)
     {
-        $config_entities = $this->container->get('duf_admin.dufadminconfig')->getDufAdminConfig(array('entities'));
+        $config_entities = $this->getConfigEntities();
 
         foreach ($config_entities as $config_entity_name => $config_entity_params) {
             if ($config_entity_name === $entity_name && isset($config_entity_params['is_exportable']) && true === $config_entity_params['is_exportable']) {
@@ -235,13 +252,56 @@ class DufAdminRouting
         return false;
     }
 
+    public function isProduct($entity_name)
+    {
+        $config_entities = $this->getConfigEntities(true);
+
+        if (isset($config_entities[$entity_name])) {
+            if (isset($config_entities[$entity_name]['is_product'])) {
+                if (true === $config_entities[$entity_name]['is_product']) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public function isStore($entity_name)
+    {
+        $config_entities = $this->getConfigEntities(true);
+
+        if (isset($config_entities[$entity_name])) {
+            if (isset($config_entities[$entity_name]['is_store'])) {
+                if (true === $config_entities[$entity_name]['is_store']) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     public function getEntityGenericForm($entity)
     {
-
         if (is_subclass_of($entity, 'Duf\AdminBundle\Entity\DufAdminNestedTreeEntity')) {
             return DufAdminGenericNestedTreeType::class;
         }
         
         return DufAdminGenericType::class;
+    }
+
+    private function getConfigEntities($ecommerce_only = false)
+    {
+        $entities               = $this->container->get('duf_admin.dufadminconfig')->getDufAdminConfig(array('entities'));
+        $ecommerce_entities     = $this->container->get('duf_admin.dufadminconfig')->getDufAdminConfig(array('ecommerce_entities'));
+
+        if ($ecommerce_only)
+            return $ecommerce_entities;
+
+        if (is_array($ecommerce_entities))
+            return array_merge($entities, $ecommerce_entities);
+
+        return $entities;
     }
 }

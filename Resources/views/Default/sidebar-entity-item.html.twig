@@ -1,0 +1,18 @@
+{% set is_product = false %}
+{% if params.is_product is defined and params.is_product == true %}
+	{% set is_product = true %}
+{% endif %}
+
+{% if params.hidden is not defined or params.hidden == false or params.hidden is null %}
+	{% if params.override_route is not defined %}
+		{% set entity_link = path('duf_admin_entity_index', { path: duf_admin_routing.getRouteFromEntityName(entity_name, 'content', 'index') }) %}
+	{% else %}
+		{% set entity_link = path(params.override_route) %}
+	{% endif %}
+
+	<li {% if false == is_product %}class="treeview"{% endif %}>
+		<a href="{{ entity_link }}">
+			<i class="fa {{ params.icon }}"></i> <span>{{ params.title }}</span>
+		</a>
+	</li>
+{% endif %}

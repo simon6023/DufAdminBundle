@@ -1,0 +1,39 @@
+duf_admin_ecommerce_index:
+    path:     /
+    defaults: { _controller: DufECommerceBundle:Admin\Index:index }
+
+duf_admin_ecommerce_categories_index:
+    path:     /categories/index
+    defaults: { _controller: DufECommerceBundle:Admin\Categories:index }
+
+duf_admin_ecommerce_territories:
+    path:     /territories
+    defaults: { _controller: DufECommerceBundle:Admin\Territories:index }
+
+duf_admin_ecommerce_territories_save:
+    path:     /territories/save
+    defaults: { _controller: DufECommerceBundle:Admin\Territories:save }
+
+duf_admin_ecommerce_currencies:
+    path:     /currencies
+    defaults: { _controller: DufECommerceBundle:Admin\Currencies:index }
+
+duf_admin_ecommerce_currencies_save:
+    path:     /currencies/save
+    defaults: { _controller: DufECommerceBundle:Admin\Currencies:save }
+
+duf_admin_ecommerce_currencies_add_territories:
+    path:     /currencies/territories/{currency_code}
+    defaults: { _controller: DufECommerceBundle:Admin\Currencies:addTerritories }
+
+duf_admin_ecommerce_currencies_add_territories_save:
+    path:     /currencies/territories/save/{currency_code}
+    defaults: { _controller: DufECommerceBundle:Admin\Currencies:saveTerritories }
+
+duf_admin_ecommerce_currencies_enable_currency:
+    path:     /currencies/enable/{currency_code}
+    defaults: { _controller: DufECommerceBundle:Admin\Currencies:enableCurrency }
+
+duf_admin_ecommerce_currencies_disable_currency:
+    path:     /currencies/disable/{currency_code}
+    defaults: { _controller: DufECommerceBundle:Admin\Currencies:disableCurrency }
