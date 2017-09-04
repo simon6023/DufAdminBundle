@@ -87,7 +87,7 @@ class RoutingController extends Controller
                                 'relation_entity'   => null,
                                 'relation_index'    => null,
                                 'is_boolean'        => 0,
-                                'value'             => number_format($execution_average, 4) . ' sec.',
+                                'value'             => (isset($execution_average)) ? number_format($execution_average, 4) . ' sec.': '',
                             )
                         )
                     );
