@@ -52,6 +52,9 @@ class DufAdminForm
         $entity_properties      = $this->getEntityProperties($entity_class);
         $annotationReader       = new AnnotationReader();
 
+        $config_user_entity         = $this->container->get('duf_admin.dufadminconfig')->getDufAdminConfig('user_entity');
+        $config_user_role_entity    = $this->container->get('duf_admin.dufadminconfig')->getDufAdminConfig('user_role_entity');
+
         foreach ($entity_properties as $property_name) {
             $entity_class               = $_entity_class;
 
@@ -143,8 +146,12 @@ class DufAdminForm
 
                                 if ($annotation->type == 'entity') {
                                     // check if entity is interface
-                                    if (isset($form_options[$property_name]['parameters']['class'])) {
-                                        exit('check if entity is interface');
+                                    if (
+                                        isset($form_options[$property_name]['parameters']['class']) 
+                                        && stripos($form_options[$property_name]['parameters']['class'], 'DufAdminUserRoleInterface') !== false
+                                    )
+                                    {
+                                        $form_options[$property_name]['parameters']['class'] = $config_user_role_entity;
                                     }
 
                                     $form_options[$property_name]['parameters']['multiple']         = $annotation->multiple;
@@ -161,7 +168,6 @@ class DufAdminForm
                                 }
 
                                 if ($annotation->type == 'entity_hidden') {
-                                    $config_user_entity     = $this->container->get('duf_admin.dufadminconfig')->getDufAdminConfig('user_entity');
                                     $form_options[$property_name]['class']  = ('user_entity' !== $annotation->class) ? $annotation->class: $config_user_entity;
 
                                     if ($annotation->hidden_value === 'current_user') {
