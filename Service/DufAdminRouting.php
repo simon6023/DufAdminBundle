@@ -126,10 +126,17 @@ class DufAdminRouting
             if (isset($matches[0]))
                 $matches = $matches[0];
 
-            // get second uppercase letter
-            if (isset($matches[1])) {
-                $start_upper = (int)$matches[1][1];
-                $entity_class = substr_replace($entity_class, '\\', $start_upper, 0);
+            for ($i = 1; $i <= count($matches); $i++) { 
+                // get second uppercase letter
+                if (isset($matches[$i])) {
+                    $start_upper         = (int)$matches[$i][1];
+                    $entity_class_test   = substr_replace($entity_class, '\\', $start_upper, 0);
+
+                    if (class_exists($entity_class_test)) {
+                        $entity_class = $entity_class_test;
+                        $i = count($matches) + 1;
+                    }
+                }
             }
         }
 
