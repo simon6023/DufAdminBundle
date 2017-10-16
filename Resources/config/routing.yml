@@ -120,6 +120,10 @@ duf_admin_clear_cache:
     path: /clear-cache/{type}
     defaults: { _controller: "DufAdminBundle:Cache:clear" }
 
+duf_admin_update_doctrin_schema:
+    path: /update-doctrine-cache
+    defaults: { _controller: "DufAdminBundle:Cache:updateDoctrineSchema" }
+
 duf_admin_delete_embed_entity:
     path: /delete-embed-entity/{embed_entity_class}/{embed_entity_id}
     defaults: { _controller: "DufAdminBundle:Form:deleteEmbedEntity" }

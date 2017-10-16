@@ -203,21 +203,24 @@
 
 			<li class="header">PARAMETERS</li>
 
-			<li class="treeview">
-				<a href="#">
-					<i class="fa fa-archive"></i> <span>Cache</span> <i class="fa fa-angle-left pull-right"></i>
-				</a>
+			{% if is_granted('ROLE_ADMIN') %}
+				<li class="treeview">
+					<a href="#">
+						<i class="fa fa-archive"></i> <span>Doctrine</span> <i class="fa fa-angle-left pull-right"></i>
+					</a>
 
-				<ul class="treeview-menu">
-					<li><a href="{{ path('duf_admin_clear_cache', { type: 'doctrine' }) }}"><i class="fa fa-database"></i> Clear Doctrine cache</a></li>
-				</ul>
-			</li>
+					<ul class="treeview-menu">
+						<li><a href="{{ path('duf_admin_clear_cache', { type: 'doctrine' }) }}"><i class="fa fa-database"></i> Clear Doctrine cache</a></li>
+						<li><a href="{{ path('duf_admin_update_doctrin_schema') }}"><i class="fa fa-database"></i> Update Doctrine schema</a></li>
+					</ul>
+				</li>
 
-			<li class="treeview">
-				<a href="{{ path('duf_admin_create_entity_index') }}">
-					<i class="fa fa-database"></i> <span>Entity manager</span>
-				</a>
-			</li>
+				<li class="treeview">
+					<a href="{{ path('duf_admin_create_entity_index') }}">
+						<i class="fa fa-database"></i> <span>Entity manager</span>
+					</a>
+				</li>
+			{% endif %}
 
 			<li class="treeview">
 				<a href="{{ path('duf_admin_entity_index', { path: duf_admin_routing.getRouteFromEntityName('DufCoreBundle:DufCoreNotificationType', 'content', 'index') }) }}">
